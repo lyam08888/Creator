@@ -2683,11 +2683,10 @@
             }
 
             function getDynamicData(container) {
-                return Array.from(container.children).map(itemDiv => ({
-                    title: itemDiv.querySelector('.data-title')?.value || '',
-                    meta: itemDiv.querySelector('.data-meta')?.value || '',
-                    desc: itemDiv.querySelector('.data-desc')?.value || '',
-                }));
+                // Cette fonction est obsolète et a été remplacée par getDynamicItemsData
+                // Elle est conservée temporairement pour compatibilité
+                console.warn('getDynamicData is deprecated, use getDynamicItemsData instead');
+                return getDynamicItemsData(container);
             }
             
             // --- SKILLS RENDERING ---
