@@ -1546,6 +1546,11 @@
                                     <label for="body-text-color-picker" class="block text-sm font-medium text-gray-700">Texte du corps</label>
                                     <input type="color" id="body-text-color-picker" value="#334155" class="cv-input w-full h-10 p-1 border rounded-md">
                                 </div>
+                                <div class="col-span-2">
+                                    <button id="suggest-colors" class="w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white py-2 px-4 rounded-md hover:from-blue-600 hover:to-purple-700 flex items-center justify-center gap-2">
+                                        <i class="fas fa-palette"></i> Suggestions de couleurs
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </details>
@@ -2102,7 +2107,32 @@
                     text: document.getElementById('confirm-modal-text'),
                     okBtn: document.getElementById('confirm-modal-ok-btn'),
                     cancelBtn: document.getElementById('confirm-modal-cancel-btn'),
-                }
+                },
+
+                // Éléments manquants pour les nouvelles fonctionnalités
+                suggestColorsBtn: document.getElementById('suggest-colors'),
+                languageList: document.getElementById('langue-list'),
+                projectList: document.getElementById('projet-list'),
+                certificationList: document.getElementById('certification-list'),
+                referenceList: document.getElementById('reference-list'),
+                socialList: document.getElementById('social-list'),
+                profilePhotoPreview: document.getElementById('profile-photo-preview'),
+                removeProfilePhoto: document.getElementById('remove-profile-photo'),
+                textToAnalyze: document.getElementById('text-to-analyze'),
+                aiRewriteProfile: document.getElementById('ai-rewrite-profile'),
+                aiOptimizeProfile: document.getElementById('ai-optimize-profile'),
+                aiCategorizeSkills: document.getElementById('ai-categorize-skills'),
+                aiSuggestSkills: document.getElementById('ai-suggest-skills'),
+                templatesModal: document.getElementById('templates-modal'),
+                apiModal: document.getElementById('api-modal'),
+                collapseAllSectionsBtn: document.getElementById('collapse-all-sections-btn'),
+                accessibilityBtn: document.getElementById('accessibility-btn'),
+                loadCvBtn: document.getElementById('load-cv-btn'),
+                templatesBtn: document.getElementById('templates-btn'),
+                shareBtn: document.getElementById('share-btn'),
+                resetCvBtn: document.getElementById('reset-cv-btn'),
+                toggleDarkMode: document.getElementById('toggle-dark-mode'),
+                printCv: document.getElementById('print-cv')
             };
 
             // --- DYNAMIC SELECTORS ---
@@ -3697,22 +3727,87 @@
                 controls.resetRecruiterBtn.addEventListener('click', () => { setDefaultRecruiterInfo(); updatePreview('form'); });
                 controls.addPageBtn.addEventListener('click', () => addNewPage());
                 controls.removeBannerBgBtn.addEventListener('click', () => removeBannerBackground());
-                controls.addSectionBtn.addEventListener('click', () => {
-                    const title = controls.newSectionTitleInput.value.trim();
-                    if(title) {
-                        addCustomSection(title);
-                        controls.newSectionTitleInput.value = '';
-                    } else {
-                        showNotification("Veuillez entrer un titre pour la nouvelle section.", "error");
+                // === AJOUT DES EVENT LISTENERS MANQUANTS ===
+
+                // Event listeners pour la barre d'outils
+                document.getElementById('api-settings-btn')?.addEventListener('click', openAPISettings);
+                document.getElementById('accessibility-btn')?.addEventListener('click', improveAccessibility);
+                document.getElementById('save-cv-btn')?.addEventListener('click', saveCV);
+                document.getElementById('load-cv-btn')?.addEventListener('click', loadCV);
+                document.getElementById('templates-btn')?.addEventListener('click', openTemplates);
+                document.getElementById('download-pdf-btn')?.addEventListener('click', downloadPDF);
+                document.getElementById('share-btn')?.addEventListener('click', shareCV);
+                document.getElementById('reset-cv-btn')?.addEventListener('click', () => {
+                    if (confirm('Êtes-vous sûr de vouloir réinitialiser le CV ?')) {
+                        resetCVToDefault();
                     }
                 });
-                controls.sectionSuggestionSelect.addEventListener('change', (e) => {
-                    if(e.target.value) controls.newSectionTitleInput.value = e.target.value;
+                document.getElementById('toggle-overflow-btn')?.addEventListener('click', toggleOverflow);
+                document.getElementById('toggle-presentation-mode-btn')?.addEventListener('click', togglePresentationMode);
+                document.getElementById('collapse-all-sections-btn')?.addEventListener('click', collapseAllSections);
+
+                // Event listeners pour l'analyse IA
+                document.getElementById('analyze-btn')?.addEventListener('click', analyzeText);
+                document.getElementById('generate-mail-btn')?.addEventListener('click', generateMail);
+                document.getElementById('ai-summarize-btn')?.addEventListener('click', summarizeAllExperiencesAI);
+
+                // Event listeners pour les boutons IA du profil
+                document.getElementById('ai-rewrite-profile')?.addEventListener('click', rewriteProfile);
+                document.getElementById('ai-optimize-profile')?.addEventListener('click', optimizeProfile);
+
+                // Event listeners pour les boutons de gestion des compétences
+                document.getElementById('ai-categorize-skills')?.addEventListener('click', categorizeSkills);
+                document.getElementById('ai-suggest-skills')?.addEventListener('click', suggestSkills);
+
+                // === CORRECTION DES EVENT LISTENERS AVEC LES BONS IDs ===
+
+                // Event listeners pour les boutons de couleurs et bannière
+                document.getElementById('suggest-colors')?.addEventListener('click', suggestColors);
+                document.getElementById('randomize-banner-style-btn')?.addEventListener('click', randomizeBannerStyle);
+
+                // Event listeners pour les boutons de templates
+                document.getElementById('save-template-btn')?.addEventListener('click', saveTemplate);
+                document.getElementById('export-templates-btn')?.addEventListener('click', exportTemplate);
+                document.getElementById('import-templates-btn')?.addEventListener('click', importTemplate);
+
+                // Event listeners pour la gestion des photos
+                document.getElementById('upload-photo')?.addEventListener('click', handleProfilePhoto);
+                document.getElementById('remove-photo')?.addEventListener('click', removeProfilePhoto);
+
+                // Event listeners pour les paramètres API
+                document.getElementById('save-api-settings')?.addEventListener('click', saveAPISettings);
+
+                // Event listeners pour les autres contrôles
+                document.getElementById('toggle-dark-mode')?.addEventListener('click', toggleDarkMode);
+                document.getElementById('print-cv')?.addEventListener('click', printCV);
+
+                // Event listeners pour les modales
+                document.querySelectorAll('.modal-close').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        btn.closest('.modal').classList.remove('active');
+                    });
                 });
-                controls.fixBannerTopBtn.addEventListener('click', () => moveBannerTo('top'));
-                controls.fixBannerBottomBtn.addEventListener('click', () => moveBannerTo('bottom'));
-                controls.modularBannerBtn.addEventListener('click', () => moveBannerTo('modular'));
-                controls.addSkillLevelBtn.addEventListener('click', () => createSkillLevelItem());
+
+                // Event listeners pour ouvrir les modales
+                document.getElementById('open-templates')?.addEventListener('click', openTemplates);
+                document.getElementById('open-api-settings')?.addEventListener('click', openAPISettings);
+
+                // Event listeners pour les boutons de basculement de sections
+                document.querySelectorAll('.toggle-section').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const sectionId = e.target.dataset.section;
+                        toggleSection(sectionId);
+                    });
+                });
+
+                // Event listeners pour les boutons d'ajout d'éléments dynamiques
+                document.getElementById('add-experience')?.addEventListener('click', addExperience);
+                document.getElementById('add-formation')?.addEventListener('click', addFormation);
+                document.getElementById('add-language')?.addEventListener('click', addLanguage);
+                document.getElementById('add-project')?.addEventListener('click', addProject);
+                document.getElementById('add-certification')?.addEventListener('click', addCertification);
+                document.getElementById('add-reference')?.addEventListener('click', addReference);
+                document.getElementById('add-social-link')?.addEventListener('click', addSocialLink);
 
                 document.querySelectorAll('.a4-page').forEach(setupOverflowObserver);
             }
@@ -4595,7 +4690,312 @@
             }
         });
 
-        // === FONCTIONS MANQUANTES ===
+        // === FONCTIONS MANQUANTES POUR LES BOUTONS ===
+
+        // Fonction pour sauvegarder le CV actuel
+        function saveCV() {
+            const cvData = {
+                nom: controls.nom.value,
+                prenom: controls.prenom.value,
+                poste: controls.poste.value,
+                description: controls.description.value,
+                email: controls.email.value,
+                telephone: controls.telephone.value,
+                competences: controls.competences.value,
+                experiences: getDynamicItemsData(controls.experienceList),
+                formations: getDynamicItemsData(controls.formationList),
+                langues: getDynamicItemsData(controls.langueList),
+                projets: getDynamicItemsData(controls.projetList),
+                certifications: getDynamicItemsData(controls.certificationList),
+                references: getDynamicItemsData(controls.referenceList),
+                liensSociaux: getDynamicItemsData(controls.socialList),
+                profilePhoto: localStorage.getItem('profile-photo'),
+                timestamp: new Date().toISOString()
+            };
+
+            const savedCVs = JSON.parse(localStorage.getItem('saved-cvs') || '[]');
+            savedCVs.push(cvData);
+            localStorage.setItem('saved-cvs', JSON.stringify(savedCVs));
+
+            showNotification('CV sauvegardé avec succès.', 'success');
+        }
+
+        // Fonction pour charger un CV sauvegardé
+        function loadCV() {
+            const savedCVs = JSON.parse(localStorage.getItem('saved-cvs') || '[]');
+            if (savedCVs.length === 0) {
+                showNotification('Aucun CV sauvegardé trouvé.', 'warning');
+                return;
+            }
+
+            // Pour l'instant, charger le dernier CV sauvegardé
+            const lastCV = savedCVs[savedCVs.length - 1];
+            loadTemplate(lastCV);
+            showNotification('Dernier CV chargé avec succès.', 'success');
+        }
+
+        // Fonction pour télécharger le CV en PDF
+        function downloadPDF() {
+            showLoader('Génération du PDF...');
+
+            const element = document.getElementById('cv-preview-wrapper');
+            const opt = {
+                margin: 1,
+                filename: `CV-${controls.prenom.value}-${controls.nom.value}.pdf`,
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2, useCORS: true },
+                jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+            };
+
+            html2pdf().set(opt).from(element).save().then(() => {
+                hideLoader();
+                showNotification('PDF téléchargé avec succès.', 'success');
+            }).catch((error) => {
+                hideLoader();
+                console.error('Erreur lors de la génération du PDF:', error);
+                showNotification('Erreur lors de la génération du PDF.', 'error');
+            });
+        }
+
+        // Fonction pour partager le CV
+        function shareCV() {
+            const cvData = {
+                nom: controls.nom.value,
+                prenom: controls.prenom.value,
+                poste: controls.poste.value,
+                description: controls.description.value,
+                email: controls.email.value,
+                telephone: controls.telephone.value,
+                competences: controls.competences.value
+            };
+
+            const shareData = {
+                title: `CV de ${cvData.prenom} ${cvData.nom}`,
+                text: `Découvrez le CV de ${cvData.prenom} ${cvData.nom} - ${cvData.poste}`,
+                url: window.location.href
+            };
+
+            if (navigator.share) {
+                navigator.share(shareData)
+                    .then(() => showNotification('CV partagé avec succès.', 'success'))
+                    .catch(() => showNotification('Partage annulé.', 'info'));
+            } else {
+                // Fallback: copier le lien dans le presse-papiers
+                navigator.clipboard.writeText(window.location.href)
+                    .then(() => showNotification('Lien copié dans le presse-papiers.', 'success'))
+                    .catch(() => showNotification('Impossible de copier le lien.', 'error'));
+            }
+        }
+
+        // Fonction pour basculer la détection de dépassement
+        function toggleOverflow() {
+            const body = document.body;
+            const btn = document.getElementById('toggle-overflow-btn');
+
+            if (body.classList.contains('overflow-check-active')) {
+                body.classList.remove('overflow-check-active');
+                btn.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Détection dépassement';
+                showNotification('Détection de dépassement désactivée.', 'info');
+            } else {
+                body.classList.add('overflow-check-active');
+                btn.innerHTML = '<i class="fas fa-check-circle"></i> Détection active';
+                checkAllPagesOverflow();
+                showNotification('Détection de dépassement activée.', 'success');
+            }
+        }
+
+        // Fonction pour basculer le mode présentation
+        function togglePresentationMode() {
+            const body = document.body;
+            const btn = document.getElementById('toggle-presentation-mode-btn');
+
+            if (body.classList.contains('presentation-mode')) {
+                body.classList.remove('presentation-mode');
+                btn.innerHTML = '<i class="fas fa-eye"></i> Mode présentation';
+                showNotification('Mode présentation désactivé.', 'info');
+            } else {
+                body.classList.add('presentation-mode');
+                btn.innerHTML = '<i class="fas fa-eye-slash"></i> Mode normal';
+                showNotification('Mode présentation activé.', 'success');
+            }
+        }
+
+        // Fonction pour réduire toutes les sections
+        function collapseAllSections() {
+            const sections = document.querySelectorAll('.cv-section details');
+            sections.forEach(section => {
+                section.open = false;
+            });
+            showNotification('Toutes les sections réduites.', 'success');
+        }
+
+        // Fonction pour analyser le texte et remplir automatiquement
+        async function analyzeText() {
+            const textToAnalyze = document.getElementById('text-to-analyze').value;
+            if (!textToAnalyze.trim()) {
+                showNotification('Veuillez saisir un texte à analyser.', 'warning');
+                return;
+            }
+
+            const apiKey = localStorage.getItem('gemini-api-key') || localStorage.getItem('openai-api-key');
+            if (!apiKey) {
+                showNotification('Veuillez configurer une clé API dans les paramètres.', 'warning');
+                return;
+            }
+
+            try {
+                showLoader('Analyse du texte...');
+                const prompt = `Analyse ce texte et extrais les informations pour remplir un CV. Retourne un objet JSON avec les champs suivants: nom, prenom, poste, description, email, telephone, competences, experiences (tableau d'objets avec title, meta, desc), formations (tableau d'objets avec title, meta). Texte à analyser: "${textToAnalyze}"`;
+
+                const result = await callAIAPI(prompt);
+                const cvData = JSON.parse(result);
+
+                // Remplir les champs
+                if (cvData.nom) controls.nom.value = cvData.nom;
+                if (cvData.prenom) controls.prenom.value = cvData.prenom;
+                if (cvData.poste) controls.poste.value = cvData.poste;
+                if (cvData.description) controls.description.value = cvData.description;
+                if (cvData.email) controls.email.value = cvData.email;
+                if (cvData.telephone) controls.telephone.value = cvData.telephone;
+                if (cvData.competences) controls.competences.value = cvData.competences;
+
+                // Remplir les expériences
+                if (cvData.experiences && Array.isArray(cvData.experiences)) {
+                    controls.experienceList.innerHTML = '';
+                    cvData.experiences.forEach(exp => {
+                        createDynamicItem(controls.experienceList, [
+                            { key: 'title', placeholder: 'Titre du poste' },
+                            { key: 'meta', placeholder: 'Entreprise & Dates' },
+                            { key: 'desc', placeholder: 'Description des missions', type: 'textarea' }
+                        ], exp);
+                    });
+                }
+
+                // Remplir les formations
+                if (cvData.formations && Array.isArray(cvData.formations)) {
+                    controls.formationList.innerHTML = '';
+                    cvData.formations.forEach(form => {
+                        createDynamicItem(controls.formationList, [
+                            { key: 'title', placeholder: 'Nom du diplôme' },
+                            { key: 'meta', placeholder: 'Établissement & Année' }
+                        ], form);
+                    });
+                }
+
+                updatePreview('form');
+                hideLoader();
+                showNotification('Texte analysé et champs remplis automatiquement.', 'success');
+
+            } catch (error) {
+                hideLoader();
+                console.error('Erreur lors de l\'analyse:', error);
+                showNotification('Erreur lors de l\'analyse du texte.', 'error');
+            }
+        }
+
+        // Fonction pour générer un mail de présentation
+        async function generateMail() {
+            const recruiterInfo = {
+                nom: controls.bannerNom.value,
+                poste: controls.bannerPoste.value,
+                email: controls.bannerEmail.value
+            };
+
+            const candidateInfo = {
+                nom: controls.nom.value,
+                prenom: controls.prenom.value,
+                poste: controls.poste.value,
+                email: controls.email.value
+            };
+
+            if (!recruiterInfo.email || !candidateInfo.nom) {
+                showNotification('Informations manquantes pour générer le mail.', 'warning');
+                return;
+            }
+
+            const apiKey = localStorage.getItem('gemini-api-key') || localStorage.getItem('openai-api-key');
+            if (!apiKey) {
+                showNotification('Veuillez configurer une clé API dans les paramètres.', 'warning');
+                return;
+            }
+
+            try {
+                showLoader('Génération du mail...');
+                const prompt = `Génère un mail de présentation professionnel pour postuler au poste de "${candidateInfo.poste}". Le candidat s'appelle ${candidateInfo.prenom} ${candidateInfo.nom}, son email est ${candidateInfo.email}. Le recruteur est ${recruiterInfo.nom}, poste: ${recruiterInfo.poste}, email: ${recruiterInfo.email}. Le mail doit être en français, professionnel, et inclure une présentation brève, les motivations, et une formule de politesse.`;
+
+                const generatedMail = await callAIAPI(prompt);
+
+                // Copier dans le presse-papiers
+                navigator.clipboard.writeText(generatedMail)
+                    .then(() => {
+                        hideLoader();
+                        showNotification('Mail généré et copié dans le presse-papiers.', 'success');
+                    })
+                    .catch(() => {
+                        hideLoader();
+                        showNotification('Mail généré avec succès.', 'success');
+                        console.log('Mail généré:', generatedMail);
+                    });
+
+            } catch (error) {
+                hideLoader();
+                console.error('Erreur lors de la génération du mail:', error);
+                showNotification('Erreur lors de la génération du mail.', 'error');
+            }
+        }
+
+        // Fonction pour ouvrir les paramètres API
+        function openAPISettings() {
+            controls.apiModal.classList.add('active');
+            loadAPISettings();
+        }
+
+        // Fonction pour améliorer l'accessibilité
+        function improveAccessibility() {
+            showLoader('Amélioration de l\'accessibilité...');
+
+            // Ajouter des attributs d'accessibilité
+            document.querySelectorAll('[contenteditable="true"]').forEach(el => {
+                el.setAttribute('aria-label', 'Zone de texte éditable');
+            });
+
+            // Améliorer le contraste des couleurs
+            const root = document.documentElement;
+            const currentPrimary = getComputedStyle(root).getPropertyValue('--primary-color');
+            const currentSecondary = getComputedStyle(root).getPropertyValue('--secondary-color');
+
+            // S'assurer que les couleurs ont un bon contraste
+            root.style.setProperty('--primary-color', '#1e40af'); // Bleu plus foncé
+            root.style.setProperty('--secondary-color', '#0f172a'); // Gris plus foncé
+
+            // Mettre à jour les pickers de couleur
+            controls.primaryColorPicker.value = '#1e40af';
+            controls.secondaryColorPicker.value = '#0f172a';
+
+            // Ajouter des labels aux boutons
+            document.querySelectorAll('button:not([aria-label])').forEach(btn => {
+                const icon = btn.querySelector('i');
+                if (icon) {
+                    const iconClass = icon.className;
+                    let label = '';
+                    if (iconClass.includes('magic')) label = 'Utiliser l\'IA';
+                    else if (iconClass.includes('save')) label = 'Sauvegarder';
+                    else if (iconClass.includes('download')) label = 'Télécharger';
+                    else if (iconClass.includes('share')) label = 'Partager';
+                    if (label) btn.setAttribute('aria-label', label);
+                }
+            });
+
+            updatePreview('theme');
+            hideLoader();
+            showNotification('Accessibilité améliorée.', 'success');
+        }
+
+        // Fonction pour ouvrir la modale des templates
+        function openTemplates() {
+            controls.templatesModal.classList.add('active');
+            loadTemplatesList();
+        }
 
         // Fonction pour mettre à jour la couleur primaire
         function updatePrimaryColor() {
