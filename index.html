@@ -4595,7 +4595,944 @@
             }
         });
 
-        // === NOUVELLES FONCTIONNALITÉS POUR LA SECTION CONTENU ÉTENDUE ===
+        // === FONCTIONS MANQUANTES ===
+
+        // Fonction pour mettre à jour la couleur primaire
+        function updatePrimaryColor() {
+            const color = controls.primaryColorPicker.value;
+            document.documentElement.style.setProperty('--primary-color', color);
+            updatePreview('colors');
+        }
+
+        // Fonction pour mettre à jour la couleur secondaire
+        function updateSecondaryColor() {
+            const color = controls.secondaryColorPicker.value;
+            document.documentElement.style.setProperty('--secondary-color', color);
+            updatePreview('colors');
+        }
+
+        // Fonction pour mettre à jour le style de la bannière
+        function updateBannerStyle() {
+            const style = controls.bannerStyleSelect.value;
+            const banner = document.getElementById('recruiter-banner');
+            if (banner) {
+                // Supprimer tous les styles de bannière existants
+                banner.classList.remove('banner-style-modern', 'banner-style-elegant', 'banner-style-discret', 'banner-style-carte', 'banner-style-degrade', 'banner-style-premium', 'banner-style-minimal', 'banner-style-encadre', 'banner-style-ligne-haute');
+                // Ajouter le nouveau style
+                banner.classList.add(style);
+                updatePreview('banner');
+            }
+        }
+
+        // Fonction pour charger la liste des templates
+        function loadTemplatesList() {
+            const templates = JSON.parse(localStorage.getItem('cv-templates') || '[]');
+            const templatesList = document.getElementById('templates-list');
+            if (!templatesList) return;
+
+            templatesList.innerHTML = '';
+
+            if (templates.length === 0) {
+                templatesList.innerHTML = '<p class="text-gray-500 text-center py-4">Aucun modèle sauvegardé</p>';
+                return;
+            }
+
+            templates.forEach((template, index) => {
+                const templateItem = document.createElement('div');
+                templateItem.className = 'template-item';
+                templateItem.innerHTML = `
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <h4 class="font-medium">${template.name}</h4>
+                            <p class="text-sm text-gray-500">${template.data.prenom} ${template.data.nom} - ${template.data.poste || 'Sans poste'}</p>
+                            <p class="text-xs text-gray-400">${new Date(template.createdAt || template.timestamp).toLocaleDateString()}</p>
+                        </div>
+                        <div class="flex gap-2">
+                            <button class="load-template-btn bg-blue-500 text-white px-3 py-1 rounded text-sm" data-index="${index}">
+                                Charger
+                            </button>
+                            <button class="delete-template-btn bg-red-500 text-white px-3 py-1 rounded text-sm" data-index="${index}">
+                                Suppr
+                            </button>
+                        </div>
+                    </div>
+                `;
+                templatesList.appendChild(templateItem);
+            });
+
+            // Ajouter les event listeners pour les boutons
+            document.querySelectorAll('.load-template-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const index = e.target.dataset.index;
+                    const templates = JSON.parse(localStorage.getItem('cv-templates') || '[]');
+                    const template = templates[index];
+                    if (template) {
+                        loadTemplate(template.data);
+                        controls.templatesModal.classList.remove('active');
+                        showNotification(`Modèle "${template.name}" chargé.`, 'success');
+                    }
+                });
+            });
+
+            document.querySelectorAll('.delete-template-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const index = e.target.dataset.index;
+                    const templates = JSON.parse(localStorage.getItem('cv-templates') || '[]');
+                    const templateName = templates[index].name;
+                    templates.splice(index, 1);
+                    localStorage.setItem('cv-templates', JSON.stringify(templates));
+                    loadTemplatesList();
+                    showNotification(`Modèle "${templateName}" supprimé.`, 'success');
+                });
+            });
+        }
+
+        // Fonction pour charger un template
+        function loadTemplate(templateData) {
+            // Charger les données dans les champs du formulaire
+            controls.nom.value = templateData.nom || '';
+            controls.prenom.value = templateData.prenom || '';
+            controls.poste.value = templateData.poste || '';
+            controls.description.value = templateData.description || '';
+            controls.email.value = templateData.email || '';
+            controls.telephone.value = templateData.telephone || '';
+            controls.competences.value = templateData.competences || '';
+
+            // Charger les expériences
+            if (templateData.experiences) {
+                controls.experienceList.innerHTML = '';
+                templateData.experiences.forEach(exp => {
+                    createDynamicItem(controls.experienceList, [
+                        { key: 'title', placeholder: 'Titre du poste' },
+                        { key: 'meta', placeholder: 'Entreprise & Dates' },
+                        { key: 'desc', placeholder: 'Description des missions', type: 'textarea' }
+                    ], exp);
+                });
+            }
+
+            // Charger les formations
+            if (templateData.formations) {
+                controls.formationList.innerHTML = '';
+                templateData.formations.forEach(form => {
+                    createDynamicItem(controls.formationList, [
+                        { key: 'title', placeholder: 'Nom du diplôme' },
+                        { key: 'meta', placeholder: 'Établissement & Année' }
+                    ], form);
+                });
+            }
+
+        // Fonction pour sauvegarder un template
+        function saveTemplate() {
+            const templateName = prompt('Nom du modèle :');
+            if (!templateName) return;
+
+            const templateData = {
+                name: templateName,
+                data: {
+                    nom: controls.nom.value,
+                    prenom: controls.prenom.value,
+                    poste: controls.poste.value,
+                    description: controls.description.value,
+                    email: controls.email.value,
+                    telephone: controls.telephone.value,
+                    competences: controls.competences.value,
+                    experiences: getDynamicItemsData(controls.experienceList),
+                    formations: getDynamicItemsData(controls.formationList),
+                    langues: getDynamicItemsData(controls.langueList),
+                    projets: getDynamicItemsData(controls.projetList),
+                    certifications: getDynamicItemsData(controls.certificationList),
+                    references: getDynamicItemsData(controls.referenceList),
+                    liensSociaux: getDynamicItemsData(controls.socialList)
+                },
+                createdAt: new Date().toISOString()
+            };
+
+            const templates = JSON.parse(localStorage.getItem('cv-templates') || '[]');
+            templates.push(templateData);
+            localStorage.setItem('cv-templates', JSON.stringify(templates));
+
+            loadTemplatesList();
+            showNotification(`Modèle "${templateName}" sauvegardé.`, 'success');
+        }
+
+        // Fonction pour exporter un template
+        function exportTemplate() {
+            const templateData = {
+                nom: controls.nom.value,
+                prenom: controls.prenom.value,
+                poste: controls.poste.value,
+                description: controls.description.value,
+                email: controls.email.value,
+                telephone: controls.telephone.value,
+                competences: controls.competences.value,
+                experiences: getDynamicItemsData(controls.experienceList),
+                formations: getDynamicItemsData(controls.formationList),
+                langues: getDynamicItemsData(controls.langueList),
+                projets: getDynamicItemsData(controls.projetList),
+                certifications: getDynamicItemsData(controls.certificationList),
+                references: getDynamicItemsData(controls.referenceList),
+                liensSociaux: getDynamicItemsData(controls.socialList)
+            };
+
+            const dataStr = JSON.stringify(templateData, null, 2);
+            const dataBlob = new Blob([dataStr], {type:'application/json'});
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'cv-template.json';
+            link.click();
+            URL.revokeObjectURL(url);
+            showNotification('Modèle exporté avec succès.', 'success');
+        }
+
+        // Fonction pour importer un template
+        function importTemplate() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.json';
+            input.onchange = (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    try {
+                        const templateData = JSON.parse(e.target.result);
+                        loadTemplate(templateData);
+                        showNotification('Modèle importé avec succès.', 'success');
+                    } catch (error) {
+                        showNotification('Erreur lors de l\'importation du modèle.', 'error');
+                    }
+                };
+                reader.readAsText(file);
+            };
+            input.click();
+        }
+
+        // Fonction pour obtenir les données des éléments dynamiques
+        function getDynamicItemsData(container) {
+            const items = [];
+            container.querySelectorAll('.dynamic-item').forEach(item => {
+                const itemData = {};
+                item.querySelectorAll('input, textarea').forEach(input => {
+                    itemData[input.dataset.key] = input.value;
+                });
+                items.push(itemData);
+            });
+            return items;
+        }
+
+        // Fonction pour randomiser le style de la bannière
+        function randomizeBannerStyle() {
+            const styles = ['banner-style-modern', 'banner-style-elegant', 'banner-style-discret', 'banner-style-carte', 'banner-style-degrade', 'banner-style-premium', 'banner-style-minimal', 'banner-style-encadre', 'banner-style-ligne-haute'];
+            const randomStyle = styles[Math.floor(Math.random() * styles.length)];
+            controls.bannerStyleSelect.value = randomStyle;
+            updateBannerStyle();
+            showNotification('Style de bannière randomisé.', 'success');
+        }
+
+        // Fonction pour suggérer des couleurs
+        function suggestColors() {
+            const suggestions = [
+                { primary: '#3B82F6', secondary: '#1E40AF' },
+                { primary: '#10B981', secondary: '#047857' },
+                { primary: '#F59E0B', secondary: '#D97706' },
+                { primary: '#EF4444', secondary: '#DC2626' },
+                { primary: '#8B5CF6', secondary: '#7C3AED' },
+                { primary: '#06B6D4', secondary: '#0891B2' }
+            ];
+
+            const randomSuggestion = suggestions[Math.floor(Math.random() * suggestions.length)];
+            controls.primaryColorPicker.value = randomSuggestion.primary;
+            controls.secondaryColorPicker.value = randomSuggestion.secondary;
+            updatePrimaryColor();
+            updateSecondaryColor();
+        // === FONCTIONS IA ===
+
+        // Fonction pour réécrire le profil avec l'IA
+        async function rewriteProfile() {
+            const currentText = controls.description.value;
+            if (!currentText.trim()) {
+                showNotification('Veuillez saisir une description avant de la réécrire.', 'warning');
+                return;
+            }
+
+            const apiKey = localStorage.getItem('gemini-api-key') || localStorage.getItem('openai-api-key');
+            if (!apiKey) {
+                showNotification('Veuillez configurer une clé API dans les paramètres.', 'warning');
+                return;
+            }
+
+            try {
+                showNotification('Réécriture en cours...', 'info');
+                const rewrittenText = await callAIAPI('Réécris cette description de profil professionnel de manière plus attrayante et professionnelle : ' + currentText);
+                controls.description.value = rewrittenText;
+                updatePreview('form');
+                showNotification('Profil réécrit avec succès.', 'success');
+            } catch (error) {
+                console.error('Erreur lors de la réécriture:', error);
+                showNotification('Erreur lors de la réécriture du profil.', 'error');
+            }
+        }
+
+        // Fonction pour optimiser le profil avec l'IA
+        async function optimizeProfile() {
+            const currentText = controls.description.value;
+            if (!currentText.trim()) {
+                showNotification('Veuillez saisir une description avant de l\'optimiser.', 'warning');
+                return;
+            }
+
+            const apiKey = localStorage.getItem('gemini-api-key') || localStorage.getItem('openai-api-key');
+            if (!apiKey) {
+                showNotification('Veuillez configurer une clé API dans les paramètres.', 'warning');
+                return;
+            }
+
+            try {
+                showNotification('Optimisation en cours...', 'info');
+                const optimizedText = await callAIAPI('Optimise cette description de profil pour qu\'elle soit plus impactante pour les recruteurs : ' + currentText);
+                controls.description.value = optimizedText;
+                updatePreview('form');
+                showNotification('Profil optimisé avec succès.', 'success');
+            } catch (error) {
+                console.error('Erreur lors de l\'optimisation:', error);
+                showNotification('Erreur lors de l\'optimisation du profil.', 'error');
+            }
+        }
+
+        // Fonction pour catégoriser les compétences
+        async function categorizeSkills() {
+            const skills = controls.competences.value;
+            if (!skills.trim()) {
+                showNotification('Veuillez saisir des compétences avant de les catégoriser.', 'warning');
+                return;
+            }
+
+            const apiKey = localStorage.getItem('gemini-api-key') || localStorage.getItem('openai-api-key');
+            if (!apiKey) {
+                showNotification('Veuillez configurer une clé API dans les paramètres.', 'warning');
+                return;
+            }
+
+            try {
+                showNotification('Catégorisation en cours...', 'info');
+                const categorizedSkills = await callAIAPI('Catégorise ces compétences par domaine et présente-les de manière organisée : ' + skills);
+                controls.competences.value = categorizedSkills;
+                updatePreview('form');
+                showNotification('Compétences catégorisées avec succès.', 'success');
+            } catch (error) {
+                console.error('Erreur lors de la catégorisation:', error);
+                showNotification('Erreur lors de la catégorisation des compétences.', 'error');
+            }
+        }
+
+        // Fonction pour suggérer des compétences
+        async function suggestSkills() {
+            const profile = controls.description.value;
+            const experiences = getDynamicItemsData(controls.experienceList);
+            const formations = getDynamicItemsData(controls.formationList);
+
+            if (!profile.trim() && experiences.length === 0 && formations.length === 0) {
+                showNotification('Veuillez saisir un profil ou des expériences/formations avant de demander des suggestions.', 'warning');
+                return;
+            }
+
+            const apiKey = localStorage.getItem('gemini-api-key') || localStorage.getItem('openai-api-key');
+            if (!apiKey) {
+                showNotification('Veuillez configurer une clé API dans les paramètres.', 'warning');
+                return;
+            }
+
+            try {
+                showNotification('Suggestions en cours...', 'info');
+                const context = `Profil: ${profile}\nExpériences: ${experiences.map(e => e.title + ' - ' + e.desc).join(', ')}\nFormations: ${formations.map(f => f.title).join(', ')}`;
+                const suggestedSkills = await callAIAPI('Suggère des compétences pertinentes basées sur ce profil professionnel : ' + context);
+                controls.competences.value += (controls.competences.value ? '\n\n' : '') + suggestedSkills;
+                updatePreview('form');
+                showNotification('Compétences suggérées ajoutées.', 'success');
+            } catch (error) {
+                console.error('Erreur lors des suggestions:', error);
+                showNotification('Erreur lors de la génération des suggestions.', 'error');
+            }
+        }
+
+        // Fonction générique pour appeler l'API IA
+        async function callAIAPI(prompt) {
+            const geminiKey = localStorage.getItem('gemini-api-key');
+            const openaiKey = localStorage.getItem('openai-api-key');
+
+            if (geminiKey) {
+                return await callGeminiAPI(prompt, geminiKey);
+            } else if (openaiKey) {
+                return await callOpenAIAPI(prompt, openaiKey);
+            } else {
+                throw new Error('Aucune clé API configurée');
+            }
+        }
+
+        // Fonction pour appeler l'API Gemini
+        async function callGeminiAPI(prompt, apiKey) {
+            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${apiKey}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    contents: [{
+                        parts: [{
+                            text: prompt
+                        }]
+                    }]
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error(`Erreur API Gemini: ${response.status}`);
+            }
+
+            const data = await response.json();
+            return data.candidates[0].content.parts[0].text;
+        }
+
+        // Fonction pour appeler l'API OpenAI
+        async function callOpenAIAPI(prompt, apiKey) {
+            const response = await fetch('https://api.openai.com/v1/chat/completions', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${apiKey}`
+                },
+                body: JSON.stringify({
+                    model: 'gpt-3.5-turbo',
+                    messages: [{
+                        role: 'user',
+                        content: prompt
+                    }],
+                    max_tokens: 1000
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error(`Erreur API OpenAI: ${response.status}`);
+            }
+
+            const data = await response.json();
+        // === FONCTIONS PARAMÈTRES ET UTILITAIRES ===
+
+        // Fonction pour sauvegarder les paramètres API
+        function saveAPISettings() {
+            const geminiKey = document.getElementById('gemini-api-key').value;
+            const openaiKey = document.getElementById('openai-api-key').value;
+
+            if (geminiKey) {
+                localStorage.setItem('gemini-api-key', geminiKey);
+            }
+            if (openaiKey) {
+                localStorage.setItem('openai-api-key', openaiKey);
+            }
+
+            showNotification('Paramètres API sauvegardés.', 'success');
+            controls.apiModal.classList.remove('active');
+        }
+
+        // Fonction pour charger les paramètres API
+        function loadAPISettings() {
+            const geminiKey = localStorage.getItem('gemini-api-key') || '';
+            const openaiKey = localStorage.getItem('openai-api-key') || '';
+
+            document.getElementById('gemini-api-key').value = geminiKey;
+            document.getElementById('openai-api-key').value = openaiKey;
+        }
+
+        // Fonction pour gérer la photo de profil
+        function handleProfilePhoto() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'image/*';
+            input.onchange = (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const img = document.getElementById('profile-photo-preview');
+                    if (img) {
+                        img.src = e.target.result;
+                        img.style.display = 'block';
+                    }
+                    localStorage.setItem('profile-photo', e.target.result);
+                    updatePreview('photo');
+                    showNotification('Photo de profil mise à jour.', 'success');
+                };
+                reader.readAsDataURL(file);
+            };
+            input.click();
+        }
+
+        // Fonction pour supprimer la photo de profil
+        function removeProfilePhoto() {
+            const img = document.getElementById('profile-photo-preview');
+            if (img) {
+                img.src = '';
+                img.style.display = 'none';
+            }
+            localStorage.removeItem('profile-photo');
+            updatePreview('photo');
+            showNotification('Photo de profil supprimée.', 'success');
+        }
+
+        // Fonction pour charger la photo de profil sauvegardée
+        function loadProfilePhoto() {
+            const savedPhoto = localStorage.getItem('profile-photo');
+            if (savedPhoto) {
+                const img = document.getElementById('profile-photo-preview');
+                if (img) {
+                    img.src = savedPhoto;
+                    img.style.display = 'block';
+                }
+            }
+        }
+
+        // Fonction pour afficher les notifications
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `notification notification-${type}`;
+            notification.innerHTML = `
+                <div class="notification-content">
+                    <span>${message}</span>
+                    <button class="notification-close">&times;</button>
+                </div>
+            `;
+
+            document.body.appendChild(notification);
+
+            // Animation d'entrée
+            setTimeout(() => {
+                notification.classList.add('active');
+            }, 10);
+
+            // Fermeture automatique après 5 secondes
+            setTimeout(() => {
+                notification.classList.remove('active');
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 300);
+            }, 5000);
+
+            // Fermeture manuelle
+            notification.querySelector('.notification-close').addEventListener('click', () => {
+                notification.classList.remove('active');
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 300);
+            });
+        }
+
+        // Fonction pour basculer le mode sombre
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+            const isDark = document.body.classList.contains('dark-mode');
+            localStorage.setItem('dark-mode', isDark);
+            showNotification(isDark ? 'Mode sombre activé.' : 'Mode sombre désactivé.', 'success');
+        }
+
+        // Fonction pour charger le mode sombre
+        function loadDarkMode() {
+            const isDark = localStorage.getItem('dark-mode') === 'true';
+            if (isDark) {
+                document.body.classList.add('dark-mode');
+            }
+        }
+
+        // Fonction pour basculer la visibilité des sections
+        function toggleSection(sectionId) {
+            const section = document.getElementById(sectionId);
+            if (section) {
+                section.classList.toggle('hidden');
+                const isHidden = section.classList.contains('hidden');
+                localStorage.setItem(`section-${sectionId}-hidden`, isHidden);
+            }
+        }
+
+        // Fonction pour charger la visibilité des sections
+        function loadSectionVisibility() {
+            const sections = ['personal-info', 'experience', 'education', 'skills', 'languages', 'projects', 'certifications', 'references', 'social-links'];
+            sections.forEach(sectionId => {
+                const isHidden = localStorage.getItem(`section-${sectionId}-hidden`) === 'true';
+                if (isHidden) {
+                    const section = document.getElementById(sectionId);
+                    if (section) {
+                        section.classList.add('hidden');
+                    }
+                }
+            });
+        }
+
+        // Fonction pour exporter le CV en PDF (simulation)
+        function exportToPDF() {
+            showNotification('Fonctionnalité d\'export PDF à implémenter.', 'info');
+            // Ici vous pourriez intégrer une bibliothèque comme jsPDF ou html2pdf
+        }
+
+        // === FONCTIONS ÉLÉMENTS DYNAMIQUES ===
+
+        // Fonction pour créer un élément dynamique
+        function createDynamicItem(container, fields, data = {}) {
+            const item = document.createElement('div');
+            item.className = 'dynamic-item';
+
+            let html = '<div class="dynamic-item-content">';
+
+            fields.forEach(field => {
+                const value = data[field.key] || '';
+                if (field.type === 'textarea') {
+                    html += `<textarea class="dynamic-input" data-key="${field.key}" placeholder="${field.placeholder}" rows="3">${value}</textarea>`;
+                } else {
+                    html += `<input type="text" class="dynamic-input" data-key="${field.key}" placeholder="${field.placeholder}" value="${value}">`;
+                }
+            });
+
+            html += '</div>';
+            html += '<button class="remove-dynamic-item bg-red-500 text-white px-2 py-1 rounded text-sm">×</button>';
+
+            item.innerHTML = html;
+            container.appendChild(item);
+
+            // Event listener pour la suppression
+            item.querySelector('.remove-dynamic-item').addEventListener('click', () => {
+                container.removeChild(item);
+                updatePreview('form');
+            });
+
+            // Event listeners pour la mise à jour automatique
+            item.querySelectorAll('.dynamic-input').forEach(input => {
+                input.addEventListener('input', () => updatePreview('form'));
+            });
+
+            return item;
+        }
+
+        // Fonction pour ajouter une expérience
+        function addExperience() {
+            createDynamicItem(controls.experienceList, [
+                { key: 'title', placeholder: 'Titre du poste' },
+                { key: 'meta', placeholder: 'Entreprise & Dates' },
+                { key: 'desc', placeholder: 'Description des missions', type: 'textarea' }
+            ]);
+        }
+
+        // Fonction pour ajouter une formation
+        function addFormation() {
+            createDynamicItem(controls.formationList, [
+                { key: 'title', placeholder: 'Nom du diplôme' },
+                { key: 'meta', placeholder: 'Établissement & Année' }
+            ]);
+        }
+
+        // Fonction pour ajouter une langue
+        function addLanguage() {
+            createDynamicItem(controls.langueList, [
+                { key: 'title', placeholder: 'Langue' },
+                { key: 'meta', placeholder: 'Niveau' }
+            ]);
+        }
+
+        // Fonction pour ajouter un projet
+        function addProject() {
+            createDynamicItem(controls.projetList, [
+                { key: 'title', placeholder: 'Nom du projet' },
+                { key: 'meta', placeholder: 'Technologies utilisées' },
+                { key: 'desc', placeholder: 'Description du projet', type: 'textarea' }
+            ]);
+        }
+
+        // Fonction pour ajouter une certification
+        function addCertification() {
+            createDynamicItem(controls.certificationList, [
+                { key: 'title', placeholder: 'Nom de la certification' },
+                { key: 'meta', placeholder: 'Organisme & Date' }
+            ]);
+        }
+
+        // Fonction pour ajouter une référence
+        function addReference() {
+            createDynamicItem(controls.referenceList, [
+                { key: 'title', placeholder: 'Nom de la personne' },
+                { key: 'meta', placeholder: 'Poste & Entreprise' },
+                { key: 'desc', placeholder: 'Coordonnées', type: 'textarea' }
+            ]);
+        }
+
+        // Fonction pour ajouter un lien social
+        function addSocialLink() {
+            createDynamicItem(controls.socialList, [
+                { key: 'title', placeholder: 'Plateforme (LinkedIn, GitHub, etc.)' },
+                { key: 'meta', placeholder: 'URL du profil' }
+            ]);
+        }
+
+        // === INITIALISATION DE L'APPLICATION ===
+
+        // Fonction d'initialisation principale
+        function initializeApp() {
+            // Charger les paramètres sauvegardés
+            loadDarkMode();
+            loadSectionVisibility();
+            loadProfilePhoto();
+            loadAPISettings();
+            loadTemplatesList();
+
+            // Initialiser les contrôles
+            initializeControls();
+
+            // Ajouter les event listeners
+            addEventListeners();
+
+            // Mise à jour initiale de l'aperçu
+            updatePreview('all');
+
+            showNotification('Application initialisée avec succès.', 'success');
+        }
+
+        // Fonction pour initialiser les contrôles
+        function initializeControls() {
+            // Initialiser les sélecteurs de couleurs avec les valeurs par défaut
+            if (controls.primaryColorPicker) {
+                controls.primaryColorPicker.value = '#3B82F6';
+            }
+            if (controls.secondaryColorPicker) {
+                controls.secondaryColorPicker.value = '#1E40AF';
+            }
+            if (controls.bannerStyleSelect) {
+                controls.bannerStyleSelect.value = 'banner-style-modern';
+            }
+        }
+
+        // Fonction pour ajouter tous les event listeners
+        function addEventListeners() {
+            // Event listeners pour les champs de formulaire principaux
+            const mainFields = ['nom', 'prenom', 'poste', 'description', 'email', 'telephone', 'competences'];
+            mainFields.forEach(field => {
+                if (controls[field]) {
+                    controls[field].addEventListener('input', () => updatePreview('form'));
+                }
+            });
+
+            // Event listeners pour les boutons d'ajout d'éléments dynamiques
+            document.getElementById('add-experience')?.addEventListener('click', addExperience);
+            document.getElementById('add-formation')?.addEventListener('click', addFormation);
+            document.getElementById('add-language')?.addEventListener('click', addLanguage);
+            document.getElementById('add-project')?.addEventListener('click', addProject);
+            document.getElementById('add-certification')?.addEventListener('click', addCertification);
+            document.getElementById('add-reference')?.addEventListener('click', addReference);
+            document.getElementById('add-social-link')?.addEventListener('click', addSocialLink);
+
+            // Event listeners pour les contrôles de couleurs
+            if (controls.primaryColorPicker) {
+                controls.primaryColorPicker.addEventListener('input', updatePrimaryColor);
+            }
+            if (controls.secondaryColorPicker) {
+                controls.secondaryColorPicker.addEventListener('input', updateSecondaryColor);
+            }
+
+            // Event listener pour le sélecteur de style de bannière
+            if (controls.bannerStyleSelect) {
+                controls.bannerStyleSelect.addEventListener('change', updateBannerStyle);
+            }
+
+            // Event listeners pour les boutons IA
+            document.getElementById('rewrite-profile')?.addEventListener('click', rewriteProfile);
+            document.getElementById('optimize-profile')?.addEventListener('click', optimizeProfile);
+            document.getElementById('categorize-skills')?.addEventListener('click', categorizeSkills);
+            document.getElementById('suggest-skills')?.addEventListener('click', suggestSkills);
+
+            // Event listeners pour les boutons de couleurs et bannière
+            document.getElementById('suggest-colors')?.addEventListener('click', suggestColors);
+            document.getElementById('randomize-banner')?.addEventListener('click', randomizeBannerStyle);
+
+            // Event listeners pour les boutons de templates
+            document.getElementById('save-template')?.addEventListener('click', saveTemplate);
+            document.getElementById('export-template')?.addEventListener('click', exportTemplate);
+            document.getElementById('import-template')?.addEventListener('click', importTemplate);
+
+            // Event listeners pour la gestion des photos
+            document.getElementById('upload-photo')?.addEventListener('click', handleProfilePhoto);
+            document.getElementById('remove-photo')?.addEventListener('click', removeProfilePhoto);
+
+            // Event listeners pour les paramètres API
+            document.getElementById('save-api-settings')?.addEventListener('click', saveAPISettings);
+
+            // Event listeners pour les autres contrôles
+            document.getElementById('toggle-dark-mode')?.addEventListener('click', toggleDarkMode);
+            document.getElementById('export-pdf')?.addEventListener('click', exportToPDF);
+            document.getElementById('print-cv')?.addEventListener('click', printCV);
+
+            // Event listeners pour les modales
+            document.querySelectorAll('.modal-close').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    btn.closest('.modal').classList.remove('active');
+                });
+            });
+
+            // Event listeners pour ouvrir les modales
+            document.getElementById('open-templates')?.addEventListener('click', () => {
+                controls.templatesModal.classList.add('active');
+                loadTemplatesList();
+            });
+
+            document.getElementById('open-api-settings')?.addEventListener('click', () => {
+                controls.apiModal.classList.add('active');
+                loadAPISettings();
+            });
+
+            // Event listeners pour les boutons de basculement de sections
+            document.querySelectorAll('.toggle-section').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const sectionId = e.target.dataset.section;
+                    toggleSection(sectionId);
+                });
+            });
+        }
+
+        // Démarrer l'application quand le DOM est chargé
+        document.addEventListener('DOMContentLoaded', initializeApp);
+
+        // Gestion de la sauvegarde du CV
+        if (controls.saveCvBtn) {
+            controls.saveCvBtn.addEventListener('click', () => {
+                const cvData = {
+                    nom: controls.nom.value,
+                    prenom: controls.prenom.value,
+                    poste: controls.poste.value,
+                    description: controls.description.value,
+                    email: controls.email?.value || '',
+                    telephone: controls.telephone?.value || '',
+                    competences: controls.competences.value,
+                    experiences: getDynamicData(controls.experienceList),
+                    formations: getDynamicData(controls.formationList),
+                    // Ajouter d'autres données selon les besoins
+                    timestamp: Date.now()
+                };
+
+                const templateName = prompt('Nom du modèle de CV :');
+                if (templateName) {
+                    const templates = JSON.parse(localStorage.getItem('cv-templates') || '[]');
+                    templates.push({
+                        name: templateName,
+                        data: cvData,
+                        createdAt: new Date().toISOString()
+                    });
+                    localStorage.setItem('cv-templates', JSON.stringify(templates));
+                    showNotification(`CV sauvegardé sous le nom "${templateName}"`, 'success');
+                }
+            });
+        }
+
+        // Gestion du chargement du CV
+        if (controls.loadCvBtn) {
+            controls.loadCvBtn.addEventListener('click', () => {
+                const templates = JSON.parse(localStorage.getItem('cv-templates') || '[]');
+                if (templates.length === 0) {
+                    showNotification('Aucun modèle de CV sauvegardé.', 'warning');
+                    return;
+                }
+
+                // Ouvrir la modal des templates
+                controls.templatesModal.classList.add('active');
+            });
+        }
+
+        // Gestion des templates
+        if (controls.templatesBtn) {
+            controls.templatesBtn.addEventListener('click', () => {
+                controls.templatesModal.classList.add('active');
+            });
+        }
+
+        // Gestion des paramètres API
+        if (controls.apiSettingsBtn) {
+            controls.apiSettingsBtn.addEventListener('click', () => {
+                controls.apiSettingsModal.classList.add('active');
+            });
+        }
+
+        // Gestion des suggestions de couleurs IA
+        if (controls.aiColorBtn) {
+            controls.aiColorBtn.addEventListener('click', async () => {
+                const prompt = `En tant qu'expert en design graphique, suggère une palette de couleurs cohérente et professionnelle pour un CV. Le poste visé est "${controls.poste.value || 'général'}". Retourne uniquement 2 couleurs principales en hexadécimal (ex: #3b82f6, #1f2937) séparées par une virgule, sans explication.`;
+
+                try {
+                    const colorSuggestion = await callAIAPI(prompt);
+                    if (colorSuggestion) {
+                        const colors = colorSuggestion.split(',').map(c => c.trim());
+                        if (colors.length >= 2) {
+                            controls.primaryColorPicker.value = colors[0];
+                            controls.secondaryColorPicker.value = colors[1];
+                            updatePrimaryColor();
+                            updateSecondaryColor();
+                            showNotification('Palette de couleurs suggérée par IA appliquée.', 'success');
+                        }
+                    }
+                } catch (error) {
+                    showNotification('Erreur lors de la génération de couleurs IA.', 'error');
+                }
+            });
+        }
+
+        // Gestion de l'export des templates
+        if (controls.exportTemplatesBtn) {
+            controls.exportTemplatesBtn.addEventListener('click', () => {
+                const templates = JSON.parse(localStorage.getItem('cv-templates') || '[]');
+                if (templates.length === 0) {
+                    showNotification('Aucun modèle à exporter.', 'warning');
+                    return;
+                }
+
+                const dataStr = JSON.stringify(templates, null, 2);
+                const dataBlob = new Blob([dataStr], { type: 'application/json' });
+                const url = URL.createObjectURL(dataBlob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = `cv-templates-${new Date().toISOString().split('T')[0]}.json`;
+                link.click();
+                URL.revokeObjectURL(url);
+                showNotification(`${templates.length} modèles exportés.`, 'success');
+            });
+        }
+
+        // Gestion de l'import des templates
+        if (controls.importTemplatesBtn) {
+            controls.importTemplatesBtn.addEventListener('click', () => {
+                const input = document.createElement('input');
+                input.type = 'file';
+                input.accept = '.json';
+                input.onchange = (e) => {
+                    const file = e.target.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = (e) => {
+                            try {
+                                const importedTemplates = JSON.parse(e.target.result);
+                                const existingTemplates = JSON.parse(localStorage.getItem('cv-templates') || '[]');
+
+                                // Fusionner les templates
+                                const mergedTemplates = [...existingTemplates, ...importedTemplates];
+                                localStorage.setItem('cv-templates', JSON.stringify(mergedTemplates));
+
+                                showNotification(`${importedTemplates.length} modèles importés.`, 'success');
+                                // Recharger la liste des templates
+                                loadTemplatesList();
+                            } catch (error) {
+                                showNotification('Erreur lors de l\'import des modèles.', 'error');
+                            }
+                        };
+                        reader.readAsText(file);
+                    }
+                };
+                input.click();
+            });
+        }
 
         // Gestion de la photo de profil
         const profilePhotoInput = document.getElementById('profile-photo');
@@ -4784,10 +5721,60 @@
             // Ici nous pourrions mettre à jour un compteur si nécessaire
         }
 
-        // Gestion des centres d'intérêt
-        const interestsTextarea = document.getElementById('interests');
-        const interestsCount = document.getElementById('interests-count');
-        const aiSuggestInterestsBtn = document.getElementById('ai-suggest-interests');
+        // Gestion des actions IA pour le profil
+        const aiRewriteProfileBtn = document.getElementById('ai-rewrite-profile');
+        const aiOptimizeProfileBtn = document.getElementById('ai-optimize-profile');
+
+        if (aiRewriteProfileBtn) {
+            aiRewriteProfileBtn.addEventListener('click', async () => {
+                const profileText = controls.description.value;
+                if (!profileText) {
+                    showNotification("Le profil est vide.", "error");
+                    return;
+                }
+
+                const prompt = `En tant qu'expert en recrutement, réécris ce profil de CV pour qu'il soit plus percutant et professionnel, en utilisant des verbes d'action forts. Garde une longueur similaire et un ton professionnel. Ne retourne que le paragraphe final réécrit, sans aucun commentaire. Le profil actuel est : "${profileText}"`;
+
+                try {
+                    const rewrittenProfile = await callAIAPI(prompt);
+                    if (rewrittenProfile) {
+                        controls.description.value = rewrittenProfile;
+                        showNotification("Profil réécrit par l'IA.", "success");
+                    }
+                } catch (error) {
+                    showNotification("Erreur lors de la réécriture IA.", "error");
+                }
+            });
+        }
+
+        if (aiOptimizeProfileBtn) {
+            aiOptimizeProfileBtn.addEventListener('click', async () => {
+                const profileText = controls.description.value;
+                const poste = controls.poste.value;
+
+                if (!profileText) {
+                    showNotification("Le profil est vide.", "error");
+                    return;
+                }
+
+                if (!poste) {
+                    showNotification("Veuillez saisir le poste recherché.", "error");
+                    return;
+                }
+
+                const prompt = `En tant qu'expert en recrutement, optimise ce profil de CV pour le poste de "${poste}". Mets en avant les compétences et expériences les plus pertinentes pour ce poste. Utilise un langage impactant et professionnel. Ne retourne que le paragraphe final optimisé, sans aucun commentaire. Le profil actuel est : "${profileText}"`;
+
+                try {
+                    const optimizedProfile = await callAIAPI(prompt);
+                    if (optimizedProfile) {
+                        controls.description.value = optimizedProfile;
+                        showNotification("Profil optimisé pour le poste.", "success");
+                    }
+                } catch (error) {
+                    showNotification("Erreur lors de l'optimisation IA.", "error");
+                }
+            });
+        }
 
         if (interestsTextarea && interestsCount) {
             interestsTextarea.addEventListener('input', () => {
