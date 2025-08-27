@@ -1048,11 +1048,17 @@
             <button id="accessibility-btn" class="toolbar-btn bg-purple-600 text-white px-3 py-2 rounded-md hover:bg-purple-700 flex items-center gap-2 text-sm" title="Améliorer l'accessibilité du CV">
                 <i class="fas fa-universal-access"></i> ACCESSIBILITÉ
             </button>
-            <button id="save-cv-btn" class="toolbar-btn bg-blue-600 text-white px-3 py-2 rounded-md hover:bg-blue-700 flex items-center gap-2 text-sm" title="Sauvegarder le CV actuel">
-                <i class="fas fa-save"></i> SAUVEGARDER
+            <button id="save-cv-btn" class="toolbar-btn bg-blue-600 text-white px-3 py-2 rounded-md hover:bg-blue-700 flex items-center gap-2 text-sm" title="Sauvegarder le CV actuel avec tous les paramètres">
+                <i class="fas fa-save"></i> SAUVEGARDER CV
             </button>
             <button id="load-cv-btn" class="toolbar-btn bg-blue-500 text-white px-3 py-2 rounded-md hover:bg-blue-600 flex items-center gap-2 text-sm" title="Charger un CV sauvegardé">
-                <i class="fas fa-folder-open"></i> CHARGER
+                <i class="fas fa-folder-open"></i> CHARGER CV
+            </button>
+            <button id="save-settings-btn" class="toolbar-btn bg-green-600 text-white px-3 py-2 rounded-md hover:bg-green-700 flex items-center gap-2 text-sm" title="Sauvegarder tous les paramètres (layout, couleurs, etc.)">
+                <i class="fas fa-cogs"></i> SAUVEGARDER PARAMÈTRES
+            </button>
+            <button id="load-settings-btn" class="toolbar-btn bg-green-500 text-white px-3 py-2 rounded-md hover:bg-green-600 flex items-center gap-2 text-sm" title="Charger les paramètres sauvegardés">
+                <i class="fas fa-folder"></i> CHARGER PARAMÈTRES
             </button>
             <button id="templates-btn" class="toolbar-btn bg-teal-600 text-white px-3 py-2 rounded-md hover:bg-teal-700 flex items-center gap-2 text-sm" title="Gérer les modèles de CV">
                 <i class="fas fa-th-large"></i> TEMPLATES
@@ -1836,6 +1842,10 @@
                             </div>
                             <label class="flex items-center gap-2 text-sm"><input type="checkbox" id="banner-bg-grayscale" class="cv-input">Image en noir et blanc</label>
                             <button id="remove-banner-bg-btn" class="w-full bg-red-500 text-white py-2 px-4 rounded-md hover:bg-red-600 flex items-center justify-center gap-2"><i class="fas fa-trash"></i> Supprimer l'image de fond</button>
+                            <div class="flex gap-2 mt-4">
+                                <button id="save-banner-settings-btn" class="flex-1 bg-green-500 text-white py-2 px-4 rounded-md hover:bg-green-600 flex items-center justify-center gap-2"><i class="fas fa-save"></i> Sauvegarder Bannière</button>
+                                <button id="load-banner-settings-btn" class="flex-1 bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 flex items-center justify-center gap-2"><i class="fas fa-folder-open"></i> Charger Bannière</button>
+                            </div>
                         </div>
                     </details>
                      <details class="control-group" open>
@@ -3633,21 +3643,25 @@
 
                     const deleteBlockBtn = target.closest('.delete-block-btn');
                     if (deleteBlockBtn) {
-                        const itemContainer = deleteBlockBtn.closest('.dynamic-item-container');
-                        if (itemContainer) {
-                            const index = parseInt(itemContainer.dataset.index, 10);
-                            const type = itemContainer.dataset.type;
-                            const formList = type === 'experience' ? controls.experienceList : controls.formationList;
-                            if (formList.children[index]) {
-                                formList.children[index].remove();
-                                updatePreview('form');
-                            }
-                        } else {
-                            const customModule = deleteBlockBtn.closest('.custom-module-preview');
-                            if(customModule) {
-                                const controlItem = controls.customSectionsList.querySelector(`[data-section-id="${customModule.id}"]`);
-                                if(controlItem) controlItem.remove();
-                                customModule.remove();
+                        if (confirm('Êtes-vous sûr de vouloir supprimer ce bloc ? Cette action est irréversible.')) {
+                            const itemContainer = deleteBlockBtn.closest('.dynamic-item-container');
+                            if (itemContainer) {
+                                const index = parseInt(itemContainer.dataset.index, 10);
+                                const type = itemContainer.dataset.type;
+                                const formList = type === 'experience' ? controls.experienceList : controls.formationList;
+                                if (formList.children[index]) {
+                                    formList.children[index].remove();
+                                    updatePreview('form');
+                                    showNotification('Bloc supprimé avec succès.', 'success');
+                                }
+                            } else {
+                                const customModule = deleteBlockBtn.closest('.custom-module-preview');
+                                if(customModule) {
+                                    const controlItem = controls.customSectionsList.querySelector(`[data-section-id="${customModule.id}"]`);
+                                    if(controlItem) controlItem.remove();
+                                    customModule.remove();
+                                    showNotification('Section personnalisée supprimée.', 'success');
+                                }
                             }
                         }
                         return;
@@ -3674,10 +3688,13 @@
                     
                     const removePageBtn = target.closest('.remove-page-btn');
                     if (removePageBtn) {
-                        const pageContainer = removePageBtn.closest('.a4-page-container');
-                        if (pageContainer) {
-                            pageContainer.remove();
-                            checkAllPagesOverflow();
+                        if (confirm('Êtes-vous sûr de vouloir supprimer cette page ? Toutes les données de cette page seront perdues.')) {
+                            const pageContainer = removePageBtn.closest('.a4-page-container');
+                            if (pageContainer) {
+                                pageContainer.remove();
+                                checkAllPagesOverflow();
+                                showNotification('Page supprimée avec succès.', 'success');
+                            }
                         }
                         return;
                     }
@@ -4015,13 +4032,22 @@
                 controls.anonymizeBtn.addEventListener('click', anonymizeCV);
                 controls.resetRecruiterBtn.addEventListener('click', () => { setDefaultRecruiterInfo(); updatePreview('form'); });
                 controls.addPageBtn.addEventListener('click', () => addNewPage());
-                controls.removeBannerBgBtn.addEventListener('click', () => removeBannerBackground());
+                controls.removeBannerBgBtn.addEventListener('click', () => {
+                    if (confirm('Êtes-vous sûr de vouloir supprimer l\'image de fond de la bannière ?')) {
+                        removeBannerBackground();
+                        showNotification('Image de fond supprimée.', 'success');
+                    }
+                });
                 // === AJOUT DES EVENT LISTENERS MANQUANTS ===
 
                 // Event listeners pour la barre d'outils
                 document.getElementById('api-settings-btn')?.addEventListener('click', openAPISettings);
                 document.getElementById('accessibility-btn')?.addEventListener('click', improveAccessibility);
-                document.getElementById('save-cv-btn')?.addEventListener('click', saveCV);
+                document.getElementById('save-cv-btn')?.addEventListener('click', saveCVWithConfirmation);
+                document.getElementById('save-settings-btn')?.addEventListener('click', saveAllSettings);
+                document.getElementById('load-settings-btn')?.addEventListener('click', loadAllSettings);
+                document.getElementById('save-banner-settings-btn')?.addEventListener('click', saveBannerSettings);
+                document.getElementById('load-banner-settings-btn')?.addEventListener('click', loadBannerSettings);
                 document.getElementById('load-cv-btn')?.addEventListener('click', loadCV);
                 document.getElementById('templates-btn')?.addEventListener('click', openTemplates);
                 document.getElementById('download-pdf-btn')?.addEventListener('click', downloadPDF);
@@ -4055,7 +4081,7 @@
                 document.getElementById('randomize-banner-style-btn')?.addEventListener('click', randomizeBannerStyle);
 
                 // Event listeners pour les boutons de templates
-                document.getElementById('save-template-btn')?.addEventListener('click', saveTemplate);
+                document.getElementById('save-template-btn')?.addEventListener('click', saveTemplateWithConfirmation);
                 document.getElementById('export-templates-btn')?.addEventListener('click', exportTemplate);
                 document.getElementById('import-templates-btn')?.addEventListener('click', importTemplate);
 
@@ -4743,7 +4769,10 @@
             document.querySelectorAll('.delete-template-btn').forEach(btn => {
                 btn.addEventListener('click', (e) => {
                     const index = parseInt(e.target.dataset.index);
-                    deleteTemplate(index);
+                    const templateName = savedTemplates[index]?.name || 'Template';
+                    if (confirm(`Êtes-vous sûr de vouloir supprimer le template "${templateName}" ?`)) {
+                        deleteTemplate(index);
+                    }
                 });
             });
         }
@@ -4943,6 +4972,247 @@
             localStorage.setItem('cv-api-settings', JSON.stringify(apiSettings));
             updateApiUI();
             showNotification('Paramètres API sauvegardés.', 'success');
+        }
+
+        // Save banner settings
+        function saveBannerSettings() {
+            const bannerData = {
+                isEnabled: controls.toggleBanner.checked,
+                style: controls.bannerStyleSelect.value,
+                alignment: document.querySelector('.banner-align-btn.active')?.dataset.bannerAlign || 'left',
+                logoSize: document.querySelector('.logo-size-btn.active')?.dataset.logoSize || 'md',
+                isInverted: controls.bannerInvertBtn.classList.contains('active'),
+                spacing: controls.bannerElementSpacing.value,
+                nom: controls.bannerNom.value,
+                poste: controls.bannerPoste.value,
+                email: controls.bannerEmail.value,
+                tel: controls.bannerTel.value,
+                bgGrayscale: controls.bannerBgGrayscale.checked,
+                timestamp: new Date().toISOString()
+            };
+
+            localStorage.setItem('cv-banner-settings', JSON.stringify(bannerData));
+            showNotification('Paramètres de bannière sauvegardés.', 'success');
+        }
+
+        // Load banner settings
+        function loadBannerSettings() {
+            const savedData = localStorage.getItem('cv-banner-settings');
+            if (!savedData) {
+                showNotification('Aucun paramètre de bannière trouvé.', 'info');
+                return;
+            }
+
+            try {
+                const bannerData = JSON.parse(savedData);
+                controls.toggleBanner.checked = bannerData.isEnabled || false;
+                controls.bannerStyleSelect.value = bannerData.style || 'banner-style-modern';
+                controls.bannerElementSpacing.value = bannerData.spacing || 1;
+                controls.bannerNom.value = bannerData.nom || '';
+                controls.bannerPoste.value = bannerData.poste || '';
+                controls.bannerEmail.value = bannerData.email || '';
+                controls.bannerTel.value = bannerData.tel || '';
+                controls.bannerBgGrayscale.checked = bannerData.bgGrayscale || false;
+
+                // Set active buttons
+                document.querySelectorAll('.banner-align-btn').forEach(btn => {
+                    btn.classList.toggle('active', btn.dataset.bannerAlign === bannerData.alignment);
+                });
+                document.querySelectorAll('.logo-size-btn').forEach(btn => {
+                    btn.classList.toggle('active', btn.dataset.logoSize === bannerData.logoSize);
+                });
+                controls.bannerInvertBtn.classList.toggle('active', bannerData.isInverted || false);
+
+                updatePreview('banner');
+                showNotification('Paramètres de bannière chargés.', 'success');
+            } catch (error) {
+                showNotification('Erreur lors du chargement des paramètres de bannière.', 'error');
+            }
+        }
+
+        // Save template with confirmation
+        function saveTemplateWithConfirmation() {
+            const name = templatesModal.templateName.value.trim();
+            if (!name) {
+                showNotification('Veuillez entrer un nom pour le template.', 'error');
+                return;
+            }
+
+            // Show confirmation dialog
+            if (confirm(`Êtes-vous sûr de vouloir sauvegarder ce template sous le nom "${name}" ?`)) {
+                const template = {
+                    name: name,
+                    category: templatesModal.templateCategory.value,
+                    date: new Date().toISOString(),
+                    // Save current layout and styling
+                    layoutData: {
+                        layout: document.querySelector('.layout-btn.active')?.dataset.layout || 'layout-1-col',
+                        columnStyle: document.querySelector('.column-style-btn.active')?.dataset.columnStyle || 'normal',
+                        bgStyle: document.querySelector('.bg-style-btn.active')?.dataset.bgStyle || 'normal',
+                        separator: document.querySelector('.separator-btn.active')?.dataset.separator || 'line',
+                        animation: document.querySelector('.animation-btn.active')?.dataset.animation || 'none'
+                    },
+                    styleData: {
+                        primaryColor: controls.primaryColorPicker.value,
+                        secondaryColor: controls.secondaryColorPicker.value,
+                        bodyTextColor: controls.bodyTextColorPicker.value,
+                        fontFamilyH1: controls.fontFamilyH1Select.value,
+                        fontFamilyH2: controls.fontFamilyH2Select.value,
+                        fontFamilyBody: controls.fontFamilyBodySelect.value,
+                        theme: document.querySelector('.theme-btn.active')?.dataset.theme || 'professional'
+                    }
+                };
+
+                savedTemplates.push(template);
+                saveTemplates();
+                updateTemplatesList();
+                templatesModal.templateName.value = '';
+                showNotification(`Template "${name}" sauvegardé avec succès !`, 'success');
+            }
+        }
+
+        // Enhanced save CV with confirmation
+        function saveCVWithConfirmation() {
+            const cvName = `${controls.prenom.value} ${controls.nom.value}`.trim() || 'CV Sans Nom';
+
+            if (confirm(`Êtes-vous sûr de vouloir sauvegarder ce CV sous le nom "${cvName}" ?`)) {
+                const cvData = {
+                    nom: controls.nom.value,
+                    prenom: controls.prenom.value,
+                    poste: controls.poste.value,
+                    description: controls.description.value,
+                    email: controls.email.value,
+                    telephone: controls.telephone.value,
+                    competences: controls.competences.value,
+                    experiences: getDynamicItemsData(controls.experienceList),
+                    formations: getDynamicItemsData(controls.formationList),
+                    langues: getDynamicItemsData(controls.langueList),
+                    projets: getDynamicItemsData(controls.projetList),
+                    certifications: getDynamicItemsData(controls.certificationList),
+                    references: getDynamicItemsData(controls.referenceList),
+                    liensSociaux: getDynamicItemsData(controls.socialList),
+                    profilePhoto: localStorage.getItem('profile-photo'),
+                    bannerSettings: JSON.parse(localStorage.getItem('cv-banner-settings') || 'null'),
+                    layoutSettings: {
+                        layout: document.querySelector('.layout-btn.active')?.dataset.layout || 'layout-1-col',
+                        columnStyle: document.querySelector('.column-style-btn.active')?.dataset.columnStyle || 'normal',
+                        bgStyle: document.querySelector('.bg-style-btn.active')?.dataset.bgStyle || 'normal',
+                        separator: document.querySelector('.separator-btn.active')?.dataset.separator || 'line',
+                        animation: document.querySelector('.animation-btn.active')?.dataset.animation || 'none'
+                    },
+                    styleSettings: {
+                        primaryColor: controls.primaryColorPicker.value,
+                        secondaryColor: controls.secondaryColorPicker.value,
+                        bodyTextColor: controls.bodyTextColorPicker.value,
+                        fontFamilyH1: controls.fontFamilyH1Select.value,
+                        fontFamilyH2: controls.fontFamilyH2Select.value,
+                        fontFamilyBody: controls.fontFamilyBodySelect.value,
+                        theme: document.querySelector('.theme-btn.active')?.dataset.theme || 'professional'
+                    },
+                    timestamp: new Date().toISOString()
+                };
+
+                const savedCVs = JSON.parse(localStorage.getItem('saved-cvs') || '[]');
+                savedCVs.push(cvData);
+                localStorage.setItem('saved-cvs', JSON.stringify(savedCVs));
+
+                showNotification(`CV "${cvName}" sauvegardé avec succès !`, 'success');
+            }
+        }
+
+        // Save all settings (layout, colors, fonts, etc.)
+        function saveAllSettings() {
+            if (confirm('Êtes-vous sûr de vouloir sauvegarder tous les paramètres actuels (layout, couleurs, polices, etc.) ?')) {
+                const settingsData = {
+                    layoutSettings: {
+                        layout: document.querySelector('.layout-btn.active')?.dataset.layout || 'layout-1-col',
+                        columnStyle: document.querySelector('.column-style-btn.active')?.dataset.columnStyle || 'normal',
+                        bgStyle: document.querySelector('.bg-style-btn.active')?.dataset.bgStyle || 'normal',
+                        separator: document.querySelector('.separator-btn.active')?.dataset.separator || 'line',
+                        animation: document.querySelector('.animation-btn.active')?.dataset.animation || 'none'
+                    },
+                    styleSettings: {
+                        primaryColor: controls.primaryColorPicker.value,
+                        secondaryColor: controls.secondaryColorPicker.value,
+                        bodyTextColor: controls.bodyTextColorPicker.value,
+                        fontFamilyH1: controls.fontFamilyH1Select.value,
+                        fontFamilyH2: controls.fontFamilyH2Select.value,
+                        fontFamilyBody: controls.fontFamilyBodySelect.value,
+                        theme: document.querySelector('.theme-btn.active')?.dataset.theme || 'professional'
+                    },
+                    bannerSettings: JSON.parse(localStorage.getItem('cv-banner-settings') || 'null'),
+                    apiSettings: apiSettings,
+                    timestamp: new Date().toISOString()
+                };
+
+                localStorage.setItem('cv-all-settings', JSON.stringify(settingsData));
+                showNotification('Tous les paramètres sauvegardés avec succès !', 'success');
+            }
+        }
+
+        // Load all settings
+        function loadAllSettings() {
+            const savedData = localStorage.getItem('cv-all-settings');
+            if (!savedData) {
+                showNotification('Aucun paramètre sauvegardé trouvé.', 'error');
+                return;
+            }
+
+            if (confirm('Êtes-vous sûr de vouloir charger les paramètres sauvegardés ? Cela écrasera vos paramètres actuels.')) {
+                try {
+                    const settingsData = JSON.parse(savedData);
+
+                    // Apply layout settings
+                    if (settingsData.layoutSettings) {
+                        document.querySelectorAll('.layout-btn').forEach(btn => {
+                            btn.classList.toggle('active', btn.dataset.layout === settingsData.layoutSettings.layout);
+                        });
+                        document.querySelectorAll('.column-style-btn').forEach(btn => {
+                            btn.classList.toggle('active', btn.dataset.columnStyle === settingsData.layoutSettings.columnStyle);
+                        });
+                        document.querySelectorAll('.bg-style-btn').forEach(btn => {
+                            btn.classList.toggle('active', btn.dataset.bgStyle === settingsData.layoutSettings.bgStyle);
+                        });
+                        document.querySelectorAll('.separator-btn').forEach(btn => {
+                            btn.classList.toggle('active', btn.dataset.separator === settingsData.layoutSettings.separator);
+                        });
+                        document.querySelectorAll('.animation-btn').forEach(btn => {
+                            btn.classList.toggle('active', btn.dataset.animation === settingsData.layoutSettings.animation);
+                        });
+                    }
+
+                    // Apply style settings
+                    if (settingsData.styleSettings) {
+                        controls.primaryColorPicker.value = settingsData.styleSettings.primaryColor || '#3b82f6';
+                        controls.secondaryColorPicker.value = settingsData.styleSettings.secondaryColor || '#8b5cf6';
+                        controls.bodyTextColorPicker.value = settingsData.styleSettings.bodyTextColor || '#374151';
+                        controls.fontFamilyH1Select.value = settingsData.styleSettings.fontFamilyH1 || "'Montserrat', sans-serif";
+                        controls.fontFamilyH2Select.value = settingsData.styleSettings.fontFamilyH2 || "'Montserrat', sans-serif";
+                        controls.fontFamilyBodySelect.value = settingsData.styleSettings.fontFamilyBody || "'Lato', sans-serif";
+
+                        document.querySelectorAll('.theme-btn').forEach(btn => {
+                            btn.classList.toggle('active', btn.dataset.theme === settingsData.styleSettings.theme);
+                        });
+                    }
+
+                    // Apply banner settings
+                    if (settingsData.bannerSettings) {
+                        localStorage.setItem('cv-banner-settings', JSON.stringify(settingsData.bannerSettings));
+                        loadBannerSettings();
+                    }
+
+                    // Apply API settings
+                    if (settingsData.apiSettings) {
+                        apiSettings = { ...apiSettings, ...settingsData.apiSettings };
+                        saveApiSettings();
+                    }
+
+                    updatePreview('all');
+                    showNotification('Tous les paramètres chargés avec succès !', 'success');
+                } catch (error) {
+                    showNotification('Erreur lors du chargement des paramètres.', 'error');
+                }
+            }
         }
 
         // Update API UI
