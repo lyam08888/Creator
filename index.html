@@ -638,63 +638,6 @@
                             <textarea id="recruiter-mail-content" rows="8" class="cv-input w-full p-2 border rounded-md mt-2" placeholder="Le mail de présentation apparaîtra ici..."></textarea>
                         </div>
                     </details>
-                    <details class="control-group" open>
-                        <summary><span>Optimisation IA</span><label class="completion-label"><input type="checkbox" id="completion-ia-optimisation" class="completion-checkbox"><span>Fait ✅</span></label></summary>
-                        <div class="control-group-content space-y-3">
-                            <div class="grid grid-cols-1 gap-3">
-                                <button id="ai-layout-optimisation-btn" class="w-full bg-purple-600 text-white py-3 px-4 rounded-md hover:bg-purple-700 flex items-center justify-center gap-2">
-                                    <i class="fas fa-th-large"></i> IA Layout Optimisation
-                                    <span class="text-xs opacity-75 block">Ajuste colonnes, tailles de police, marges/espaces</span>
-                                </button>
-                                <button id="ai-optimize-cv-btn" class="w-full bg-indigo-600 text-white py-3 px-4 rounded-md hover:bg-indigo-700 flex items-center justify-center gap-2">
-                                    <i class="fas fa-magic-wand-sparkles"></i> Optimiser tout le CV
-                                    <span class="text-xs opacity-75 block">Relecture globale (structure/orthographe/pertinence)</span>
-                                </button>
-                                <button id="ai-rewrite-descriptions-btn" class="w-full bg-green-600 text-white py-3 px-4 rounded-md hover:bg-green-700 flex items-center justify-center gap-2">
-                                    <i class="fas fa-edit"></i> Réécrire les descriptions
-                                    <span class="text-xs opacity-75 block">Reformulation pro des expériences</span>
-                                </button>
-                            </div>
-                        </div>
-                    </details>
-                    <details class="control-group" open>
-                        <summary><span>Adaptation de Contenu</span><label class="completion-label"><input type="checkbox" id="completion-ia-adaptation" class="completion-checkbox"><span>Fait ✅</span></label></summary>
-                        <div class="control-group-content space-y-3">
-                            <div class="space-y-3">
-                                <div>
-                                    <label for="target-sector" class="block text-sm font-medium mb-1">Secteur d'activité cible</label>
-                                    <select id="target-sector" class="w-full p-2 border rounded-md text-sm">
-                                        <option value="">Choisir un secteur</option>
-                                        <option value="tech">Technologie</option>
-                                        <option value="finance">Finance</option>
-                                        <option value="marketing">Marketing</option>
-                                        <option value="sante">Santé</option>
-                                        <option value="education">Éducation</option>
-                                        <option value="commerce">Commerce</option>
-                                        <option value="industrie">Industrie</option>
-                                        <option value="services">Services</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label for="experience-level" class="block text-sm font-medium mb-1">Niveau d'expérience</label>
-                                    <select id="experience-level" class="w-full p-2 border rounded-md text-sm">
-                                        <option value="junior">Junior (0-3 ans)</option>
-                                        <option value="intermediate">Intermédiaire (3-5 ans)</option>
-                                        <option value="senior">Senior (5-10 ans)</option>
-                                        <option value="expert">Expert (10+ ans)</option>
-                                    </select>
-                                </div>
-                                <button id="ai-adapt-sector-btn" class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 flex items-center justify-center gap-2">
-                                    <i class="fas fa-adjust"></i> Adapter au secteur
-                                    <span class="text-xs opacity-75 block">Ajuste vocabulaire/compétences selon secteur + niveau</span>
-                                </button>
-                                <button id="ai-boost-keywords-btn" class="w-full bg-orange-600 text-white py-2 px-4 rounded-md hover:bg-orange-700 flex items-center justify-center gap-2">
-                                    <i class="fas fa-search-plus"></i> Booster les mots-clés
-                                    <span class="text-xs opacity-75 block">Injecte automatiquement des mots-clés recherchés</span>
-                                </button>
-                            </div>
-                        </div>
-                    </details>
                 </div>
 
                 <!-- TAB: Contenu -->
@@ -2760,58 +2703,6 @@
                         controls.recruiterMailContent.value = mailContent;
                         showNotification("E-mail de présentation client généré.", "success");
                     }
-                });
-
-                // New AI buttons event listeners
-                document.getElementById('ai-layout-optimisation-btn').addEventListener('click', async () => {
-                    showNotification("Optimisation IA du layout en cours...", "info");
-                    // Here you would implement AI layout optimization
-                    // For now, we'll simulate the optimization
-                    await new Promise(resolve => setTimeout(resolve, 1500));
-                    showNotification("Layout optimisé par l'IA !", "success");
-                });
-
-                document.getElementById('ai-optimize-cv-btn').addEventListener('click', async () => {
-                    showNotification("Optimisation globale du CV en cours...", "info");
-                    // Here you would implement AI CV optimization
-                    await new Promise(resolve => setTimeout(resolve, 2000));
-                    showNotification("CV optimisé par l'IA !", "success");
-                });
-
-                document.getElementById('ai-rewrite-descriptions-btn').addEventListener('click', async () => {
-                    showNotification("Réécriture des descriptions en cours...", "info");
-                    // Here you would implement AI description rewriting
-                    await new Promise(resolve => setTimeout(resolve, 1800));
-                    showNotification("Descriptions réécrites par l'IA !", "success");
-                });
-
-                document.getElementById('ai-adapt-sector-btn').addEventListener('click', async () => {
-                    const sector = document.getElementById('target-sector').value;
-                    const level = document.getElementById('experience-level').value;
-
-                    if (!sector) {
-                        showNotification("Veuillez sélectionner un secteur d'activité.", "error");
-                        return;
-                    }
-
-                    showNotification(`Adaptation au secteur "${sector}" et niveau "${level}" en cours...`, "info");
-                    // Here you would implement AI sector adaptation
-                    await new Promise(resolve => setTimeout(resolve, 1600));
-                    showNotification(`CV adapté au secteur ${sector} !`, "success");
-                });
-
-                document.getElementById('ai-boost-keywords-btn').addEventListener('click', async () => {
-                    const sector = document.getElementById('target-sector').value;
-
-                    if (!sector) {
-                        showNotification("Veuillez sélectionner un secteur d'activité.", "error");
-                        return;
-                    }
-
-                    showNotification("Injection de mots-clés en cours...", "info");
-                    // Here you would implement AI keyword boosting
-                    await new Promise(resolve => setTimeout(resolve, 1400));
-                    showNotification("Mots-clés optimisés pour le secteur !", "success");
                 });
 
                 controls.downloadPdfBtn.addEventListener('click', async () => {
