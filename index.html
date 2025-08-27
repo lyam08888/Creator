@@ -2050,9 +2050,15 @@
             }
 
             async function callGeminiAPI(prompt, schema) {
+                // Vérifier si une clé API Gemini est disponible
+                if (!apiSettings.gemini.apiKey) {
+                    showNotification("Veuillez configurer votre clé API Gemini dans les paramètres.", 'error');
+                    return null;
+                }
+
                 showLoader("L'IA réfléchit...");
                 try {
-                    const apiKey = ""; // Provided automatically by the environment
+                    const apiKey = apiSettings.gemini.apiKey;
                     const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
                     
                     const payload = {
@@ -2093,7 +2099,84 @@
                     hideLoader();
                 }
             }
-            
+
+            async function callChatGPTAPI(prompt) {
+                // Vérifier si une clé API ChatGPT est disponible
+                if (!apiSettings.chatgpt.apiKey) {
+                    showNotification("Veuillez configurer votre clé API ChatGPT dans les paramètres.", 'error');
+                    return null;
+                }
+
+                showLoader("L'IA réfléchit...");
+                try {
+                    const apiKey = apiSettings.chatgpt.apiKey;
+                    const apiUrl = 'https://api.openai.com/v1/chat/completions';
+
+                    const payload = {
+                        model: apiSettings.chatgpt.model || 'gpt-3.5-turbo',
+                        messages: [{ role: 'user', content: prompt }],
+                        max_tokens: 1000,
+                        temperature: 0.7
+                    };
+
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${apiKey}`
+                        },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (!response.ok) {
+                        const errorBody = await response.json();
+                        throw new Error(`Erreur API ChatGPT: ${errorBody.error?.message || response.statusText}`);
+                    }
+
+                    const result = await response.json();
+
+                    if (result.choices && result.choices.length > 0) {
+                        return result.choices[0].message.content;
+                    }
+
+                    throw new Error("Réponse invalide ou vide reçue de ChatGPT.");
+
+                } catch (error) {
+                    console.error("Erreur détaillée de ChatGPT:", error);
+                    showNotification(`Erreur ChatGPT : ${error.message}`, 'error', 5000);
+                    return null;
+                } finally {
+                    hideLoader();
+                }
+            }
+
+            async function callAIAPI(prompt, schema = null) {
+                // Vérifier qu'un fournisseur est sélectionné
+                if (!apiSettings.provider) {
+                    showNotification("Veuillez sélectionner un fournisseur d'IA dans les paramètres.", 'error');
+                    return null;
+                }
+
+                // Vérifier que la clé API est disponible
+                const hasApiKey = (apiSettings.provider === 'gemini' && apiSettings.gemini.apiKey) ||
+                                 (apiSettings.provider === 'chatgpt' && apiSettings.chatgpt.apiKey);
+
+                if (!hasApiKey) {
+                    showNotification(`Veuillez configurer votre clé API ${apiSettings.provider} dans les paramètres.`, 'error');
+                    return null;
+                }
+
+                // Router vers la bonne API
+                if (apiSettings.provider === 'gemini') {
+                    return await callGeminiAPI(prompt, schema);
+                } else if (apiSettings.provider === 'chatgpt') {
+                    return await callChatGPTAPI(prompt);
+                } else {
+                    showNotification("Fournisseur d'IA non supporté.", 'error');
+                    return null;
+                }
+            }
+
             function updateAllStyles() {
                 root.style.setProperty('--primary-color', controls.primaryColorPicker.value);
                 root.style.setProperty('--secondary-color', controls.secondaryColorPicker.value);
@@ -2230,7 +2313,7 @@
                         if (!profileText) { showNotification("Le profil est vide.", "error"); return; }
                         prompt = `En tant qu'expert en recrutement, réécris ce profil de CV pour qu'il soit plus percutant et professionnel, en utilisant des verbes d'action forts. Garde une longueur similaire et un ton professionnel. Ne retourne que le paragraphe final réécrit, sans aucun commentaire. Le profil actuel est : "${profileText}"`;
                         targetControl = controls.description;
-                        const newProfile = await callGeminiAPI(prompt);
+                        const newProfile = await callAIAPI(prompt);
                         if (newProfile && targetControl) {
                             targetControl.value = newProfile;
                             showNotification("Profil amélioré par l'IA.", "success");
@@ -2244,7 +2327,7 @@
                         if (formations.length === 0) { showNotification("Aucune formation à améliorer.", "error"); return; }
                         const formationSchema = { type: "ARRAY", items: { type: "OBJECT", properties: { title: { type: "STRING" }, meta: { type: "STRING" } } } };
                         const formationPrompt = `En tant qu'expert RH, améliore la formulation de ces entrées de formation pour un CV. Rends les titres plus percutants et les descriptions plus claires si nécessaire. Ne retourne que le résultat final sous forme de tableau JSON \`[{"title": "...", "meta": "..."}]\` sans aucun commentaire ou texte additionnel. Voici les données actuelles : ${JSON.stringify(formations.map(f => ({ title: f.title, meta: f.meta })))}`;
-                        const newFormations = await callGeminiAPI(formationPrompt, formationSchema);
+                        const newFormations = await callAIAPI(formationPrompt, formationSchema);
                         if (newFormations && Array.isArray(newFormations)) {
                             controls.formationList.innerHTML = '';
                             newFormations.forEach(form => createDynamicItem(controls.formationList, [{ key: 'title', placeholder: 'Nom du diplôme' }, { key: 'meta', placeholder: 'Établissement & Année' }], form));
@@ -2305,7 +2388,7 @@
                     const originalText = textarea.value;
                     if (originalText) {
                         const prompt = `Résume la description de cette mission professionnelle en 5 lignes maximum. Utilise des verbes d'action et un format de liste à puces (chaque point commençant par '• '). Ne retourne que le texte final formaté en liste à puces, sans aucune phrase d'introduction, de conclusion ou de commentaire. Voici la description : "${originalText}"`;
-                        const summary = await callGeminiAPI(prompt);
+                        const summary = await callAIAPI(prompt);
                         if (summary) {
                             textarea.value = summary;
                         }
@@ -2324,7 +2407,7 @@
                 }
                 const prompt = `Analyse cette liste de compétences de CV: "${currentSkills}". Regroupe-les par catégories pertinentes (ex: Langages, Frameworks, Outils, Logiciels, Langues, etc.). Retourne le résultat sous la forme "Catégorie 1: compétence A, compétence B\nCatégorie 2: compétence C, compétence D". Ne retourne que le texte final formaté, sans aucune phrase d'introduction, de conclusion ou de commentaire.`;
 
-                const organizedSkills = await callGeminiAPI(prompt);
+                const organizedSkills = await callAIAPI(prompt);
                 if (organizedSkills) {
                     controls.competences.value = organizedSkills;
                     updatePreview('form');
@@ -2345,7 +2428,7 @@
                 }
                 const prompt = `À partir de cette liste de compétences: "${currentSkills}", sélectionne les 10 compétences les plus importantes et pertinentes pour un poste de "${jobTitle}". Retourne uniquement la liste des 10 compétences, séparées par des virgules, sans aucune phrase d'introduction, de conclusion ou de commentaire.`;
 
-                const limitedSkills = await callGeminiAPI(prompt);
+                const limitedSkills = await callAIAPI(prompt);
                 if (limitedSkills) {
                     controls.competences.value = limitedSkills;
                     updatePreview('form');
@@ -2671,7 +2754,7 @@
                     };
                     const prompt = `Analyse le texte suivant et extrais les informations pour un CV. Formate la sortie en JSON respectant ce schéma. Sois concis. Texte : """${text}"""`;
                     
-                    const extractedData = await callGeminiAPI(prompt, schema);
+                    const extractedData = await callAIAPI(prompt, schema);
                     
                     if (extractedData) {
                         controls.nom.value = extractedData.nom || '';
@@ -2727,7 +2810,7 @@
 
                     **Important:** Ne retourne QUE le texte de l'e-mail (objet inclus, sous la forme "Objet: ..."), sans aucune phrase d'introduction ou de conclusion de ta part. Le ton doit être celui d'un partenaire commercial, pas celui du candidat.`;
 
-                    const mailContent = await callGeminiAPI(prompt);
+                    const mailContent = await callAIAPI(prompt);
                     if (mailContent) {
                         controls.recruiterMailContent.value = mailContent;
                         showNotification("E-mail de présentation client généré.", "success");
