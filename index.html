@@ -868,6 +868,151 @@
             }
         }
 
+        /* === NOUVEAUX STYLES DE MISE EN PAGE AVANCÉS === */
+
+        /* Bannière inversée */
+        .banner-inverted .banner-content-wrapper { flex-direction: row-reverse; }
+        .banner-inverted .banner-contact { order: -1; }
+
+        /* Layouts avancés */
+        .layout-3-col { grid-template-columns: 1fr 1fr 1fr; }
+        .layout-4-col { grid-template-columns: 1fr 1fr 1fr 1fr; }
+        .layout-asymetric-left { grid-template-columns: 1.5fr 1fr; }
+        .layout-asymetric-right { grid-template-columns: 1fr 1.5fr; }
+        .layout-header-main { grid-template-rows: auto 1fr; grid-template-columns: 1fr; }
+        .layout-sidebar-main { grid-template-columns: 300px 1fr; }
+        .layout-main-sidebar { grid-template-columns: 1fr 300px; }
+
+        /* Styles de colonnes spéciales */
+        .column-highlight { background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(147, 51, 234, 0.1)); border: 2px solid rgba(59, 130, 246, 0.3); border-radius: 8px; }
+        .column-shadow { box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); }
+        .column-border { border: 2px solid var(--primary-color); border-radius: 8px; padding: 15px; }
+        .column-rounded { border-radius: 12px; overflow: hidden; }
+
+        /* Nouveaux styles de sections */
+        .section-style-card { background: white; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); padding: 15px; margin-bottom: 15px; }
+        .section-style-glass { background: rgba(255,255,255,0.8); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; padding: 15px; }
+        .section-style-gradient { background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); color: white; border-radius: 8px; padding: 15px; }
+        .section-style-neumorphism { background: #e0e7ff; box-shadow: 8px 8px 16px #c8d0e7, -8px -8px 16px #ffffff; border-radius: 8px; padding: 15px; }
+
+        /* Styles de texte avancés */
+        .text-style-elegant { font-family: 'Playfair Display', serif; font-style: italic; }
+        .text-style-modern { font-family: 'Montserrat', sans-serif; font-weight: 300; letter-spacing: 1px; }
+        .text-style-bold { font-weight: 700; text-transform: uppercase; letter-spacing: 2px; }
+        .text-style-handwritten { font-family: 'Kalam', cursive; }
+        .text-style-gradient { background: linear-gradient(45deg, var(--primary-color), var(--secondary-color)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+
+        /* Animations et effets */
+        .animate-fade-in { animation: fadeIn 0.5s ease-in; }
+        .animate-slide-up { animation: slideUp 0.5s ease-out; }
+        .animate-scale-in { animation: scaleIn 0.3s ease-out; }
+        .animate-bounce-in { animation: bounceIn 0.6s ease-out; }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        @keyframes scaleIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        @keyframes bounceIn { 0% { transform: scale(0.3); opacity: 0; } 50% { transform: scale(1.05); } 70% { transform: scale(0.9); } 100% { transform: scale(1); opacity: 1; } }
+
+        /* Hover effects */
+        .hover-lift { transition: transform 0.3s ease, box-shadow 0.3s ease; }
+        .hover-lift:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0,0,0,0.15); }
+
+        .hover-glow { transition: box-shadow 0.3s ease; }
+        .hover-glow:hover { box-shadow: 0 0 20px rgba(59, 130, 246, 0.4); }
+
+        /* Espacement personnalisé */
+        .spacing-compact .cv-module { margin-bottom: 0.5rem; }
+        .spacing-relaxed .cv-module { margin-bottom: 2rem; }
+        .spacing-generous .cv-module { margin-bottom: 3rem; }
+
+        /* Bordures et séparateurs */
+        .separator-line { border-bottom: 1px solid var(--primary-color); margin: 1rem 0; }
+        .separator-dotted { border-bottom: 2px dotted var(--primary-color); margin: 1rem 0; }
+        .separator-double { border-bottom: 3px double var(--primary-color); margin: 1rem 0; }
+        .separator-gradient { height: 3px; background: linear-gradient(90deg, transparent, var(--primary-color), transparent); margin: 1rem 0; }
+
+        /* Styles de fond de page */
+        .page-bg-dots { background-image: radial-gradient(circle, var(--primary-color) 1px, transparent 1px); background-size: 20px 20px; }
+        .page-bg-lines { background-image: linear-gradient(90deg, rgba(0,0,0,0.1) 1px, transparent 1px); background-size: 20px 20px; }
+        .page-bg-grid { background-image: linear-gradient(rgba(0,0,0,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,0.1) 1px, transparent 1px); background-size: 20px 20px; }
+        .page-bg-gradient { background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); }
+
+        /* Styles de police avancés */
+        .font-script { font-family: 'Great Vibes', cursive; }
+        .font-tech { font-family: 'JetBrains Mono', monospace; }
+        .font-vintage { font-family: 'Cinzel', serif; }
+        .font-clean { font-family: 'Inter', sans-serif; }
+
+        /* Tailles de police étendues */
+        .text-xs-custom { font-size: 8pt; }
+        .text-sm-custom { font-size: 9pt; }
+        .text-base-custom { font-size: 11pt; }
+        .text-lg-custom { font-size: 13pt; }
+
+        /* === STYLES AVANCÉS POUR LES NOUVELLES FONCTIONNALITÉS === */
+
+        /* Styles de colonnes avancés */
+        .column-style-highlight .cv-column { background: linear-gradient(135deg, rgba(59, 130, 246, 0.08), rgba(147, 51, 234, 0.08)); border: 1px solid rgba(59, 130, 246, 0.2); border-radius: 8px; padding: 10px; }
+        .column-style-shadow .cv-column { box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); border-radius: 8px; padding: 10px; }
+        .column-style-border .cv-column { border: 2px solid var(--primary-color); border-radius: 8px; padding: 15px; }
+
+        /* Fonds de page avancés */
+        .bg-style-gradient .cv-page { background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 50%, #cbd5e1 100%); }
+        .bg-style-dots .cv-page { background-image: radial-gradient(circle, rgba(59, 130, 246, 0.1) 1px, transparent 1px); background-size: 15px 15px; }
+        .bg-style-lines .cv-page { background-image: linear-gradient(90deg, rgba(0,0,0,0.05) 1px, transparent 1px); background-size: 20px 20px; }
+
+        /* Séparateurs avancés */
+        :root { --separator-style: line; }
+        .cv-module:not(:last-child)::after {
+            content: '';
+            display: block;
+            margin: 1rem 0;
+            height: 1px;
+        }
+        .cv-module:not(:last-child)::after {
+            background: var(--primary-color);
+        }
+
+        /* Animations de page */
+        .animation-fade-in .cv-page { animation: pageFadeIn 0.8s ease-in-out; }
+        .animation-slide-up .cv-page { animation: pageSlideUp 0.6s ease-out; }
+        .animation-scale-in .cv-page { animation: pageScaleIn 0.5s ease-out; }
+
+        @keyframes pageFadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes pageSlideUp {
+            from { transform: translateY(30px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        @keyframes pageScaleIn {
+            from { transform: scale(0.95); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        /* Boutons actifs pour les nouveaux contrôles */
+        .column-style-btn.active, .bg-style-btn.active, .separator-btn.active, .animation-btn.active {
+            background-color: #3b82f6;
+            color: white;
+        }
+        .text-xl-custom { font-size: 15pt; }
+        .text-2xl-custom { font-size: 18pt; }
+        .text-3xl-custom { font-size: 22pt; }
+
+        /* Couleurs étendues */
+        .text-color-warm { color: #d97706; }
+        .text-color-cool { color: #0891b2; }
+        .text-color-muted { color: #64748b; }
+        .text-color-accent { color: var(--primary-color); }
+
+        /* Styles d'icônes */
+        .icon-circle { background: var(--primary-color); color: white; border-radius: 50%; width: 20px; height: 20px; display: inline-flex; align-items: center; justify-content: center; font-size: 10px; }
+        .icon-square { background: var(--secondary-color); color: white; border-radius: 4px; width: 20px; height: 20px; display: inline-flex; align-items: center; justify-content: center; font-size: 10px; }
+        .icon-transparent { background: transparent; color: var(--primary-color); border: 2px solid var(--primary-color); border-radius: 50%; width: 20px; height: 20px; display: inline-flex; align-items: center; justify-content: center; font-size: 10px; }
+
     </style>
 </head>
 <body class="bg-gray-200 font-sans">
@@ -1506,6 +1651,48 @@
                         <summary><span>Mise en Colonnes</span><label class="completion-label"><input type="checkbox" id="completion-layout-cols" class="completion-checkbox"><span>Fait ✅</span></label></summary>
                         <div class="control-group-content">
                             <div class="flex gap-2"><button data-layout="layout-1-col" class="layout-btn flex-1 bg-gray-200 p-2 rounded-md text-sm" title="Mise en page à une colonne">1</button><button data-layout="layout-2-col-33-67" class="layout-btn flex-1 bg-gray-200 p-2 rounded-md text-sm" title="Mise en page deux colonnes 33/67">33/67</button><button data-layout="layout-2-col-50-50" class="layout-btn flex-1 bg-gray-200 p-2 rounded-md text-sm" title="Mise en page deux colonnes 50/50">50/50</button><button data-layout="layout-2-col-67-33" class="layout-btn flex-1 bg-gray-200 p-2 rounded-md text-sm" title="Mise en page deux colonnes 67/33">67/33</button></div>
+                            <div class="flex gap-2 mt-2"><button data-layout="layout-3-col" class="layout-btn flex-1 bg-gray-200 p-2 rounded-md text-sm" title="Mise en page trois colonnes">3 COL</button><button data-layout="layout-asymetric-left" class="layout-btn flex-1 bg-gray-200 p-2 rounded-md text-sm" title="Layout asymétrique gauche">ASY G</button><button data-layout="layout-asymetric-right" class="layout-btn flex-1 bg-gray-200 p-2 rounded-md text-sm" title="Layout asymétrique droite">ASY D</button><button data-layout="layout-sidebar-main" class="layout-btn flex-1 bg-gray-200 p-2 rounded-md text-sm" title="Sidebar + contenu">SIDEBAR</button></div>
+                        </div>
+                    </details>
+                    <details class="control-group" open>
+                        <summary><span>Styles Avancés</span><label class="completion-label"><input type="checkbox" id="completion-layout-advanced" class="completion-checkbox"><span>Fait ✅</span></label></summary>
+                        <div class="control-group-content space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Style de Colonnes</label>
+                                <div class="grid grid-cols-2 gap-2">
+                                    <button data-column-style="normal" class="column-style-btn flex-1 bg-gray-200 p-2 rounded-md text-sm" title="Style normal">Normal</button>
+                                    <button data-column-style="highlight" class="column-style-btn flex-1 bg-gray-200 p-2 rounded-md text-sm" title="Colonne mise en évidence">En évidence</button>
+                                    <button data-column-style="shadow" class="column-style-btn flex-1 bg-gray-200 p-2 rounded-md text-sm" title="Ombre portée">Ombre</button>
+                                    <button data-column-style="border" class="column-style-btn flex-1 bg-gray-200 p-2 rounded-md text-sm" title="Bordure colorée">Bordure</button>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Fond de Page</label>
+                                <div class="grid grid-cols-2 gap-2">
+                                    <button data-bg-style="normal" class="bg-style-btn flex-1 bg-gray-200 p-2 rounded-md text-sm" title="Fond normal">Normal</button>
+                                    <button data-bg-style="gradient" class="bg-style-btn flex-1 bg-gray-200 p-2 rounded-md text-sm" title="Dégradé subtil">Dégradé</button>
+                                    <button data-bg-style="dots" class="bg-style-btn flex-1 bg-gray-200 p-2 rounded-md text-sm" title="Motif pointillé">Points</button>
+                                    <button data-bg-style="lines" class="bg-style-btn flex-1 bg-gray-200 p-2 rounded-md text-sm" title="Lignes discrètes">Lignes</button>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Séparateurs</label>
+                                <div class="grid grid-cols-2 gap-2">
+                                    <button data-separator="line" class="separator-btn flex-1 bg-gray-200 p-2 rounded-md text-sm" title="Ligne simple">Ligne</button>
+                                    <button data-separator="dotted" class="separator-btn flex-1 bg-gray-200 p-2 rounded-md text-sm" title="Ligne pointillée">Pointillé</button>
+                                    <button data-separator="double" class="separator-btn flex-1 bg-gray-200 p-2 rounded-md text-sm" title="Double ligne">Double</button>
+                                    <button data-separator="gradient" class="separator-btn flex-1 bg-gray-200 p-2 rounded-md text-sm" title="Dégradé">Dégradé</button>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Animations</label>
+                                <div class="grid grid-cols-2 gap-2">
+                                    <button data-animation="none" class="animation-btn flex-1 bg-gray-200 p-2 rounded-md text-sm" title="Aucune animation">Aucune</button>
+                                    <button data-animation="fade-in" class="animation-btn flex-1 bg-gray-200 p-2 rounded-md text-sm" title="Fondu en entrée">Fondu</button>
+                                    <button data-animation="slide-up" class="animation-btn flex-1 bg-gray-200 p-2 rounded-md text-sm" title="Glissement vers le haut">Glisse</button>
+                                    <button data-animation="scale-in" class="animation-btn flex-1 bg-gray-200 p-2 rounded-md text-sm" title="Zoom en entrée">Zoom</button>
+                                </div>
+                            </div>
                         </div>
                     </details>
                     <details class="control-group" open>
@@ -2730,6 +2917,9 @@
                 preview.fixedBannerTop.style.display = (isBannerEnabled && isBannerInTop) ? 'block' : 'none';
                 preview.fixedBannerBottom.style.display = (isBannerEnabled && isBannerInBottom) ? 'block' : 'none';
 
+                // Mise à jour des styles avancés
+                updateAdvancedStyles();
+
                 checkAllPagesOverflow();
             }
             
@@ -3013,8 +3203,44 @@
                 contentWrapper.className = 'banner-content-wrapper'; // Reset classes
                 contentWrapper.classList.add(`banner-align-${newAlign}`);
                 if (isInverted) contentWrapper.classList.add('banner-layout-inverted');
-                
+
+                // Mise à jour des styles avancés
+                updateAdvancedStyles();
+
                 checkAllPagesOverflow();
+            }
+
+            function updateAdvancedStyles() {
+                // Styles de colonnes
+                const activeColumnStyle = document.querySelector('.column-style-btn.active')?.dataset.columnStyle || 'normal';
+                document.querySelectorAll('.cv-body-container').forEach(container => {
+                    container.className = container.className.replace(/column-style-\w+/g, '');
+                    if (activeColumnStyle !== 'normal') {
+                        container.classList.add(`column-style-${activeColumnStyle}`);
+                    }
+                });
+
+                // Fonds de page
+                const activeBgStyle = document.querySelector('.bg-style-btn.active')?.dataset.bgStyle || 'normal';
+                document.querySelectorAll('.cv-page').forEach(page => {
+                    page.className = page.className.replace(/bg-style-\w+/g, '');
+                    if (activeBgStyle !== 'normal') {
+                        page.classList.add(`bg-style-${activeBgStyle}`);
+                    }
+                });
+
+                // Séparateurs
+                const activeSeparator = document.querySelector('.separator-btn.active')?.dataset.separator || 'line';
+                document.documentElement.style.setProperty('--separator-style', activeSeparator);
+
+                // Animations
+                const activeAnimation = document.querySelector('.animation-btn.active')?.dataset.animation || 'none';
+                document.querySelectorAll('.cv-page').forEach(page => {
+                    page.className = page.className.replace(/animation-\w+/g, '');
+                    if (activeAnimation !== 'none') {
+                        page.classList.add(`animation-${activeAnimation}`);
+                    }
+                });
             }
 
             function populateFontSelectors() {
@@ -3071,6 +3297,12 @@
                 applyTheme('professional');
                 document.querySelector('.layout-btn[data-layout="layout-1-col"]').click();
                 document.querySelector('.skill-style-btn[data-skill-style="tags"]').click();
+
+                // Initialisation des nouveaux boutons de styles avancés
+                document.querySelector('.column-style-btn[data-column-style="normal"]').click();
+                document.querySelector('.bg-style-btn[data-bg-style="normal"]').click();
+                document.querySelector('.separator-btn[data-separator="line"]').click();
+                document.querySelector('.animation-btn[data-animation="none"]').click();
                 
                 Object.values(sliders).forEach(config => {
                     const defaultValue = config.el.defaultValue;
@@ -3538,6 +3770,62 @@
                         updatePreview('form');
                         return;
                     }
+
+                    // Event listeners pour les nouveaux boutons de styles avancés
+                    const columnStyleBtn = target.closest('.column-style-btn');
+                    if (columnStyleBtn) {
+                        document.querySelectorAll('.column-style-btn').forEach(b => b.classList.remove('active'));
+                        columnStyleBtn.classList.add('active');
+                        const style = columnStyleBtn.dataset.columnStyle;
+                        document.querySelectorAll('.cv-body-container').forEach(container => {
+                            container.className = container.className.replace(/column-style-\w+/g, '');
+                            if (style !== 'normal') {
+                                container.classList.add(`column-style-${style}`);
+                            }
+                        });
+                        updatePreview('form');
+                        return;
+                    }
+
+                    const bgStyleBtn = target.closest('.bg-style-btn');
+                    if (bgStyleBtn) {
+                        document.querySelectorAll('.bg-style-btn').forEach(b => b.classList.remove('active'));
+                        bgStyleBtn.classList.add('active');
+                        const style = bgStyleBtn.dataset.bgStyle;
+                        document.querySelectorAll('.cv-page').forEach(page => {
+                            page.className = page.className.replace(/bg-style-\w+/g, '');
+                            if (style !== 'normal') {
+                                page.classList.add(`bg-style-${style}`);
+                            }
+                        });
+                        updatePreview('form');
+                        return;
+                    }
+
+                    const separatorBtn = target.closest('.separator-btn');
+                    if (separatorBtn) {
+                        document.querySelectorAll('.separator-btn').forEach(b => b.classList.remove('active'));
+                        separatorBtn.classList.add('active');
+                        const style = separatorBtn.dataset.separator;
+                        document.documentElement.style.setProperty('--separator-style', style);
+                        updatePreview('form');
+                        return;
+                    }
+
+                    const animationBtn = target.closest('.animation-btn');
+                    if (animationBtn) {
+                        document.querySelectorAll('.animation-btn').forEach(b => b.classList.remove('active'));
+                        animationBtn.classList.add('active');
+                        const animation = animationBtn.dataset.animation;
+                        document.querySelectorAll('.cv-page').forEach(page => {
+                            page.className = page.className.replace(/animation-\w+/g, '');
+                            if (animation !== 'none') {
+                                page.classList.add(`animation-${animation}`);
+                            }
+                        });
+                        updatePreview('form');
+                        return;
+                    }
                 });
 
                 Object.values(sliders).forEach(config => {
@@ -3808,6 +4096,57 @@
                 document.getElementById('add-certification')?.addEventListener('click', addCertification);
                 document.getElementById('add-reference')?.addEventListener('click', addReference);
                 document.getElementById('add-social-link')?.addEventListener('click', addSocialLink);
+
+                // === NOUVEAUX EVENT LISTENERS POUR L'ALIGNEMENT DE LA BANNIÈRE ===
+                document.querySelectorAll('.banner-align-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        // Retirer la classe active de tous les boutons d'alignement
+                        document.querySelectorAll('.banner-align-btn').forEach(b => b.classList.remove('active'));
+                        // Ajouter la classe active au bouton cliqué
+                        e.target.classList.add('active');
+
+                        // Appliquer l'alignement à la bannière
+                        const alignment = e.target.dataset.bannerAlign;
+                        const banner = document.getElementById('recruiter-banner');
+                        if (banner) {
+                            // Retirer toutes les classes d'alignement
+                            banner.classList.remove('banner-align-left', 'banner-align-center', 'banner-align-right');
+                            // Ajouter la nouvelle classe d'alignement
+                            banner.classList.add(`banner-align-${alignment}`);
+                            updatePreview('banner');
+                        }
+                    });
+                });
+
+                // Event listener pour le bouton d'inversion logo/texte
+                document.getElementById('banner-invert-btn')?.addEventListener('click', () => {
+                    const banner = document.getElementById('recruiter-banner');
+                    if (banner) {
+                        banner.classList.toggle('banner-inverted');
+                        updatePreview('banner');
+                    }
+                });
+
+                // Event listeners pour les boutons de taille de logo
+                document.querySelectorAll('.logo-size-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        // Retirer la classe active de tous les boutons de taille
+                        document.querySelectorAll('.logo-size-btn').forEach(b => b.classList.remove('active'));
+                        // Ajouter la classe active au bouton cliqué
+                        e.target.classList.add('active');
+
+                        // Appliquer la taille du logo
+                        const size = e.target.dataset.logoSize;
+                        const logoImg = document.getElementById('banner-img-preview');
+                        if (logoImg) {
+                            // Retirer toutes les classes de taille
+                            logoImg.classList.remove('logo-sm', 'logo-md', 'logo-lg', 'logo-xl', 'logo-xxl');
+                            // Ajouter la nouvelle classe de taille
+                            logoImg.classList.add(`logo-${size}`);
+                            updatePreview('banner');
+                        }
+                    });
+                });
 
                 document.querySelectorAll('.a4-page').forEach(setupOverflowObserver);
             }
@@ -4831,7 +5170,7 @@
 
         // Fonction pour analyser le texte et remplir automatiquement
         async function analyzeText() {
-            const textToAnalyze = document.getElementById('text-to-analyze').value;
+            const textToAnalyze = document.getElementById('ai-input').value;
             if (!textToAnalyze.trim()) {
                 showNotification('Veuillez saisir un texte à analyser.', 'warning');
                 return;
