@@ -4887,15 +4887,6 @@
             }
         }
 
-        // Collapse all sections functionality
-        function collapseAllSections() {
-            const detailsElements = document.querySelectorAll('details.control-group');
-            detailsElements.forEach(details => {
-                details.open = false;
-            });
-            showNotification('Toutes les sections réduites.', 'success');
-        }
-
         // Event listeners for new toolbar buttons
         newToolbarButtons.saveCvBtn.addEventListener('click', saveCurrentCV);
         newToolbarButtons.loadCvBtn.addEventListener('click', loadSavedCV);
