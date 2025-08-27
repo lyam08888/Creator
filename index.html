@@ -112,6 +112,108 @@
         .banner-style-encadre { border: 2px solid var(--primary-color); border-radius: 0.5rem; }
         .banner-style-ligne-haute { border-top: 4px solid var(--primary-color); padding-top: 0.8rem !important; }
 
+        /* Toolbar Styles */
+        #top-toolbar {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+            background-color: rgba(255, 255, 255, 0.95);
+        }
+        .toolbar-btn {
+            white-space: nowrap;
+            transition: all 0.2s ease;
+        }
+        .toolbar-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .toolbar-btn:active {
+            transform: translateY(0);
+        }
+
+        /* Accessibility Styles */
+        .accessibility-high-contrast {
+            filter: contrast(1.5);
+        }
+        .accessibility-high-contrast body {
+            background-color: #000 !important;
+            color: #fff !important;
+        }
+        .accessibility-high-contrast .a4-page {
+            background-color: #000 !important;
+            color: #fff !important;
+            border: 2px solid #fff !important;
+        }
+        .accessibility-high-contrast [contenteditable="true"]:hover {
+            background-color: #333 !important;
+            outline: 1px solid #fff !important;
+        }
+        .accessibility-high-contrast [contenteditable="true"]:focus {
+            background-color: #444 !important;
+            outline: 2px solid #fff !important;
+        }
+
+        .accessibility-large-text {
+            font-size: 1.2em !important;
+        }
+        .accessibility-large-text .a4-page p,
+        .accessibility-large-text .a4-page li {
+            font-size: 1.4rem !important;
+        }
+        .accessibility-large-text .cv-header h1 {
+            font-size: 3rem !important;
+        }
+        .accessibility-large-text .section-title {
+            font-size: 1.4rem !important;
+        }
+
+        .accessibility-keyboard-nav .cv-module:focus-within {
+            outline: 3px solid #4f46e5 !important;
+            outline-offset: 2px;
+        }
+        .accessibility-keyboard-nav [contenteditable="true"]:focus {
+            outline: 3px solid #4f46e5 !important;
+            outline-offset: 2px;
+        }
+
+        .accessibility-focus-visible *:focus {
+            outline: 2px solid #4f46e5 !important;
+            outline-offset: 2px;
+        }
+
+        .accessibility-reduced-motion * {
+            animation-duration: 0.01ms !important;
+            animation-iteration-count: 1 !important;
+            transition-duration: 0.01ms !important;
+        }
+
+        .accessibility-no-animations * {
+            animation: none !important;
+            transition: none !important;
+        }
+
+        .accessibility-large-targets button,
+        .accessibility-large-targets .toolbar-btn {
+            min-width: 44px;
+            min-height: 44px;
+        }
+
+        .accessibility-skip-links {
+            position: absolute;
+            top: -40px;
+            left: 6px;
+            background: #000;
+            color: #fff;
+            padding: 8px;
+            text-decoration: none;
+            z-index: 1000;
+            border-radius: 4px;
+        }
+        .accessibility-skip-links:focus {
+            top: 6px;
+        }
+
         #notification { position: fixed; top: 20px; right: 20px; z-index: 10000; }
         .toast { background-color: white; color: #111827; padding: 1rem 1.5rem; border-radius: 0.5rem; box-shadow: 0 5px 15px rgba(0,0,0,0.1); display: flex; align-items: center; gap: 0.75rem; transition: all 0.3s ease; transform: translateX(120%); }
         .toast.show { transform: translateX(0); }
@@ -164,7 +266,7 @@
             cursor: pointer;
         }
         .completion-checkbox:focus {
-            ring: #4f46e5;
+            outline: 2px solid #4f46e5;
         }
         
         #ai-summarize-btn { position: fixed; bottom: 30px; right: 30px; width: 60px; height: 60px; background-color: #2563eb; color: white; border-radius: 50%; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(0,0,0,0.2); font-size: 24px; z-index: 999; transition: transform 0.2s ease-in-out; }
@@ -332,6 +434,36 @@
     <div id="notification"></div>
     <button id="ai-summarize-btn" title="Synthèse IA des expériences (5 lignes max)" class="no-print"><i class="fas fa-compress-arrows-alt"></i></button>
 
+    <!-- TOP TOOLBAR -->
+    <div id="top-toolbar" class="w-full bg-white shadow-md border-b border-gray-200 px-4 py-2 flex flex-wrap items-center justify-between gap-2 no-print">
+        <div class="flex items-center gap-2">
+            <h1 class="text-lg font-bold text-gray-800">Créateur de CV</h1>
+        </div>
+        <div class="flex items-center gap-2 flex-wrap">
+            <button id="accessibility-btn" class="toolbar-btn bg-purple-600 text-white px-3 py-2 rounded-md hover:bg-purple-700 flex items-center gap-2 text-sm">
+                <i class="fas fa-universal-access"></i> ACCESSIBILITÉ
+            </button>
+            <button id="download-pdf-btn" class="toolbar-btn bg-gray-800 text-white px-3 py-2 rounded-md hover:bg-gray-900 flex items-center gap-2 text-sm">
+                <i class="fa-solid fa-download"></i> PDF
+            </button>
+            <button id="share-btn" class="toolbar-btn bg-green-600 text-white px-3 py-2 rounded-md hover:bg-green-700 flex items-center gap-2 text-sm">
+                <i class="fa-solid fa-share-alt"></i> PARTAGER
+            </button>
+            <button id="anonymize-btn" class="toolbar-btn bg-slate-500 text-white px-3 py-2 rounded-md hover:bg-slate-600 flex items-center gap-2 text-sm">
+                <i class="fa-solid fa-user-secret"></i> ANONYMISER
+            </button>
+            <button id="reset-cv-btn" class="toolbar-btn bg-red-600 text-white px-3 py-2 rounded-md hover:bg-red-700 flex items-center gap-2 text-sm">
+                <i class="fa-solid fa-file-circle-plus"></i> NOUVEAU CV
+            </button>
+            <button id="toggle-overflow-btn" class="toolbar-btn bg-yellow-500 text-white px-3 py-2 rounded-md hover:bg-yellow-600 flex items-center gap-2 text-sm">
+                <i class="fa-solid fa-ruler-combined"></i> DÉTECTION DÉPASSEMENT
+            </button>
+            <button id="toggle-presentation-mode-btn" class="toolbar-btn bg-indigo-600 text-white px-3 py-2 rounded-md hover:bg-indigo-700 flex items-center gap-2 text-sm">
+                <i class="fa-solid fa-eye"></i> MODE PRÉSENTATION
+            </button>
+        </div>
+    </div>
+
     <div class="flex flex-col lg:flex-row min-h-screen">
         <!-- CONTROLS PANEL -->
         <div id="controls" class="w-full lg:w-1/3 xl:w-1/4 p-6 bg-white shadow-2xl overflow-y-auto flex flex-col no-print">
@@ -356,13 +488,13 @@
             <!-- Actions Rapides -->
             <div class="space-y-2 mb-4 p-4 bg-slate-50 rounded-lg border border-slate-200 flex-shrink-0">
                  <div class="grid grid-cols-2 gap-2">
-                      <button id="download-pdf-btn" class="w-full bg-gray-800 text-white py-2 px-4 rounded-md hover:bg-gray-900 flex items-center justify-center gap-2"><i class="fa-solid fa-download"></i> PDF</button>
-                      <button id="share-btn" class="w-full bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 flex items-center justify-center gap-2"><i class="fa-solid fa-share-alt"></i> Partager</button>
+                      <button id="download-pdf-btn-old" class="w-full bg-gray-800 text-white py-2 px-4 rounded-md hover:bg-gray-900 flex items-center justify-center gap-2"><i class="fa-solid fa-download"></i> PDF</button>
+                      <button id="share-btn-old" class="w-full bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 flex items-center justify-center gap-2"><i class="fa-solid fa-share-alt"></i> Partager</button>
                  </div>
-                 <button id="anonymize-btn" class="w-full bg-slate-500 text-white py-2 px-4 rounded-md hover:bg-slate-600 flex items-center justify-center gap-2"><i class="fa-solid fa-user-secret"></i>Anonymiser le CV</button>
-                 <button id="reset-cv-btn" class="w-full bg-red-600 text-white py-2 px-4 rounded-md hover:bg-red-700 flex items-center justify-center gap-2"><i class="fa-solid fa-file-circle-plus"></i> Nouveau CV</button>
-                 <button id="toggle-overflow-btn" class="w-full bg-yellow-500 text-white py-2 px-4 rounded-md hover:bg-yellow-600 flex items-center justify-center gap-2"><i class="fa-solid fa-ruler-combined"></i> Détection Dépassement</button>
-                 <button id="toggle-presentation-mode-btn" class="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 flex items-center justify-center gap-2 mt-2"><i class="fa-solid fa-eye"></i> Mode Présentation</button>
+                 <button id="anonymize-btn-old" class="w-full bg-slate-500 text-white py-2 px-4 rounded-md hover:bg-slate-600 flex items-center justify-center gap-2"><i class="fa-solid fa-user-secret"></i>Anonymiser le CV</button>
+                 <button id="reset-cv-btn-old" class="w-full bg-red-600 text-white py-2 px-4 rounded-md hover:bg-red-700 flex items-center justify-center gap-2"><i class="fa-solid fa-file-circle-plus"></i> Nouveau CV</button>
+                 <button id="toggle-overflow-btn-old" class="w-full bg-yellow-500 text-white py-2 px-4 rounded-md hover:bg-yellow-600 flex items-center justify-center gap-2"><i class="fa-solid fa-ruler-combined"></i> Détection Dépassement</button>
+                 <button id="toggle-presentation-mode-btn-old" class="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 flex items-center justify-center gap-2 mt-2"><i class="fa-solid fa-eye"></i> Mode Présentation</button>
             </div>
 
 
@@ -610,7 +742,7 @@
         </div>
 
         <!-- PREVIEW PANEL -->
-        <div class="w-full lg:w-2/3 xl:w-3/4 p-8 bg-gray-200 flex justify-center items-start overflow-auto" id="preview-area">
+        <div class="w-full lg:w-2/3 xl:w-3/4 p-8 bg-gray-200 flex justify-center items-start overflow-auto" id="main-content">
             <div id="cv-preview-wrapper">
                 <div class="a4-page-container">
                     <div id="page-1" class="a4-page">
@@ -686,6 +818,129 @@
             <div class="flex justify-end gap-4">
                 <button id="confirm-modal-cancel-btn" class="px-4 py-2 bg-gray-200 text-sm rounded-md hover:bg-gray-300">Annuler</button>
                 <button id="confirm-modal-ok-btn" class="px-4 py-2 bg-red-600 text-white text-sm rounded-md hover:bg-red-700">Confirmer</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ACCESSIBILITY MODAL -->
+    <div id="accessibility-modal" class="modal-overlay">
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold text-purple-600">Paramètres d'Accessibilité</h2>
+                <button id="close-accessibility-modal" class="text-gray-500 hover:text-gray-800 text-2xl">&times;</button>
+            </div>
+
+            <div class="space-y-6">
+                <!-- Contrast -->
+                <div class="border-b pb-4">
+                    <h3 class="font-semibold text-lg mb-3 flex items-center gap-2">
+                        <i class="fas fa-adjust text-purple-600"></i> Contraste
+                    </h3>
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between">
+                            <label class="text-sm font-medium">Niveau de contraste</label>
+                            <select id="contrast-level" class="p-2 border rounded-md text-sm">
+                                <option value="normal">Normal</option>
+                                <option value="high">Élevé</option>
+                                <option value="very-high">Très élevé</option>
+                            </select>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <input type="checkbox" id="high-contrast-mode" class="w-4 h-4 text-purple-600">
+                            <label for="high-contrast-mode" class="text-sm">Mode contraste élevé</label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Text Size -->
+                <div class="border-b pb-4">
+                    <h3 class="font-semibold text-lg mb-3 flex items-center gap-2">
+                        <i class="fas fa-font text-purple-600"></i> Taille du texte
+                    </h3>
+                    <div class="space-y-3">
+                        <div>
+                            <label for="text-size-slider" class="block text-sm font-medium mb-2">
+                                Taille globale: <span id="text-size-value">100</span>%
+                            </label>
+                            <input type="range" id="text-size-slider" min="75" max="150" step="5" value="100"
+                                   class="w-full h-2 bg-gray-200 rounded-lg cursor-pointer">
+                        </div>
+                        <div class="grid grid-cols-3 gap-2">
+                            <button id="text-size-small" class="p-2 bg-gray-200 rounded-md text-sm hover:bg-gray-300">Petit</button>
+                            <button id="text-size-medium" class="p-2 bg-purple-600 text-white rounded-md text-sm">Moyen</button>
+                            <button id="text-size-large" class="p-2 bg-gray-200 rounded-md text-sm hover:bg-gray-300">Grand</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Navigation -->
+                <div class="border-b pb-4">
+                    <h3 class="font-semibold text-lg mb-3 flex items-center gap-2">
+                        <i class="fas fa-keyboard text-purple-600"></i> Navigation clavier
+                    </h3>
+                    <div class="space-y-3">
+                        <div class="flex items-center gap-2">
+                            <input type="checkbox" id="keyboard-navigation" class="w-4 h-4 text-purple-600">
+                            <label for="keyboard-navigation" class="text-sm">Navigation au clavier activée</label>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <input type="checkbox" id="focus-indicators" class="w-4 h-4 text-purple-600">
+                            <label for="focus-indicators" class="text-sm">Indicateurs de focus visibles</label>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <input type="checkbox" id="skip-links" class="w-4 h-4 text-purple-600">
+                            <label for="skip-links" class="text-sm">Liens d'évitement</label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Animations -->
+                <div class="border-b pb-4">
+                    <h3 class="font-semibold text-lg mb-3 flex items-center gap-2">
+                        <i class="fas fa-film text-purple-600"></i> Animations
+                    </h3>
+                    <div class="space-y-3">
+                        <div class="flex items-center gap-2">
+                            <input type="checkbox" id="reduce-animations" class="w-4 h-4 text-purple-600">
+                            <label for="reduce-animations" class="text-sm">Réduire les animations</label>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <input type="checkbox" id="disable-animations" class="w-4 h-4 text-purple-600">
+                            <label for="disable-animations" class="text-sm">Désactiver toutes les animations</label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Additional Features -->
+                <div>
+                    <h3 class="font-semibold text-lg mb-3 flex items-center gap-2">
+                        <i class="fas fa-cog text-purple-600"></i> Fonctionnalités supplémentaires
+                    </h3>
+                    <div class="space-y-3">
+                        <div class="flex items-center gap-2">
+                            <input type="checkbox" id="screen-reader" class="w-4 h-4 text-purple-600">
+                            <label for="screen-reader" class="text-sm">Optimisation pour lecteurs d'écran</label>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <input type="checkbox" id="large-click-targets" class="w-4 h-4 text-purple-600">
+                            <label for="large-click-targets" class="text-sm">Cibles de clic agrandies</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex justify-between items-center mt-8 pt-4 border-t">
+                <div class="flex gap-2">
+                    <button id="save-accessibility-settings" class="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 text-sm">
+                        Sauvegarder
+                    </button>
+                    <button id="reset-accessibility-settings" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 text-sm">
+                        Réinitialiser
+                    </button>
+                </div>
+                <button id="close-accessibility-modal-bottom" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 text-sm">
+                    Fermer
+                </button>
             </div>
         </div>
     </div>
@@ -2237,7 +2492,435 @@
 
                 document.querySelectorAll('.a4-page').forEach(setupOverflowObserver);
             }
-            
+
+            // --- TOOLBAR AND ACCESSIBILITY FUNCTIONALITY ---
+
+            // Generate share link functionality
+            function generateShareLink() {
+                // Create a data URL with the current CV data
+                const cvData = {
+                    nom: controls.nom.value,
+                    prenom: controls.prenom.value,
+                    poste: controls.poste.value,
+                    description: controls.description.value,
+                    // Add more data as needed
+                    timestamp: Date.now()
+                };
+
+                // Encode the data
+                const encodedData = btoa(JSON.stringify(cvData));
+                const shareUrl = `${window.location.origin}${window.location.pathname}?shared=${encodedData}`;
+
+                controls.shareLinkInput.value = shareUrl;
+            }
+
+            // Copy share link to clipboard
+            function copyShareLink() {
+                controls.shareLinkInput.select();
+                document.execCommand('copy');
+                showNotification('Lien de partage copié dans le presse-papiers !', 'success');
+            }
+
+            // Share modal event listeners
+            controls.closeShareModal.addEventListener('click', () => {
+                controls.shareModal.classList.remove('active');
+            });
+
+            controls.copyShareLinkBtn.addEventListener('click', copyShareLink);
+
+            // Close share modal when clicking outside
+            controls.shareModal.addEventListener('click', (e) => {
+                if (e.target === controls.shareModal) {
+                    controls.shareModal.classList.remove('active');
+                }
+            });
+
+            // Toolbar button event listeners
+            const toolbarButtons = {
+                accessibilityBtn: document.getElementById('accessibility-btn'),
+                shareBtn: document.getElementById('share-btn'),
+                downloadPdfBtn: document.getElementById('download-pdf-btn'),
+                anonymizeBtn: document.getElementById('anonymize-btn'),
+                resetCvBtn: document.getElementById('reset-cv-btn'),
+                toggleOverflowBtn: document.getElementById('toggle-overflow-btn'),
+                togglePresentationModeBtn: document.getElementById('toggle-presentation-mode-btn')
+            };
+
+            // Accessibility modal elements
+            const accessibilityModal = {
+                overlay: document.getElementById('accessibility-modal'),
+                closeBtn: document.getElementById('close-accessibility-modal'),
+                closeBottomBtn: document.getElementById('close-accessibility-modal-bottom'),
+                saveBtn: document.getElementById('save-accessibility-settings'),
+                resetBtn: document.getElementById('reset-accessibility-settings'),
+                contrastLevel: document.getElementById('contrast-level'),
+                highContrastMode: document.getElementById('high-contrast-mode'),
+                textSizeSlider: document.getElementById('text-size-slider'),
+                textSizeValue: document.getElementById('text-size-value'),
+                textSizeSmall: document.getElementById('text-size-small'),
+                textSizeMedium: document.getElementById('text-size-medium'),
+                textSizeLarge: document.getElementById('text-size-large'),
+                keyboardNavigation: document.getElementById('keyboard-navigation'),
+                focusIndicators: document.getElementById('focus-indicators'),
+                skipLinks: document.getElementById('skip-links'),
+                reduceAnimations: document.getElementById('reduce-animations'),
+                disableAnimations: document.getElementById('disable-animations'),
+                screenReader: document.getElementById('screen-reader'),
+                largeClickTargets: document.getElementById('large-click-targets')
+            };
+
+            // Accessibility settings storage
+            let accessibilitySettings = {
+                contrastLevel: 'normal',
+                highContrastMode: false,
+                textSize: 100,
+                keyboardNavigation: false,
+                focusIndicators: false,
+                skipLinks: false,
+                reduceAnimations: false,
+                disableAnimations: false,
+                screenReader: false,
+                largeClickTargets: false
+            };
+
+            // Load accessibility settings from localStorage
+            function loadAccessibilitySettings() {
+                const saved = localStorage.getItem('cv-accessibility-settings');
+                if (saved) {
+                    accessibilitySettings = { ...accessibilitySettings, ...JSON.parse(saved) };
+                }
+                applyAccessibilitySettings();
+            }
+
+            // Save accessibility settings to localStorage
+            function saveAccessibilitySettings() {
+                localStorage.setItem('cv-accessibility-settings', JSON.stringify(accessibilitySettings));
+                showNotification('Paramètres d\'accessibilité sauvegardés.', 'success');
+            }
+
+            // Apply accessibility settings
+            function applyAccessibilitySettings() {
+                const body = document.body;
+
+                // Remove all accessibility classes first
+                body.classList.remove('accessibility-high-contrast', 'accessibility-large-text', 'accessibility-keyboard-nav', 'accessibility-focus-visible', 'accessibility-reduced-motion', 'accessibility-no-animations', 'accessibility-large-targets');
+
+                // Apply contrast settings
+                if (accessibilitySettings.highContrastMode) {
+                    body.classList.add('accessibility-high-contrast');
+                }
+
+                // Apply text size settings
+                if (accessibilitySettings.textSize !== 100) {
+                    body.classList.add('accessibility-large-text');
+                    document.documentElement.style.fontSize = accessibilitySettings.textSize + '%';
+                } else {
+                    document.documentElement.style.fontSize = '';
+                }
+
+                // Apply keyboard navigation settings
+                if (accessibilitySettings.keyboardNavigation) {
+                    body.classList.add('accessibility-keyboard-nav');
+                }
+
+                // Apply focus indicators
+                if (accessibilitySettings.focusIndicators) {
+                    body.classList.add('accessibility-focus-visible');
+                }
+
+                // Apply animation settings
+                if (accessibilitySettings.disableAnimations) {
+                    body.classList.add('accessibility-no-animations');
+                } else if (accessibilitySettings.reduceAnimations) {
+                    body.classList.add('accessibility-reduced-motion');
+                }
+
+                // Apply large click targets
+                if (accessibilitySettings.largeClickTargets) {
+                    body.classList.add('accessibility-large-targets');
+                }
+
+                // Handle skip links
+                const existingSkipLink = document.querySelector('.accessibility-skip-links');
+                if (accessibilitySettings.skipLinks) {
+                    if (!existingSkipLink) {
+                        const skipLink = document.createElement('a');
+                        skipLink.href = '#main-content';
+                        skipLink.className = 'accessibility-skip-links';
+                        skipLink.textContent = 'Aller au contenu principal';
+                        document.body.insertBefore(skipLink, document.body.firstChild);
+                    }
+                } else if (existingSkipLink) {
+                    existingSkipLink.remove();
+                }
+            }
+
+            // Reset accessibility settings
+            function resetAccessibilitySettings() {
+                accessibilitySettings = {
+                    contrastLevel: 'normal',
+                    highContrastMode: false,
+                    textSize: 100,
+                    keyboardNavigation: false,
+                    focusIndicators: false,
+                    skipLinks: false,
+                    reduceAnimations: false,
+                    disableAnimations: false,
+                    screenReader: false,
+                    largeClickTargets: false
+                };
+                applyAccessibilitySettings();
+                updateAccessibilityModal();
+                localStorage.removeItem('cv-accessibility-settings');
+                showNotification('Paramètres d\'accessibilité réinitialisés.', 'success');
+            }
+
+            // Update modal UI to reflect current settings
+            function updateAccessibilityModal() {
+                accessibilityModal.contrastLevel.value = accessibilitySettings.contrastLevel;
+                accessibilityModal.highContrastMode.checked = accessibilitySettings.highContrastMode;
+                accessibilityModal.textSizeSlider.value = accessibilitySettings.textSize;
+                accessibilityModal.textSizeValue.textContent = accessibilitySettings.textSize;
+                accessibilityModal.keyboardNavigation.checked = accessibilitySettings.keyboardNavigation;
+                accessibilityModal.focusIndicators.checked = accessibilitySettings.focusIndicators;
+                accessibilityModal.skipLinks.checked = accessibilitySettings.skipLinks;
+                accessibilityModal.reduceAnimations.checked = accessibilitySettings.reduceAnimations;
+                accessibilityModal.disableAnimations.checked = accessibilitySettings.disableAnimations;
+                accessibilityModal.screenReader.checked = accessibilitySettings.screenReader;
+                accessibilityModal.largeClickTargets.checked = accessibilitySettings.largeClickTargets;
+
+                // Update text size buttons
+                accessibilityModal.textSizeSmall.classList.toggle('bg-purple-600', accessibilitySettings.textSize === 75);
+                accessibilityModal.textSizeSmall.classList.toggle('text-white', accessibilitySettings.textSize === 75);
+                accessibilityModal.textSizeSmall.classList.toggle('bg-gray-200', accessibilitySettings.textSize !== 75);
+
+                accessibilityModal.textSizeMedium.classList.toggle('bg-purple-600', accessibilitySettings.textSize === 100);
+                accessibilityModal.textSizeMedium.classList.toggle('text-white', accessibilitySettings.textSize === 100);
+                accessibilityModal.textSizeMedium.classList.toggle('bg-gray-200', accessibilitySettings.textSize !== 100);
+
+                accessibilityModal.textSizeLarge.classList.toggle('bg-purple-600', accessibilitySettings.textSize === 150);
+                accessibilityModal.textSizeLarge.classList.toggle('text-white', accessibilitySettings.textSize === 150);
+                accessibilityModal.textSizeLarge.classList.toggle('bg-gray-200', accessibilitySettings.textSize !== 150);
+            }
+
+            // Toolbar button event listeners
+            toolbarButtons.accessibilityBtn.addEventListener('click', () => {
+                accessibilityModal.overlay.classList.add('active');
+                updateAccessibilityModal();
+            });
+
+            toolbarButtons.shareBtn.addEventListener('click', () => {
+                controls.shareModal.classList.add('active');
+                generateShareLink();
+            });
+
+            toolbarButtons.downloadPdfBtn.addEventListener('click', async () => {
+                const filename = `CV_${controls.prenom.value}_${controls.nom.value}.pdf`.replace(/ /g, '_');
+                document.body.classList.add('presentation-mode');
+
+                const bannerImg = preview.bannerImg;
+                const bannerBg = preview.bannerBgImg;
+                const originalBannerImg = { src: bannerImg.src, style: bannerImg.style.cssText };
+                const originalBannerBg = { src: bannerBg.src, style: bannerBg.style.cssText };
+
+                const processImage = async (imgElement, isCircle = false) => {
+                    if (!imgElement.src || imgElement.src.startsWith('https://placehold.co')) return;
+
+                    const img = new Image();
+                    img.crossOrigin = "anonymous";
+
+                    const promise = new Promise((resolve) => {
+                        img.onload = () => {
+                            const canvas = document.createElement('canvas');
+                            const ctx = canvas.getContext('2d');
+                            const size = Math.min(img.naturalWidth, img.naturalHeight);
+                            canvas.width = isCircle ? size : img.naturalWidth;
+                            canvas.height = isCircle ? size : img.naturalHeight;
+
+                            if (isCircle) {
+                                ctx.beginPath();
+                                ctx.arc(size / 2, size / 2, size / 2, 0, Math.PI * 2);
+                                ctx.clip();
+                            }
+
+                            const hRatio = canvas.width / img.naturalWidth;
+                            const vRatio = canvas.height / img.naturalHeight;
+                            const ratio = Math.max(hRatio, vRatio);
+                            const centerShift_x = (canvas.width - img.naturalWidth * ratio) / 2;
+                            const centerShift_y = (canvas.height - img.naturalHeight * ratio) / 2;
+
+                            const opacity = imgElement.style.opacity || '1';
+                            const filter = imgElement.style.filter || 'none';
+                            ctx.globalAlpha = parseFloat(opacity);
+                            ctx.filter = filter;
+
+                            ctx.drawImage(img, 0, 0, img.naturalWidth, img.naturalHeight, centerShift_x, centerShift_y, img.naturalWidth * ratio, img.naturalHeight * ratio);
+
+                            imgElement.src = canvas.toDataURL('image/png');
+                            imgElement.style.borderRadius = '0';
+                            imgElement.style.objectFit = 'contain';
+                            imgElement.style.filter = 'none';
+                            imgElement.style.opacity = '1';
+                            resolve();
+                        };
+                        img.onerror = () => {
+                            console.error("Could not load image for PDF processing:", imgElement.src);
+                            resolve(); // Resolve anyway to not block PDF generation
+                        };
+                    });
+                    img.src = imgElement.src;
+                    return promise;
+                };
+
+                await processImage(bannerImg, true);
+                await processImage(bannerBg, false);
+
+                const opt = {
+                    margin: 0,
+                    filename: filename,
+                    image: { type: 'jpeg', quality: 0.98 },
+                    html2canvas: { scale: 2, useCORS: true, logging: false },
+                    jsPDF: { unit: 'cm', format: 'a4', orientation: 'portrait' }
+                };
+
+                html2pdf().from(preview.previewWrapper).set(opt).save().finally(() => {
+                    bannerImg.src = originalBannerImg.src;
+                    bannerImg.style.cssText = originalBannerImg.style;
+                    bannerBg.src = originalBannerBg.src;
+                    bannerBg.style.cssText = originalBannerBg.style;
+                    document.body.classList.remove('presentation-mode');
+                });
+            });
+
+            toolbarButtons.anonymizeBtn.addEventListener('click', anonymizeCV);
+
+            toolbarButtons.resetCvBtn.addEventListener('click', async () => {
+                const confirmed = await showConfirmModal("Nouveau CV", "Êtes-vous sûr de vouloir réinitialiser complètement le CV ?");
+                if (confirmed) resetCVToDefault();
+            });
+
+            toolbarButtons.toggleOverflowBtn.addEventListener('click', (e) => {
+                document.body.classList.toggle('overflow-check-active');
+                e.currentTarget.classList.toggle('active');
+                checkAllPagesOverflow();
+            });
+
+            toolbarButtons.togglePresentationModeBtn.addEventListener('click', () => {
+                document.body.classList.toggle('presentation-mode');
+                const isActive = document.body.classList.contains('presentation-mode');
+                toolbarButtons.togglePresentationModeBtn.innerHTML = `<i class="fa-solid ${isActive ? 'fa-eye-slash' : 'fa-eye'}"></i> ${isActive ? 'Quitter Présentation' : 'MODE PRÉSENTATION'}`;
+            });
+
+            // Accessibility modal event listeners
+            accessibilityModal.closeBtn.addEventListener('click', () => {
+                accessibilityModal.overlay.classList.remove('active');
+            });
+
+            accessibilityModal.closeBottomBtn.addEventListener('click', () => {
+                accessibilityModal.overlay.classList.remove('active');
+            });
+
+            accessibilityModal.saveBtn.addEventListener('click', () => {
+                saveAccessibilitySettings();
+                accessibilityModal.overlay.classList.remove('active');
+            });
+
+            accessibilityModal.resetBtn.addEventListener('click', () => {
+                resetAccessibilitySettings();
+            });
+
+            // Contrast settings
+            accessibilityModal.contrastLevel.addEventListener('change', (e) => {
+                accessibilitySettings.contrastLevel = e.target.value;
+                applyAccessibilitySettings();
+            });
+
+            accessibilityModal.highContrastMode.addEventListener('change', (e) => {
+                accessibilitySettings.highContrastMode = e.target.checked;
+                applyAccessibilitySettings();
+            });
+
+            // Text size settings
+            accessibilityModal.textSizeSlider.addEventListener('input', (e) => {
+                accessibilitySettings.textSize = parseInt(e.target.value);
+                accessibilityModal.textSizeValue.textContent = accessibilitySettings.textSize;
+                applyAccessibilitySettings();
+            });
+
+            accessibilityModal.textSizeSmall.addEventListener('click', () => {
+                accessibilitySettings.textSize = 75;
+                updateAccessibilityModal();
+                applyAccessibilitySettings();
+            });
+
+            accessibilityModal.textSizeMedium.addEventListener('click', () => {
+                accessibilitySettings.textSize = 100;
+                updateAccessibilityModal();
+                applyAccessibilitySettings();
+            });
+
+            accessibilityModal.textSizeLarge.addEventListener('click', () => {
+                accessibilitySettings.textSize = 150;
+                updateAccessibilityModal();
+                applyAccessibilitySettings();
+            });
+
+            // Navigation settings
+            accessibilityModal.keyboardNavigation.addEventListener('change', (e) => {
+                accessibilitySettings.keyboardNavigation = e.target.checked;
+                applyAccessibilitySettings();
+            });
+
+            accessibilityModal.focusIndicators.addEventListener('change', (e) => {
+                accessibilitySettings.focusIndicators = e.target.checked;
+                applyAccessibilitySettings();
+            });
+
+            accessibilityModal.skipLinks.addEventListener('change', (e) => {
+                accessibilitySettings.skipLinks = e.target.checked;
+                applyAccessibilitySettings();
+            });
+
+            // Animation settings
+            accessibilityModal.reduceAnimations.addEventListener('change', (e) => {
+                accessibilitySettings.reduceAnimations = e.target.checked;
+                if (e.target.checked) {
+                    accessibilitySettings.disableAnimations = false;
+                    accessibilityModal.disableAnimations.checked = false;
+                }
+                applyAccessibilitySettings();
+            });
+
+            accessibilityModal.disableAnimations.addEventListener('change', (e) => {
+                accessibilitySettings.disableAnimations = e.target.checked;
+                if (e.target.checked) {
+                    accessibilitySettings.reduceAnimations = false;
+                    accessibilityModal.reduceAnimations.checked = false;
+                }
+                applyAccessibilitySettings();
+            });
+
+            // Additional features
+            accessibilityModal.screenReader.addEventListener('change', (e) => {
+                accessibilitySettings.screenReader = e.target.checked;
+                applyAccessibilitySettings();
+            });
+
+            accessibilityModal.largeClickTargets.addEventListener('change', (e) => {
+                accessibilitySettings.largeClickTargets = e.target.checked;
+                applyAccessibilitySettings();
+            });
+
+            // Close modal when clicking outside
+            accessibilityModal.overlay.addEventListener('click', (e) => {
+                if (e.target === accessibilityModal.overlay) {
+                    accessibilityModal.overlay.classList.remove('active');
+                }
+            });
+
+            // Load accessibility settings on page load
+            loadAccessibilitySettings();
+
             // --- START THE APP ---
             initializeAll();
             resetCVToDefault(); // Start with a clean slate
