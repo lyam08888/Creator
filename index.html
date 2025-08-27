@@ -401,6 +401,363 @@
             opacity: 0.5;
         }
 
+        /* === NOUVEAUX STYLES POUR LA SECTION CONTENU ÉTENDUE === */
+
+        /* Styles pour la photo de profil */
+        #profile-photo-preview {
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #e5e7eb;
+            transition: border-color 0.2s;
+        }
+        #profile-photo-preview:hover {
+            border-color: var(--primary-color);
+        }
+
+        /* Styles pour les nouvelles sections */
+        .language-item, .project-item, .certification-item, .reference-item {
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+            position: relative;
+        }
+
+        .language-item:hover, .project-item:hover, .certification-item:hover, .reference-item:hover {
+            background: #f3f4f6;
+            border-color: #d1d5db;
+        }
+
+        /* Styles pour les niveaux de langue */
+        .language-level {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            padding: 0.25rem 0.5rem;
+            background: #e0e7ff;
+            color: #4338ca;
+            border-radius: 0.25rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .language-level.expert { background: #10b981; color: white; }
+        .language-level.advanced { background: #3b82f6; color: white; }
+        .language-level.intermediate { background: #f59e0b; color: white; }
+        .language-level.beginner { background: #ef4444; color: white; }
+
+        /* Styles pour les tags de centres d'intérêt */
+        .interest-tag {
+            display: inline-block;
+            background: #f3f4f6;
+            color: #374151;
+            padding: 0.25rem 0.75rem;
+            border-radius: 1rem;
+            margin: 0.25rem;
+            font-size: 0.875rem;
+            border: 1px solid #e5e7eb;
+        }
+
+        .interest-tag:hover {
+            background: #e5e7eb;
+        }
+
+        /* Styles pour les boutons d'action étendus */
+        .action-btn-extended {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: all 0.2s;
+            border: none;
+            cursor: pointer;
+        }
+
+        .action-btn-extended:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .action-btn-extended.primary {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .action-btn-extended.primary:hover {
+            background: #2563eb;
+        }
+
+        .action-btn-extended.secondary {
+            background: #f3f4f6;
+            color: #374151;
+        }
+
+        .action-btn-extended.secondary:hover {
+            background: #e5e7eb;
+        }
+
+        /* Styles pour les compteurs */
+        .counter-display {
+            font-size: 0.75rem;
+            color: #6b7280;
+            font-weight: 500;
+        }
+
+        /* Styles pour les options d'affichage */
+        .display-options {
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .display-options h5 {
+            margin-bottom: 0.75rem;
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .display-options .option-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+        }
+
+        .display-options label {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+            color: #374151;
+            cursor: pointer;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            transition: background-color 0.2s;
+        }
+
+        .display-options label:hover {
+            background: #f3f4f6;
+        }
+
+        /* Styles pour les sections sociales */
+        .social-link-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem;
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .social-link-item .platform-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 0.375rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            color: white;
+        }
+
+        .social-link-item .platform-info {
+            flex-grow: 1;
+        }
+
+        .social-link-item .platform-name {
+            font-weight: 500;
+            color: #374151;
+        }
+
+        .social-link-item .platform-url {
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+
+        /* Styles pour les certifications */
+        .certification-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin: 0.25rem;
+        }
+
+        .certification-badge .cert-icon {
+            font-size: 1rem;
+        }
+
+        /* Styles pour les projets */
+        .project-tech-stack {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .project-tech-tag {
+            background: #e0e7ff;
+            color: #4338ca;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        /* Styles pour les références */
+        .reference-card {
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .reference-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 0.75rem;
+        }
+
+        .reference-info h4 {
+            margin: 0;
+            color: #374151;
+            font-weight: 600;
+        }
+
+        .reference-company {
+            color: #6b7280;
+            font-size: 0.875rem;
+        }
+
+        /* Styles pour les sections personnalisées étendues */
+        .custom-section-extended {
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .custom-section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .custom-section-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: #374151;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .custom-section-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        /* Styles pour les suggestions de sections */
+        .section-suggestion-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem;
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .section-suggestion-item:hover {
+            background: #f3f4f6;
+            border-color: #d1d5db;
+            transform: translateY(-1px);
+        }
+
+        .section-suggestion-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--primary-color);
+            color: white;
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+        }
+
+        .section-suggestion-info h4 {
+            margin: 0;
+            color: #374151;
+            font-weight: 600;
+        }
+
+        .section-suggestion-info p {
+            margin: 0;
+            color: #6b7280;
+            font-size: 0.875rem;
+        }
+
+        /* Styles responsive */
+        @media (max-width: 768px) {
+            .display-options .option-group {
+                flex-direction: column;
+            }
+
+            .social-link-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.5rem;
+            }
+
+            .reference-header {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            .custom-section-header {
+                flex-direction: column;
+                gap: 0.75rem;
+                align-items: flex-start;
+            }
+        }
+
+        /* Animation pour les nouveaux éléments */
+        .new-item-animation {
+            animation: fadeInUp 0.3s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
         /* For column resizing */
         .column-resizer {
             position: absolute;
@@ -647,45 +1004,244 @@
 
                 <!-- TAB: Contenu -->
                 <div id="panel-content" class="tab-panel hidden space-y-4">
+                    <!-- INFORMATIONS PERSONNELLES ÉTENDUES -->
                     <details class="control-group" open>
-                        <summary><span>Informations Principales</span><label class="completion-label"><input type="checkbox" id="completion-content-infos" class="completion-checkbox"><span>Fait ✅</span></label></summary>
-                        <div class="control-group-content space-y-3">
-                            <input type="text" id="nom" placeholder="Nom" class="cv-input w-full p-2 border rounded-md">
-                            <input type="text" id="prenom" placeholder="Prénom" class="cv-input w-full p-2 border rounded-md">
-                            <input type="text" id="poste" placeholder="Poste recherché" class="cv-input w-full p-2 border rounded-md">
-                            <textarea id="description" placeholder="Description du profil" rows="4" class="cv-input w-full p-2 border rounded-md"></textarea>
-                        </div>
-                    </details>
-                     <details class="control-group" open>
-                        <summary><span>Expériences</span><label class="completion-label"><input type="checkbox" id="completion-content-exp" class="completion-checkbox"><span>Fait ✅</span></label></summary>
-                        <div class="control-group-content space-y-2">
-                            <div class="flex justify-end mb-2"><button id="add-experience" class="text-sm text-blue-600 hover:text-blue-800 font-medium"><i class="fas fa-circle-plus"></i> Ajouter un bloc</button></div>
-                            <div id="experience-list" class="space-y-2"></div>
-                        </div>
-                    </details>
-                     <details class="control-group" open>
-                        <summary><span>Formations</span><label class="completion-label"><input type="checkbox" id="completion-content-form" class="completion-checkbox"><span>Fait ✅</span></label></summary>
-                        <div class="control-group-content space-y-2">
-                            <div class="flex justify-end mb-2"><button id="add-formation" class="text-sm text-blue-600 hover:text-blue-800 font-medium"><i class="fas fa-circle-plus"></i> Ajouter un bloc</button></div>
-                            <div id="formation-list" class="space-y-2"></div>
-                        </div>
-                    </details>
-                     <details class="control-group" open>
-                        <summary><span>Compétences</span><label class="completion-label"><input type="checkbox" id="completion-skills" class="completion-checkbox"><span>Fait ✅</span></label></summary>
-                        <div class="control-group-content space-y-3">
-                            <p class="text-sm font-medium">Style de Présentation</p>
-                            <div class="flex gap-2">
-                                <button data-skill-style="tags" class="skill-style-btn flex-1 bg-gray-200 p-2 rounded-md text-sm active" title="Afficher les compétences sous forme de tags">Tags</button>
-                                <button data-skill-style="levels" class="skill-style-btn flex-1 bg-gray-200 p-2 rounded-md text-sm" title="Afficher les compétences avec niveaux">Niveaux</button>
-                                <button data-skill-style="simple" class="skill-style-btn flex-1 bg-gray-200 p-2 rounded-md text-sm" title="Afficher les compétences sous forme simple">Simple</button>
-                            </div>
-                            
-                            <div id="skills-text-controls">
-                                <div class="flex justify-between items-center"><label for="competences" class="font-medium">Liste des compétences</label><div class="flex gap-2"><button id="ai-limit-skills-btn" class="text-blue-600 hover:text-blue-800" title="Limiter à 10 compétences par l'IA"><i class="fas fa-filter"></i> 10</button><button id="ai-synthesize-skills-btn" class="text-blue-600 hover:text-blue-800" title="Synthétiser et ranger les compétences par l'IA"><i class="fas fa-brain"></i></button></div></div>
-                                <textarea id="competences" placeholder="Compétences (séparées par des virgules)..." rows="4" class="cv-input w-full p-2 border rounded-md"></textarea>
+                        <summary><span>Informations Personnelles</span><label class="completion-label"><input type="checkbox" id="completion-content-personal" class="completion-checkbox"><span>Fait ✅</span></label></summary>
+                        <div class="control-group-content space-y-4">
+                            <!-- Coordonnées de base -->
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <input type="text" id="nom" placeholder="Nom" class="cv-input w-full p-2 border rounded-md">
+                                <input type="text" id="prenom" placeholder="Prénom" class="cv-input w-full p-2 border rounded-md">
                             </div>
 
-                            <div id="skills-level-controls" class="hidden space-y-3">
+                            <!-- Photo de profil -->
+                            <div class="border-t pt-4">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Photo de profil</label>
+                                <div class="flex items-center gap-4">
+                                    <input type="file" id="profile-photo" accept="image/*" class="cv-input flex-grow text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+                                    <button id="remove-profile-photo" class="text-red-500 hover:text-red-700" title="Supprimer la photo"><i class="fas fa-trash"></i></button>
+                                </div>
+                                <div class="mt-2 flex gap-2">
+                                    <label class="flex items-center gap-2 text-sm">
+                                        <input type="checkbox" id="photo-circular" class="cv-input" checked>
+                                        Photo circulaire
+                                    </label>
+                                    <label class="flex items-center gap-2 text-sm">
+                                        <input type="checkbox" id="photo-border" class="cv-input">
+                                        Bordure
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Informations de contact étendues -->
+                            <div class="border-t pt-4">
+                                <h4 class="font-medium text-gray-700 mb-3">Coordonnées</h4>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <input type="email" id="email" placeholder="Email" class="cv-input w-full p-2 border rounded-md">
+                                    <input type="tel" id="telephone" placeholder="Téléphone" class="cv-input w-full p-2 border rounded-md">
+                                    <input type="url" id="site-web" placeholder="Site web" class="cv-input w-full p-2 border rounded-md">
+                                    <input type="url" id="linkedin" placeholder="LinkedIn" class="cv-input w-full p-2 border rounded-md">
+                                    <input type="text" id="adresse" placeholder="Adresse" class="cv-input w-full p-2 border rounded-md">
+                                    <input type="text" id="ville" placeholder="Ville, Pays" class="cv-input w-full p-2 border rounded-md">
+                                </div>
+                            </div>
+
+                            <!-- Informations professionnelles -->
+                            <div class="border-t pt-4">
+                                <h4 class="font-medium text-gray-700 mb-3">Situation Professionnelle</h4>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <input type="text" id="poste" placeholder="Poste recherché" class="cv-input w-full p-2 border rounded-md">
+                                    <select id="situation-actuelle" class="cv-input w-full p-2 border rounded-md">
+                                        <option value="">Situation actuelle</option>
+                                        <option value="En poste">En poste</option>
+                                        <option value="En recherche active">En recherche active</option>
+                                        <option value="Disponible">Disponible</option>
+                                        <option value="Étudiant">Étudiant</option>
+                                        <option value="Freelance">Freelance</option>
+                                    </select>
+                                    <input type="text" id="secteur-recherche" placeholder="Secteur souhaité" class="cv-input w-full p-2 border rounded-md">
+                                    <input type="text" id="mobilite" placeholder="Mobilité géographique" class="cv-input w-full p-2 border rounded-md">
+                                    <input type="text" id="pretentions" placeholder="Prétentions salariales" class="cv-input w-full p-2 border rounded-md">
+                                    <select id="disponibilite" class="cv-input w-full p-2 border rounded-md">
+                                        <option value="">Disponibilité</option>
+                                        <option value="Immédiate">Immédiate</option>
+                                        <option value="1 mois">1 mois</option>
+                                        <option value="2 mois">2 mois</option>
+                                        <option value="3 mois">3 mois</option>
+                                        <option value="À discuter">À discuter</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- Profil détaillé -->
+                            <div class="border-t pt-4">
+                                <div class="flex justify-between items-center mb-2">
+                                    <label class="font-medium text-gray-700">Profil / Description</label>
+                                    <div class="flex gap-2">
+                                        <button id="ai-rewrite-profile" class="text-blue-600 hover:text-blue-800" title="Réécrire avec l'IA"><i class="fas fa-magic-wand-sparkles"></i></button>
+                                        <button id="ai-optimize-profile" class="text-blue-600 hover:text-blue-800" title="Optimiser pour le poste"><i class="fas fa-bullseye"></i></button>
+                                    </div>
+                                </div>
+                                <textarea id="description" placeholder="Décrivez votre profil professionnel, vos objectifs, vos points forts..." rows="6" class="cv-input w-full p-2 border rounded-md"></textarea>
+                                <div class="mt-2 text-sm text-gray-500">
+                                    <span id="profile-char-count">0</span> caractères
+                                </div>
+                            </div>
+                        </div>
+                    </details>
+
+                    <!-- EXPÉRIENCES PROFESSIONNELLES ÉTENDUES -->
+                    <details class="control-group" open>
+                        <summary><span>Expériences Professionnelles</span><label class="completion-label"><input type="checkbox" id="completion-content-exp" class="completion-checkbox"><span>Fait ✅</span></label></summary>
+                        <div class="control-group-content space-y-3">
+                            <div class="flex justify-between items-center mb-2">
+                                <h4 class="font-medium text-gray-700">Liste des expériences</h4>
+                                <div class="flex gap-2">
+                                    <button id="add-experience" class="text-sm text-blue-600 hover:text-blue-800 font-medium"><i class="fas fa-circle-plus"></i> Ajouter</button>
+                                    <button id="ai-summarize-all-exp" class="text-sm text-blue-600 hover:text-blue-800" title="Synthétiser toutes les expériences"><i class="fas fa-compress"></i></button>
+                                </div>
+                            </div>
+
+                            <!-- Options d'affichage des expériences -->
+                            <div class="bg-gray-50 p-3 rounded-md">
+                                <h5 class="font-medium text-sm mb-2">Options d'affichage</h5>
+                                <div class="flex flex-wrap gap-2">
+                                    <label class="flex items-center gap-2 text-sm">
+                                        <input type="checkbox" id="exp-show-dates" class="cv-input" checked>
+                                        Afficher les dates
+                                    </label>
+                                    <label class="flex items-center gap-2 text-sm">
+                                        <input type="checkbox" id="exp-show-location" class="cv-input" checked>
+                                        Afficher le lieu
+                                    </label>
+                                    <label class="flex items-center gap-2 text-sm">
+                                        <input type="checkbox" id="exp-show-company-size" class="cv-input">
+                                        Taille entreprise
+                                    </label>
+                                    <label class="flex items-center gap-2 text-sm">
+                                        <input type="checkbox" id="exp-show-sector" class="cv-input">
+                                        Secteur
+                                    </label>
+                                    <label class="flex items-center gap-2 text-sm">
+                                        <input type="checkbox" id="exp-show-contract" class="cv-input">
+                                        Type de contrat
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div id="experience-list" class="space-y-3"></div>
+                        </div>
+                    </details>
+
+                    <!-- FORMATIONS ÉTENDUES -->
+                    <details class="control-group" open>
+                        <summary><span>Formations & Éducation</span><label class="completion-label"><input type="checkbox" id="completion-content-form" class="completion-checkbox"><span>Fait ✅</span></label></summary>
+                        <div class="control-group-content space-y-3">
+                            <div class="flex justify-between items-center mb-2">
+                                <h4 class="font-medium text-gray-700">Parcours éducatif</h4>
+                                <div class="flex gap-2">
+                                    <button id="add-formation" class="text-sm text-blue-600 hover:text-blue-800 font-medium"><i class="fas fa-circle-plus"></i> Ajouter</button>
+                                    <button id="ai-improve-formations" class="text-sm text-blue-600 hover:text-blue-800" title="Améliorer la formulation"><i class="fas fa-magic-wand-sparkles"></i></button>
+                                </div>
+                            </div>
+
+                            <!-- Options d'affichage des formations -->
+                            <div class="bg-gray-50 p-3 rounded-md">
+                                <h5 class="font-medium text-sm mb-2">Options d'affichage</h5>
+                                <div class="flex flex-wrap gap-2">
+                                    <label class="flex items-center gap-2 text-sm">
+                                        <input type="checkbox" id="form-show-establishment" class="cv-input" checked>
+                                        Établissement
+                                    </label>
+                                    <label class="flex items-center gap-2 text-sm">
+                                        <input type="checkbox" id="form-show-level" class="cv-input" checked>
+                                        Niveau d'études
+                                    </label>
+                                    <label class="flex items-center gap-2 text-sm">
+                                        <input type="checkbox" id="form-show-specialization" class="cv-input">
+                                        Spécialisation
+                                    </label>
+                                    <label class="flex items-center gap-2 text-sm">
+                                        <input type="checkbox" id="form-show-mention" class="cv-input">
+                                        Mention obtenue
+                                    </label>
+                                    <label class="flex items-center gap-2 text-sm">
+                                        <input type="checkbox" id="form-show-duration" class="cv-input">
+                                        Durée
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div id="formation-list" class="space-y-3"></div>
+                        </div>
+                    </details>
+
+                    <!-- COMPÉTENCES ÉTENDUES -->
+                    <details class="control-group" open>
+                        <summary><span>Compétences & Technologies</span><label class="completion-label"><input type="checkbox" id="completion-skills" class="completion-checkbox"><span>Fait ✅</span></label></summary>
+                        <div class="control-group-content space-y-4">
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <!-- Style de présentation -->
+                                <div>
+                                    <p class="text-sm font-medium mb-2">Style de Présentation</p>
+                                    <div class="flex flex-col gap-2">
+                                        <button data-skill-style="tags" class="skill-style-btn flex-1 bg-gray-200 p-2 rounded-md text-sm active" title="Afficher les compétences sous forme de tags">Tags</button>
+                                        <button data-skill-style="levels" class="skill-style-btn flex-1 bg-gray-200 p-2 rounded-md text-sm" title="Afficher les compétences avec niveaux">Niveaux</button>
+                                        <button data-skill-style="simple" class="skill-style-btn flex-1 bg-gray-200 p-2 rounded-md text-sm" title="Afficher les compétences sous forme simple">Simple</button>
+                                    </div>
+                                </div>
+
+                                <!-- Catégorisation -->
+                                <div>
+                                    <p class="text-sm font-medium mb-2">Catégorisation</p>
+                                    <div class="flex flex-col gap-2">
+                                        <button id="ai-categorize-skills" class="bg-blue-100 text-blue-800 py-2 px-3 rounded-md hover:bg-blue-200 text-sm" title="Organiser automatiquement par catégories">
+                                            <i class="fas fa-tags"></i> Auto-catégoriser
+                                        </button>
+                                        <button id="add-skill-category" class="bg-gray-100 text-gray-800 py-2 px-3 rounded-md hover:bg-gray-200 text-sm" title="Ajouter une catégorie personnalisée">
+                                            <i class="fas fa-plus"></i> Nouvelle catégorie
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Actions IA -->
+                                <div>
+                                    <p class="text-sm font-medium mb-2">Actions IA</p>
+                                    <div class="flex flex-col gap-2">
+                                        <button id="ai-limit-skills-btn" class="bg-green-100 text-green-800 py-2 px-3 rounded-md hover:bg-green-200 text-sm" title="Limiter à 10 compétences par l'IA">
+                                            <i class="fas fa-filter"></i> Top 10
+                                        </button>
+                                        <button id="ai-synthesize-skills-btn" class="bg-purple-100 text-purple-800 py-2 px-3 rounded-md hover:bg-purple-200 text-sm" title="Synthétiser et ranger les compétences par l'IA">
+                                            <i class="fas fa-brain"></i> Synthétiser
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Liste des compétences textuelles -->
+                            <div id="skills-text-controls">
+                                <div class="flex justify-between items-center">
+                                    <label for="competences" class="font-medium">Liste des compétences</label>
+                                    <div class="flex gap-2">
+                                        <button id="import-skills-from-exp" class="text-sm text-orange-600 hover:text-orange-800" title="Extraire des expériences"><i class="fas fa-upload"></i></button>
+                                        <button id="export-skills" class="text-sm text-green-600 hover:text-green-800" title="Exporter"><i class="fas fa-download"></i></button>
+                                    </div>
+                                </div>
+                                <textarea id="competences" placeholder="Compétences (séparées par des virgules)..." rows="4" class="cv-input w-full p-2 border rounded-md"></textarea>
+                                <div class="mt-2 text-sm text-gray-500">
+                                    <span id="skills-count">0</span> compétences listées
+                                </div>
+                            </div>
+
+                            <!-- Compétences avec niveaux -->
+                            <div id="skills-level-controls" class="hidden space-y-3 border-t pt-3">
+                                <div class="flex justify-between items-center">
+                                    <h5 class="font-medium">Compétences avec niveaux</h5>
+                                    <button id="add-skill-level-btn" class="text-sm text-blue-600 hover:text-blue-800">
+                                        <i class="fas fa-plus"></i> Ajouter
+                                    </button>
+                                </div>
+
                                 <p class="text-sm font-medium">Style de Jauge</p>
                                 <div class="grid grid-cols-5 gap-2 text-center">
                                     <button data-gauge-style="bar" class="gauge-style-btn bg-gray-200 p-2 rounded-md text-sm active" title="Barre"><i class="fas fa-bars"></i></button>
@@ -694,12 +1250,227 @@
                                     <button data-gauge-style="squares" class="gauge-style-btn bg-gray-200 p-2 rounded-md text-sm" title="Carrés"><i class="fas fa-square"></i></button>
                                     <button data-gauge-style="number" class="gauge-style-btn bg-gray-200 p-2 rounded-md text-sm font-bold" title="Chiffres">⅗</button>
                                 </div>
+
                                 <div id="skills-level-list" class="space-y-2 border-t pt-3"></div>
-                                <button id="add-skill-level-btn" class="w-full bg-blue-100 text-blue-800 py-2 px-4 rounded-md hover:bg-blue-200 flex items-center justify-center gap-2 text-sm" title="Ajouter une nouvelle compétence avec niveau"><i class="fas fa-plus-circle"></i> Ajouter une compétence</button>
                             </div>
                         </div>
                     </details>
-                     <details class="control-group" open>
+
+                    <!-- LANGUES -->
+                    <details class="control-group" open>
+                        <summary><span>Langues</span><label class="completion-label"><input type="checkbox" id="completion-languages" class="completion-checkbox"><span>Fait ✅</span></label></summary>
+                        <div class="control-group-content space-y-3">
+                            <div class="flex justify-between items-center mb-2">
+                                <h4 class="font-medium text-gray-700">Langues maîtrisées</h4>
+                                <button id="add-language" class="text-sm text-blue-600 hover:text-blue-800 font-medium">
+                                    <i class="fas fa-circle-plus"></i> Ajouter une langue
+                                </button>
+                            </div>
+
+                            <div class="bg-gray-50 p-3 rounded-md mb-4">
+                                <h5 class="font-medium text-sm mb-2">Options d'affichage</h5>
+                                <div class="flex flex-wrap gap-2">
+                                    <label class="flex items-center gap-2 text-sm">
+                                        <input type="checkbox" id="lang-show-level" class="cv-input" checked>
+                                        Niveau de maîtrise
+                                    </label>
+                                    <label class="flex items-center gap-2 text-sm">
+                                        <input type="checkbox" id="lang-show-certification" class="cv-input">
+                                        Certifications
+                                    </label>
+                                    <label class="flex items-center gap-2 text-sm">
+                                        <input type="checkbox" id="lang-show-flag" class="cv-input">
+                                        Drapeaux
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div id="languages-list" class="space-y-3"></div>
+                        </div>
+                    </details>
+
+                    <!-- PROJETS PERSONNELS -->
+                    <details class="control-group">
+                        <summary><span>Projets Personnels</span><label class="completion-label"><input type="checkbox" id="completion-projects" class="completion-checkbox"><span>Fait ✅</span></label></summary>
+                        <div class="control-group-content space-y-3">
+                            <div class="flex justify-between items-center mb-2">
+                                <h4 class="font-medium text-gray-700">Projets personnels & open source</h4>
+                                <button id="add-project" class="text-sm text-blue-600 hover:text-blue-800 font-medium">
+                                    <i class="fas fa-circle-plus"></i> Ajouter un projet
+                                </button>
+                            </div>
+
+                            <div class="bg-gray-50 p-3 rounded-md mb-4">
+                                <h5 class="font-medium text-sm mb-2">Options d'affichage</h5>
+                                <div class="flex flex-wrap gap-2">
+                                    <label class="flex items-center gap-2 text-sm">
+                                        <input type="checkbox" id="project-show-tech" class="cv-input" checked>
+                                        Technologies utilisées
+                                    </label>
+                                    <label class="flex items-center gap-2 text-sm">
+                                        <input type="checkbox" id="project-show-links" class="cv-input" checked>
+                                        Liens (GitHub, démo)
+                                    </label>
+                                    <label class="flex items-center gap-2 text-sm">
+                                        <input type="checkbox" id="project-show-description" class="cv-input" checked>
+                                        Description
+                                    </label>
+                                    <label class="flex items-center gap-2 text-sm">
+                                        <input type="checkbox" id="project-show-screenshots" class="cv-input">
+                                        Captures d'écran
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div id="projects-list" class="space-y-3"></div>
+                        </div>
+                    </details>
+
+                    <!-- CERTIFICATIONS -->
+                    <details class="control-group">
+                        <summary><span>Certifications & Diplômes</span><label class="completion-label"><input type="checkbox" id="completion-certifications" class="completion-checkbox"><span>Fait ✅</span></label></summary>
+                        <div class="control-group-content space-y-3">
+                            <div class="flex justify-between items-center mb-2">
+                                <h4 class="font-medium text-gray-700">Certifications obtenues</h4>
+                                <button id="add-certification" class="text-sm text-blue-600 hover:text-blue-800 font-medium">
+                                    <i class="fas fa-circle-plus"></i> Ajouter une certification
+                                </button>
+                            </div>
+
+                            <div class="bg-gray-50 p-3 rounded-md mb-4">
+                                <h5 class="font-medium text-sm mb-2">Options d'affichage</h5>
+                                <div class="flex flex-wrap gap-2">
+                                    <label class="flex items-center gap-2 text-sm">
+                                        <input type="checkbox" id="cert-show-organism" class="cv-input" checked>
+                                        Organisme certificateur
+                                    </label>
+                                    <label class="flex items-center gap-2 text-sm">
+                                        <input type="checkbox" id="cert-show-date" class="cv-input" checked>
+                                        Date d'obtention
+                                    </label>
+                                    <label class="flex items-center gap-2 text-sm">
+                                        <input type="checkbox" id="cert-show-expiry" class="cv-input">
+                                        Date d'expiration
+                                    </label>
+                                    <label class="flex items-center gap-2 text-sm">
+                                        <input type="checkbox" id="cert-show-score" class="cv-input">
+                                        Score obtenu
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div id="certifications-list" class="space-y-3"></div>
+                        </div>
+                    </details>
+
+                    <!-- CENTRES D'INTÉRÊT -->
+                    <details class="control-group">
+                        <summary><span>Centres d'Intérêt</span><label class="completion-label"><input type="checkbox" id="completion-interests" class="completion-checkbox"><span>Fait ✅</span></label></summary>
+                        <div class="control-group-content space-y-3">
+                            <div class="flex justify-between items-center mb-2">
+                                <h4 class="font-medium text-gray-700">Activités et centres d'intérêt</h4>
+                                <div class="flex gap-2">
+                                    <button id="add-interest" class="text-sm text-blue-600 hover:text-blue-800 font-medium">
+                                        <i class="fas fa-circle-plus"></i> Ajouter
+                                    </button>
+                                    <button id="ai-suggest-interests" class="text-sm text-purple-600 hover:text-purple-800" title="Suggestions IA">
+                                        <i class="fas fa-lightbulb"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="bg-gray-50 p-3 rounded-md mb-4">
+                                <h5 class="font-medium text-sm mb-2">Style d'affichage</h5>
+                                <div class="flex flex-wrap gap-2">
+                                    <button id="interests-style-list" class="bg-blue-100 text-blue-800 py-1 px-3 rounded-md text-sm active">Liste</button>
+                                    <button id="interests-style-icons" class="bg-gray-100 text-gray-800 py-1 px-3 rounded-md text-sm">Icônes</button>
+                                    <button id="interests-style-tags" class="bg-gray-100 text-gray-800 py-1 px-3 rounded-md text-sm">Tags</button>
+                                </div>
+                            </div>
+
+                            <textarea id="interests" placeholder="Sports, voyages, lecture, musique, cinéma, etc." rows="4" class="cv-input w-full p-2 border rounded-md"></textarea>
+                            <div class="mt-2 text-sm text-gray-500">
+                                <span id="interests-count">0</span> centres d'intérêt listés
+                            </div>
+                        </div>
+                    </details>
+
+                    <!-- RÉFÉRENCES PROFESSIONNELLES -->
+                    <details class="control-group">
+                        <summary><span>Références Professionnelles</span><label class="completion-label"><input type="checkbox" id="completion-references" class="completion-checkbox"><span>Fait ✅</span></label></summary>
+                        <div class="control-group-content space-y-3">
+                            <div class="flex justify-between items-center mb-2">
+                                <h4 class="font-medium text-gray-700">Références professionnelles</h4>
+                                <button id="add-reference" class="text-sm text-blue-600 hover:text-blue-800 font-medium">
+                                    <i class="fas fa-circle-plus"></i> Ajouter une référence
+                                </button>
+                            </div>
+
+                            <div class="bg-gray-50 p-3 rounded-md mb-4">
+                                <h5 class="font-medium text-sm mb-2">Options d'affichage</h5>
+                                <div class="flex flex-wrap gap-2">
+                                    <label class="flex items-center gap-2 text-sm">
+                                        <input type="checkbox" id="ref-show-company" class="cv-input" checked>
+                                        Entreprise
+                                    </label>
+                                    <label class="flex items-center gap-2 text-sm">
+                                        <input type="checkbox" id="ref-show-position" class="cv-input" checked>
+                                        Poste occupé
+                                    </label>
+                                    <label class="flex items-center gap-2 text-sm">
+                                        <input type="checkbox" id="ref-show-contact" class="cv-input">
+                                        Coordonnées
+                                    </label>
+                                    <label class="flex items-center gap-2 text-sm">
+                                        <input type="checkbox" id="ref-show-relationship" class="cv-input">
+                                        Relation professionnelle
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div id="references-list" class="space-y-3"></div>
+                        </div>
+                    </details>
+
+                    <!-- PORTFOLIO & LIENS -->
+                    <details class="control-group">
+                        <summary><span>Portfolio & Liens</span><label class="completion-label"><input type="checkbox" id="completion-portfolio" class="completion-checkbox"><span>Fait ✅</span></label></summary>
+                        <div class="control-group-content space-y-3">
+                            <h4 class="font-medium text-gray-700 mb-3">Liens professionnels</h4>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Portfolio personnel</label>
+                                    <input type="url" id="portfolio-url" placeholder="https://monportfolio.com" class="cv-input w-full p-2 border rounded-md">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">GitHub</label>
+                                    <input type="url" id="github-url" placeholder="https://github.com/username" class="cv-input w-full p-2 border rounded-md">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">LinkedIn</label>
+                                    <input type="url" id="linkedin-url" placeholder="https://linkedin.com/in/username" class="cv-input w-full p-2 border rounded-md">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Site web professionnel</label>
+                                    <input type="url" id="website-url" placeholder="https://monsite.com" class="cv-input w-full p-2 border rounded-md">
+                                </div>
+                            </div>
+
+                            <div class="border-t pt-4">
+                                <div class="flex justify-between items-center mb-2">
+                                    <h5 class="font-medium text-gray-700">Réseaux sociaux professionnels</h5>
+                                    <button id="add-social-link" class="text-sm text-blue-600 hover:text-blue-800">
+                                        <i class="fas fa-plus"></i> Ajouter
+                                    </button>
+                                </div>
+                                <div id="social-links-list" class="space-y-2"></div>
+                            </div>
+                        </div>
+                    </details>
+
+                    <!-- SECTIONS PERSONNALISÉES -->
+                    <details class="control-group" open>
                         <summary><span>Sections Personnalisées</span><label class="completion-label"><input type="checkbox" id="completion-custom" class="completion-checkbox"><span>Fait ✅</span></label></summary>
                         <div class="control-group-content space-y-3">
                             <div class="space-y-2">
@@ -711,10 +1482,17 @@
                                     <option value="Certifications 📜">Certifications 📜</option>
                                     <option value="Projets Personnels 💡">Projets Personnels 💡</option>
                                     <option value="Bénévolat ❤️">Bénévolat ❤️</option>
+                                    <option value="Publications 📚">Publications 📚</option>
+                                    <option value="Conférences 🎤">Conférences 🎤</option>
+                                    <option value="Récompenses 🏆">Récompenses 🏆</option>
+                                    <option value="Logiciels maîtrisés 💻">Logiciels maîtrisés 💻</option>
+                                    <option value="Outils & Méthodologies 🛠️">Outils & Méthodologies 🛠️</option>
                                 </select>
                                 <div class="flex gap-2">
                                     <input type="text" id="new-section-title-input" class="flex-grow p-2 border rounded-md text-sm" placeholder="Ou tapez un titre personnalisé...">
-                                    <button id="add-section-btn" class="bg-indigo-500 text-white py-2 px-4 rounded-md hover:bg-indigo-600" title="Ajouter une nouvelle section personnalisée"><i class="fas fa-plus"></i></button>
+                                    <button id="add-section-btn" class="bg-indigo-500 text-white py-2 px-4 rounded-md hover:bg-indigo-600" title="Ajouter une nouvelle section personnalisée">
+                                        <i class="fas fa-plus"></i>
+                                    </button>
                                 </div>
                             </div>
                             <div id="custom-sections-list" class="space-y-2 mt-2 border-t pt-2"></div>
@@ -3814,6 +4592,513 @@
         templatesModal.overlay.addEventListener('click', (e) => {
             if (e.target === templatesModal.overlay) {
                 templatesModal.overlay.classList.remove('active');
+            }
+        });
+
+        // === NOUVELLES FONCTIONNALITÉS POUR LA SECTION CONTENU ÉTENDUE ===
+
+        // Gestion de la photo de profil
+        const profilePhotoInput = document.getElementById('profile-photo');
+        const removeProfilePhotoBtn = document.getElementById('remove-profile-photo');
+        const photoCircularCheckbox = document.getElementById('photo-circular');
+        const photoBorderCheckbox = document.getElementById('photo-border');
+
+        if (profilePhotoInput) {
+            profilePhotoInput.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        // Ici nous pourrions afficher un aperçu, mais pour l'instant on sauvegarde juste
+                        showNotification('Photo de profil sélectionnée.', 'success');
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+        }
+
+        if (removeProfilePhotoBtn) {
+            removeProfilePhotoBtn.addEventListener('click', () => {
+                profilePhotoInput.value = '';
+                showNotification('Photo de profil supprimée.', 'success');
+            });
+        }
+
+        // Compteur de caractères pour le profil
+        const descriptionTextarea = document.getElementById('description');
+        const profileCharCount = document.getElementById('profile-char-count');
+
+        if (descriptionTextarea && profileCharCount) {
+            descriptionTextarea.addEventListener('input', () => {
+                const count = descriptionTextarea.value.length;
+                profileCharCount.textContent = count;
+                if (count > 500) {
+                    profileCharCount.style.color = '#ef4444';
+                } else if (count > 300) {
+                    profileCharCount.style.color = '#f59e0b';
+                } else {
+                    profileCharCount.style.color = '#6b7280';
+                }
+            });
+        }
+
+        // Gestion des langues
+        const addLanguageBtn = document.getElementById('add-language');
+        const languagesList = document.getElementById('languages-list');
+
+        if (addLanguageBtn && languagesList) {
+            addLanguageBtn.addEventListener('click', () => {
+                const languageItem = document.createElement('div');
+                languageItem.className = 'language-item new-item-animation';
+                languageItem.innerHTML = `
+                    <div class="flex justify-between items-start mb-3">
+                        <div class="flex-1 grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <input type="text" placeholder="Langue" class="cv-input w-full p-2 border rounded-md">
+                            <select class="cv-input w-full p-2 border rounded-md">
+                                <option value="beginner">Débutant</option>
+                                <option value="intermediate">Intermédiaire</option>
+                                <option value="advanced">Avancé</option>
+                                <option value="expert">Expert</option>
+                            </select>
+                        </div>
+                        <button class="delete-language-btn ml-3 text-red-500 hover:text-red-700" title="Supprimer">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                    <div class="flex flex-wrap gap-2">
+                        <label class="flex items-center gap-2 text-sm">
+                            <input type="checkbox" class="cv-input"> Certification
+                        </label>
+                        <label class="flex items-center gap-2 text-sm">
+                            <input type="checkbox" class="cv-input"> Drapeau
+                        </label>
+                    </div>
+                `;
+                languagesList.appendChild(languageItem);
+
+                // Gestionnaire de suppression
+                languageItem.querySelector('.delete-language-btn').addEventListener('click', () => {
+                    languageItem.remove();
+                    updateLanguagesCount();
+                });
+
+                updateLanguagesCount();
+            });
+        }
+
+        function updateLanguagesCount() {
+            const count = document.querySelectorAll('.language-item').length;
+            // Ici nous pourrions mettre à jour un compteur si nécessaire
+        }
+
+        // Gestion des projets personnels
+        const addProjectBtn = document.getElementById('add-project');
+        const projectsList = document.getElementById('projects-list');
+
+        if (addProjectBtn && projectsList) {
+            addProjectBtn.addEventListener('click', () => {
+                const projectItem = document.createElement('div');
+                projectItem.className = 'project-item new-item-animation';
+                projectItem.innerHTML = `
+                    <div class="flex justify-between items-start mb-3">
+                        <div class="flex-1 space-y-3">
+                            <input type="text" placeholder="Nom du projet" class="cv-input w-full p-2 border rounded-md">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                <input type="url" placeholder="Lien GitHub" class="cv-input w-full p-2 border rounded-md">
+                                <input type="url" placeholder="Lien démo" class="cv-input w-full p-2 border rounded-md">
+                            </div>
+                            <textarea placeholder="Description du projet" rows="3" class="cv-input w-full p-2 border rounded-md"></textarea>
+                            <input type="text" placeholder="Technologies utilisées (séparées par des virgules)" class="cv-input w-full p-2 border rounded-md">
+                        </div>
+                        <button class="delete-project-btn ml-3 text-red-500 hover:text-red-700" title="Supprimer">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                `;
+                projectsList.appendChild(projectItem);
+
+                // Gestionnaire de suppression
+                projectItem.querySelector('.delete-project-btn').addEventListener('click', () => {
+                    projectItem.remove();
+                    updateProjectsCount();
+                });
+
+                updateProjectsCount();
+            });
+        }
+
+        function updateProjectsCount() {
+            const count = document.querySelectorAll('.project-item').length;
+            // Ici nous pourrions mettre à jour un compteur si nécessaire
+        }
+
+        // Gestion des certifications
+        const addCertificationBtn = document.getElementById('add-certification');
+        const certificationsList = document.getElementById('certifications-list');
+
+        if (addCertificationBtn && certificationsList) {
+            addCertificationBtn.addEventListener('click', () => {
+                const certificationItem = document.createElement('div');
+                certificationItem.className = 'certification-item new-item-animation';
+                certificationItem.innerHTML = `
+                    <div class="flex justify-between items-start mb-3">
+                        <div class="flex-1 grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <input type="text" placeholder="Nom de la certification" class="cv-input w-full p-2 border rounded-md">
+                            <input type="text" placeholder="Organisme certificateur" class="cv-input w-full p-2 border rounded-md">
+                            <input type="date" placeholder="Date d'obtention" class="cv-input w-full p-2 border rounded-md">
+                            <input type="text" placeholder="Score obtenu (optionnel)" class="cv-input w-full p-2 border rounded-md">
+                        </div>
+                        <button class="delete-certification-btn ml-3 text-red-500 hover:text-red-700" title="Supprimer">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                    <div class="flex flex-wrap gap-2">
+                        <label class="flex items-center gap-2 text-sm">
+                            <input type="checkbox" class="cv-input"> Date d'expiration
+                        </label>
+                        <input type="date" class="cv-input p-1 border rounded text-sm" style="display: none;">
+                    </div>
+                `;
+                certificationsList.appendChild(certificationItem);
+
+                // Gestionnaire de suppression
+                certificationItem.querySelector('.delete-certification-btn').addEventListener('click', () => {
+                    certificationItem.remove();
+                    updateCertificationsCount();
+                });
+
+                // Gestion de la date d'expiration
+                const expiryCheckbox = certificationItem.querySelector('input[type="checkbox"]');
+                const expiryDateInput = certificationItem.querySelector('input[type="date"]:last-child');
+
+                expiryCheckbox.addEventListener('change', () => {
+                    expiryDateInput.style.display = expiryCheckbox.checked ? 'block' : 'none';
+                });
+
+                updateCertificationsCount();
+            });
+        }
+
+        function updateCertificationsCount() {
+            const count = document.querySelectorAll('.certification-item').length;
+            // Ici nous pourrions mettre à jour un compteur si nécessaire
+        }
+
+        // Gestion des centres d'intérêt
+        const interestsTextarea = document.getElementById('interests');
+        const interestsCount = document.getElementById('interests-count');
+        const aiSuggestInterestsBtn = document.getElementById('ai-suggest-interests');
+
+        if (interestsTextarea && interestsCount) {
+            interestsTextarea.addEventListener('input', () => {
+                const interests = interestsTextarea.value.split(',').filter(i => i.trim());
+                interestsCount.textContent = interests.length;
+            });
+        }
+
+        if (aiSuggestInterestsBtn) {
+            aiSuggestInterestsBtn.addEventListener('click', async () => {
+                const currentInterests = interestsTextarea.value;
+                const prompt = `En tant qu'expert en recrutement, suggère 8 centres d'intérêt pertinents pour un CV dans le domaine professionnel de "${controls.poste.value || 'général'}". Tiens compte des centres d'intérêt existants: "${currentInterests}". Retourne uniquement la liste des suggestions séparées par des virgules, sans introduction ni conclusion.`;
+
+                try {
+                    const suggestions = await callAIAPI(prompt);
+                    if (suggestions) {
+                        if (currentInterests) {
+                            interestsTextarea.value = currentInterests + ', ' + suggestions;
+                        } else {
+                            interestsTextarea.value = suggestions;
+                        }
+                        // Recalculer le compteur
+                        const interests = interestsTextarea.value.split(',').filter(i => i.trim());
+                        interestsCount.textContent = interests.length;
+                        showNotification('Suggestions IA ajoutées à vos centres d\'intérêt.', 'success');
+                    }
+                } catch (error) {
+                    showNotification('Erreur lors de la génération de suggestions.', 'error');
+                }
+            });
+        }
+
+        // Gestion des références professionnelles
+        const addReferenceBtn = document.getElementById('add-reference');
+        const referencesList = document.getElementById('references-list');
+
+        if (addReferenceBtn && referencesList) {
+            addReferenceBtn.addEventListener('click', () => {
+                const referenceItem = document.createElement('div');
+                referenceItem.className = 'reference-item new-item-animation';
+                referenceItem.innerHTML = `
+                    <div class="reference-header">
+                        <div class="reference-info">
+                            <h4><input type="text" placeholder="Nom du référent" class="cv-input border-none bg-transparent font-medium"></h4>
+                            <div class="reference-company">
+                                <input type="text" placeholder="Poste occupé" class="cv-input border-none bg-transparent">
+                                chez <input type="text" placeholder="Entreprise" class="cv-input border-none bg-transparent">
+                            </div>
+                        </div>
+                        <button class="delete-reference-btn text-red-500 hover:text-red-700" title="Supprimer">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                    <div class="mt-3 grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <input type="email" placeholder="Email" class="cv-input w-full p-2 border rounded-md">
+                        <input type="tel" placeholder="Téléphone" class="cv-input w-full p-2 border rounded-md">
+                    </div>
+                    <div class="mt-3">
+                        <input type="text" placeholder="Relation professionnelle" class="cv-input w-full p-2 border rounded-md">
+                    </div>
+                `;
+                referencesList.appendChild(referenceItem);
+
+                // Gestionnaire de suppression
+                referenceItem.querySelector('.delete-reference-btn').addEventListener('click', () => {
+                    referenceItem.remove();
+                    updateReferencesCount();
+                });
+
+                updateReferencesCount();
+            });
+        }
+
+        function updateReferencesCount() {
+            const count = document.querySelectorAll('.reference-item').length;
+            // Ici nous pourrions mettre à jour un compteur si nécessaire
+        }
+
+        // Gestion des liens sociaux
+        const addSocialLinkBtn = document.getElementById('add-social-link');
+        const socialLinksList = document.getElementById('social-links-list');
+
+        if (addSocialLinkBtn && socialLinksList) {
+            addSocialLinkBtn.addEventListener('click', () => {
+                const socialLinkItem = document.createElement('div');
+                socialLinkItem.className = 'social-link-item new-item-animation';
+                socialLinkItem.innerHTML = `
+                    <div class="platform-icon" style="background: #3b82f6;">
+                        <i class="fab fa-linkedin"></i>
+                    </div>
+                    <div class="platform-info">
+                        <div class="platform-name">
+                            <select class="cv-input border-none bg-transparent font-medium">
+                                <option value="linkedin">LinkedIn</option>
+                                <option value="twitter">Twitter</option>
+                                <option value="github">GitHub</option>
+                                <option value="youtube">YouTube</option>
+                                <option value="instagram">Instagram</option>
+                                <option value="website">Site web</option>
+                            </select>
+                        </div>
+                        <div class="platform-url">
+                            <input type="url" placeholder="URL du profil" class="cv-input border-none bg-transparent w-full">
+                        </div>
+                    </div>
+                    <button class="delete-social-btn text-red-500 hover:text-red-700 ml-3" title="Supprimer">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                `;
+                socialLinksList.appendChild(socialLinkItem);
+
+                // Gestionnaire de suppression
+                socialLinkItem.querySelector('.delete-social-btn').addEventListener('click', () => {
+                    socialLinkItem.remove();
+                });
+
+                // Changer l'icône selon la plateforme
+                const platformSelect = socialLinkItem.querySelector('select');
+                const platformIcon = socialLinkItem.querySelector('.platform-icon i');
+
+                platformSelect.addEventListener('change', () => {
+                    const platform = platformSelect.value;
+                    let iconClass = 'fab ';
+                    let bgColor = '#3b82f6';
+
+                    switch(platform) {
+                        case 'linkedin':
+                            iconClass += 'fa-linkedin';
+                            bgColor = '#0077b5';
+                            break;
+                        case 'twitter':
+                            iconClass += 'fa-twitter';
+                            bgColor = '#1da1f2';
+                            break;
+                        case 'github':
+                            iconClass += 'fa-github';
+                            bgColor = '#333';
+                            break;
+                        case 'youtube':
+                            iconClass += 'fa-youtube';
+                            bgColor = '#ff0000';
+                            break;
+                        case 'instagram':
+                            iconClass += 'fa-instagram';
+                            bgColor = '#e4405f';
+                            break;
+                        case 'website':
+                            iconClass = 'fas fa-globe';
+                            bgColor = '#6b7280';
+                            break;
+                    }
+
+                    platformIcon.className = iconClass;
+                    socialLinkItem.querySelector('.platform-icon').style.background = bgColor;
+                });
+            });
+        }
+
+        // Gestion des compétences - extraction depuis les expériences
+        const importSkillsFromExpBtn = document.getElementById('import-skills-from-exp');
+        const exportSkillsBtn = document.getElementById('export-skills');
+
+        if (importSkillsFromExpBtn) {
+            importSkillsFromExpBtn.addEventListener('click', () => {
+                // Extraire les technologies des expériences
+                const experiences = getDynamicData(controls.experienceList);
+                const technologies = new Set();
+
+                experiences.forEach(exp => {
+                    if (exp.desc) {
+                        // Recherche simple de technologies communes
+                        const techKeywords = ['JavaScript', 'Python', 'Java', 'PHP', 'C++', 'C#', 'React', 'Vue', 'Angular', 'Node.js', 'Express', 'Django', 'Laravel', 'Symfony', 'SQL', 'MySQL', 'PostgreSQL', 'MongoDB', 'Git', 'Docker', 'AWS', 'Azure', 'Linux', 'Windows'];
+                        techKeywords.forEach(tech => {
+                            if (exp.desc.toLowerCase().includes(tech.toLowerCase())) {
+                                technologies.add(tech);
+                            }
+                        });
+                    }
+                });
+
+                if (technologies.size > 0) {
+                    const currentSkills = controls.competences.value;
+                    const newSkills = Array.from(technologies).join(', ');
+                    if (currentSkills) {
+                        controls.competences.value = currentSkills + ', ' + newSkills;
+                    } else {
+                        controls.competences.value = newSkills;
+                    }
+                    showNotification(`${technologies.size} compétences extraites des expériences.`, 'success');
+                } else {
+                    showNotification('Aucune compétence technique trouvée dans les expériences.', 'warning');
+                }
+            });
+        }
+
+        if (exportSkillsBtn) {
+            exportSkillsBtn.addEventListener('click', () => {
+                const skills = controls.competences.value;
+                if (skills) {
+                    // Créer un fichier texte avec les compétences
+                    const blob = new Blob([skills], { type: 'text/plain' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'competences.txt';
+                    a.click();
+                    URL.revokeObjectURL(url);
+                    showNotification('Compétences exportées dans un fichier texte.', 'success');
+                } else {
+                    showNotification('Aucune compétence à exporter.', 'warning');
+                }
+            });
+        }
+
+        // Gestion des compteurs de compétences
+        const competencesTextarea = document.getElementById('competences');
+        const skillsCount = document.getElementById('skills-count');
+
+        if (competencesTextarea && skillsCount) {
+            competencesTextarea.addEventListener('input', () => {
+                const skills = competencesTextarea.value.split(',').filter(s => s.trim());
+                skillsCount.textContent = skills.length;
+            });
+        }
+
+        // Amélioration de la fonction de catégorisation IA des compétences
+        const aiCategorizeSkillsBtn = document.getElementById('ai-categorize-skills');
+
+        if (aiCategorizeSkillsBtn) {
+            aiCategorizeSkillsBtn.addEventListener('click', async () => {
+                const currentSkills = controls.competences.value;
+                if (!currentSkills) {
+                    showNotification('Veuillez d\'abord saisir vos compétences.', 'warning');
+                    return;
+                }
+
+                const prompt = `Analyse cette liste de compétences: "${currentSkills}". Regroupe-les par catégories logiques (ex: Langages de programmation, Frameworks, Outils, Technologies, Soft Skills, etc.). Pour chaque catégorie, liste les compétences qui correspondent. Format: "Catégorie 1: compétence1, compétence2\nCatégorie 2: compétence3, compétence4". Ne retourne que les catégories et compétences, sans introduction.`;
+
+                try {
+                    const categorizedSkills = await callAIAPI(prompt);
+                    if (categorizedSkills) {
+                        controls.competences.value = categorizedSkills;
+                        showNotification('Compétences organisées par catégories IA.', 'success');
+                    }
+                } catch (error) {
+                    showNotification('Erreur lors de la catégorisation IA.', 'error');
+                }
+            });
+        }
+
+        // Gestion des styles d'intérêts
+        const interestsStyleButtons = document.querySelectorAll('[id^="interests-style-"]');
+
+        interestsStyleButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                // Retirer la classe active de tous les boutons
+                interestsStyleButtons.forEach(b => b.classList.remove('active'));
+                // Ajouter la classe active au bouton cliqué
+                btn.classList.add('active');
+
+                // Ici nous pourrions changer l'affichage des intérêts selon le style choisi
+                showNotification(`Style d'affichage des intérêts changé: ${btn.textContent}`, 'success');
+            });
+        });
+
+        // Amélioration de la fonction d'ajout de sections personnalisées
+        const sectionSuggestionSelect = document.getElementById('section-suggestion-select');
+
+        if (sectionSuggestionSelect) {
+            sectionSuggestionSelect.addEventListener('change', (e) => {
+                if (e.target.value) {
+                    controls.newSectionTitleInput.value = e.target.value;
+                    // Ici nous pourrions proposer un contenu par défaut selon la section
+                    showNotification(`Section "${e.target.value}" sélectionnée.`, 'info');
+                }
+            });
+        }
+
+        // Fonction pour compter les caractères dans les champs de texte
+        function updateCharCount(textarea, counterElement, maxLength = null) {
+            if (!textarea || !counterElement) return;
+
+            const count = textarea.value.length;
+            counterElement.textContent = count;
+
+            if (maxLength) {
+                if (count > maxLength) {
+                    counterElement.style.color = '#ef4444';
+                } else if (count > maxLength * 0.8) {
+                    counterElement.style.color = '#f59e0b';
+                } else {
+                    counterElement.style.color = '#6b7280';
+                }
+            }
+        }
+
+        // Initialisation des compteurs au chargement
+        document.addEventListener('DOMContentLoaded', () => {
+            // Initialiser les compteurs existants
+            if (descriptionTextarea && profileCharCount) {
+                updateCharCount(descriptionTextarea, profileCharCount, 500);
+            }
+
+            if (competencesTextarea && skillsCount) {
+                const skills = competencesTextarea.value.split(',').filter(s => s.trim());
+                skillsCount.textContent = skills.length;
+            }
+
+            if (interestsTextarea && interestsCount) {
+                const interests = interestsTextarea.value.split(',').filter(i => i.trim());
+                interestsCount.textContent = interests.length;
             }
         });
 
