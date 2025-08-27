@@ -611,10 +611,7 @@
             <div id="tab-navigation" class="flex flex-wrap -mb-px border-b border-gray-200">
                 <button class="tab-btn -mb-px py-3 px-4 text-sm font-medium border-b-2 whitespace-nowrap" data-target="#panel-ia"><i class="fa-solid fa-robot mr-1"></i> IA</button>
                 <button class="tab-btn -mb-px py-3 px-4 text-sm font-medium border-b-2 whitespace-nowrap" data-target="#panel-content"><i class="fa-solid fa-file-lines mr-1"></i> Contenu</button>
-                <button class="tab-btn -mb-px py-3 px-4 text-sm font-medium border-b-2 whitespace-nowrap" data-target="#panel-skills"><i class="fa-solid fa-star mr-1"></i> Compétences</button>
-                <button class="tab-btn -mb-px py-3 px-4 text-sm font-medium border-b-2 whitespace-nowrap" data-target="#panel-custom"><i class="fa-solid fa-puzzle-piece mr-1"></i> Sections</button>
                 <button class="tab-btn -mb-px py-3 px-4 text-sm font-medium border-b-2 whitespace-nowrap" data-target="#panel-layout"><i class="fa-solid fa-columns mr-1"></i> Mise en Page</button>
-                <button class="tab-btn -mb-px py-3 px-4 text-sm font-medium border-b-2 whitespace-nowrap" data-target="#panel-styles"><i class="fa-solid fa-palette mr-1"></i> Styles</button>
                 <button class="tab-btn -mb-px py-3 px-4 text-sm font-medium border-b-2 whitespace-nowrap" data-target="#panel-banner"><i class="fa-solid fa-user-tie mr-1"></i> Bannière</button>
             </div>
 
@@ -665,10 +662,6 @@
                             <div id="formation-list" class="space-y-2"></div>
                         </div>
                     </details>
-                </div>
-                
-                <!-- TAB: Compétences -->
-                <div id="panel-skills" class="tab-panel hidden space-y-4">
                      <details class="control-group" open>
                         <summary><span>Compétences</span><label class="completion-label"><input type="checkbox" id="completion-skills" class="completion-checkbox"><span>Fait ✅</span></label></summary>
                         <div class="control-group-content space-y-3">
@@ -698,11 +691,7 @@
                             </div>
                         </div>
                     </details>
-                </div>
-
-                <!-- TAB: Sections Perso -->
-                <div id="panel-custom" class="tab-panel hidden space-y-4">
-                    <details class="control-group" open>
+                     <details class="control-group" open>
                         <summary><span>Sections Personnalisées</span><label class="completion-label"><input type="checkbox" id="completion-custom" class="completion-checkbox"><span>Fait ✅</span></label></summary>
                         <div class="control-group-content space-y-3">
                             <div class="space-y-2">
@@ -740,6 +729,38 @@
                             <div><label for="module-spacing" class="block text-sm font-medium text-gray-700">Espace Blocs: <span id="module-spacing-value">1.5</span>rem</label><input type="range" id="module-spacing" min="0" max="4" step="0.1" value="1.5" class="cv-input w-full h-2 bg-gray-200 rounded-lg cursor-pointer"></div>
                             <div><label for="item-spacing" class="block text-sm font-medium text-gray-700">Espace Éléments: <span id="item-spacing-value">0.5</span>rem</label><input type="range" id="item-spacing" min="0" max="2" step="0.1" value="0.5" class="cv-input w-full h-2 bg-gray-200 rounded-lg cursor-pointer"></div>
                             <div><label for="font-size-h1" class="block text-sm font-medium text-gray-700">Taille Titre Principal: <span id="font-size-h1-value">40</span>pt</label><input type="range" id="font-size-h1" min="20" max="50" step="1" value="40" class="cv-input w-full h-2 bg-gray-200 rounded-lg cursor-pointer"></div><div><label for="font-size-h2" class="block text-sm font-medium text-gray-700">Taille Titres Section: <span id="font-size-h2-value">21</span>pt</label><input type="range" id="font-size-h2" min="14" max="30" step="1" value="21" class="cv-input w-full h-2 bg-gray-200 rounded-lg cursor-pointer"></div><div><label for="font-size-p" class="block text-sm font-medium text-gray-700">Taille Paragraphe: <span id="font-size-p-value">10</span>pt</label><input type="range" id="font-size-p" min="8" max="14" step="0.5" value="10" class="cv-input w-full h-2 bg-gray-200 rounded-lg cursor-pointer"></div><div><label for="font-size-banner" class="block text-sm font-medium text-gray-700">Taille Bannière: <span id="font-size-banner-value">9</span>pt</label><input type="range" id="font-size-banner" min="7" max="12" step="0.5" value="9" class="cv-input w-full h-2 bg-gray-200 rounded-lg cursor-pointer"></div><div><label for="line-height" class="block text-sm font-medium text-gray-700">Interligne: <span id="line-height-value">1.6</span></label><input type="range" id="line-height" min="0.8" max="2.5" step="0.1" value="1.6" class="cv-input w-full h-2 bg-gray-200 rounded-lg cursor-pointer"></div><div><label for="paragraph-spacing" class="block text-sm font-medium text-gray-700">Espace Paragraphe: <span id="paragraph-spacing-value">0.5</span>rem</label><input type="range" id="paragraph-spacing" min="0" max="2" step="0.1" value="0.5" class="cv-input w-full h-2 bg-gray-200 rounded-lg cursor-pointer"></div>
+                        </div>
+                    </details>
+                    <details class="control-group" open>
+                        <summary><span>Thèmes</span><label class="completion-label"><input type="checkbox" id="completion-styles-themes" class="completion-checkbox"><span>Fait ✅</span></label></summary>
+                        <div class="control-group-content">
+                            <div id="theme-buttons" class="grid grid-cols-3 gap-2">
+                                <button data-theme="professional" class="theme-btn bg-gray-200 p-2 rounded-md text-sm">Pro</button>
+                                <button data-theme="creative" class="theme-btn bg-gray-200 p-2 rounded-md text-sm">Créatif</button>
+                                <button data-theme="modern" class="theme-btn bg-gray-200 p-2 rounded-md text-sm">Moderne</button>
+                            </div>
+                        </div>
+                    </details>
+                    <details class="control-group" open>
+                        <summary><span>Couleurs</span><label class="completion-label"><input type="checkbox" id="completion-styles-colors" class="completion-checkbox"><span>Fait ✅</span></label></summary>
+                        <div class="control-group-content">
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label for="primary-color-picker" class="block text-sm font-medium text-gray-700">Principale</label>
+                                    <input type="color" id="primary-color-picker" value="#2563eb" class="cv-input w-full h-10 p-1 border rounded-md">
+                                </div>
+                                <div>
+                                    <label for="secondary-color-picker" class="block text-sm font-medium text-gray-700">Secondaire</label>
+                                    <div class="flex items-center">
+                                        <input type="color" id="secondary-color-picker" value="#334155" class="cv-input w-full h-10 p-1 border rounded-md">
+                                        <button id="ai-color-btn" title="Suggestion IA" class="ml-2 text-blue-600 hover:text-blue-800"><i class="fas fa-wand-magic-sparkles"></i></button>
+                                    </div>
+                                </div>
+                                <div class="col-span-2">
+                                    <label for="body-text-color-picker" class="block text-sm font-medium text-gray-700">Texte du corps</label>
+                                    <input type="color" id="body-text-color-picker" value="#334155" class="cv-input w-full h-10 p-1 border rounded-md">
+                                </div>
+                            </div>
                         </div>
                     </details>
                 </div>
@@ -3360,79 +3381,6 @@
             updateApiUI();
         }
 
-        // Save API settings to localStorage
-        function saveApiSettings() {
-            localStorage.setItem('cv-api-settings', JSON.stringify(apiSettings));
-            updateApiUI();
-            showNotification('Paramètres API sauvegardés.', 'success');
-        }
-
-        // Update API UI
-        function updateApiUI() {
-            newToolbarButtons.apiProviderSelect.value = apiSettings.provider;
-            apiSettingsModal.providerSelect.value = apiSettings.provider;
-            apiSettingsModal.geminiApiKey.value = apiSettings.gemini.apiKey;
-            apiSettingsModal.chatgptApiKey.value = apiSettings.chatgpt.apiKey;
-            apiSettingsModal.chatgptModel.value = apiSettings.chatgpt.model;
-
-            // Update status indicator
-            const indicator = newToolbarButtons.apiStatusIndicator;
-            const statusDisplay = apiSettingsModal.apiStatusDisplay;
-
-            if (apiSettings.provider === 'gemini' && apiSettings.gemini.isValid) {
-                indicator.className = 'w-2 h-2 rounded-full bg-green-400';
-                statusDisplay.innerHTML = '<div class="w-2 h-2 rounded-full bg-green-400"></div><span>Statut: Connecté (Gemini)</span>';
-            } else if (apiSettings.provider === 'chatgpt' && apiSettings.chatgpt.isValid) {
-                indicator.className = 'w-2 h-2 rounded-full bg-green-400';
-                statusDisplay.innerHTML = '<div class="w-2 h-2 rounded-full bg-green-400"></div><span>Statut: Connecté (ChatGPT)</span>';
-            } else {
-                indicator.className = 'w-2 h-2 rounded-full bg-gray-400';
-                statusDisplay.innerHTML = '<div class="w-2 h-2 rounded-full bg-gray-400"></div><span>Statut: Non configuré</span>';
-            }
-        }
-
-        // Test API connections
-        async function testGeminiConnection() {
-            const apiKey = apiSettingsModal.geminiApiKey.value;
-            if (!apiKey) {
-                showNotification('Veuillez entrer une clé API Gemini.', 'error');
-                return;
-            }
-
-            try {
-                // Here you would implement actual API test
-                // For now, we'll just simulate a successful connection
-                apiSettings.gemini.apiKey = apiKey;
-                apiSettings.gemini.isValid = true;
-                saveApiSettings();
-                showNotification('Connexion Gemini réussie !', 'success');
-            } catch (error) {
-                apiSettings.gemini.isValid = false;
-                showNotification('Erreur de connexion Gemini.', 'error');
-            }
-        }
-
-        async function testChatGPTConnection() {
-            const apiKey = apiSettingsModal.chatgptApiKey.value;
-            if (!apiKey) {
-                showNotification('Veuillez entrer une clé API ChatGPT.', 'error');
-                return;
-            }
-
-            try {
-                // Here you would implement actual API test
-                // For now, we'll just simulate a successful connection
-                apiSettings.chatgpt.apiKey = apiKey;
-                apiSettings.chatgpt.model = apiSettingsModal.chatgptModel.value;
-                apiSettings.chatgpt.isValid = true;
-                saveApiSettings();
-                showNotification('Connexion ChatGPT réussie !', 'success');
-            } catch (error) {
-                apiSettings.chatgpt.isValid = false;
-                showNotification('Erreur de connexion ChatGPT.', 'error');
-            }
-        }
-
         // Templates functionality
         let savedTemplates = [];
 
@@ -3659,6 +3607,11 @@
             apiSettingsModal.chatgptApiKey.value = '';
             showNotification('Toutes les clés API effacées.', 'success');
         });
+
+        // Load initial data
+        loadApiSettings();
+        loadTemplates();
+        setupPanelResizers();
         apiSettingsModal.testGeminiBtn.addEventListener('click', testGeminiConnection);
         apiSettingsModal.testChatgptBtn.addEventListener('click', testChatGPTConnection);
 
@@ -3681,6 +3634,86 @@
             }
         });
 
+        // Save API settings to localStorage
+        function saveApiSettings() {
+            localStorage.setItem('cv-api-settings', JSON.stringify(apiSettings));
+            updateApiUI();
+            showNotification('Paramètres API sauvegardés.', 'success');
+        }
+
+        // Update API UI
+        function updateApiUI() {
+            newToolbarButtons.apiProviderSelect.value = apiSettings.provider;
+            apiSettingsModal.providerSelect.value = apiSettings.provider;
+            apiSettingsModal.geminiApiKey.value = apiSettings.gemini.apiKey;
+            apiSettingsModal.chatgptApiKey.value = apiSettings.chatgpt.apiKey;
+            apiSettingsModal.geminiModelSelect.value = apiSettings.gemini.model;
+            apiSettingsModal.chatgptModelSelect.value = apiSettings.chatgpt.model;
+
+            // Update status indicator
+            const statusIndicator = document.getElementById('api-status-indicator');
+            const hasApiKey = (apiSettings.provider === 'gemini' && apiSettings.gemini.apiKey) ||
+                             (apiSettings.provider === 'chatgpt' && apiSettings.chatgpt.apiKey);
+            statusIndicator.className = `w-2 h-2 rounded-full ${hasApiKey ? 'bg-green-400' : 'bg-gray-400'}`;
+            statusIndicator.title = hasApiKey ? 'API configurée' : 'API non configurée';
+        }
+
+        // Test API connections
+        async function testGeminiConnection() {
+            const apiKey = apiSettingsModal.geminiApiKey.value;
+            if (!apiKey) {
+                showNotification('Veuillez entrer une clé API Gemini.', 'error');
+                return;
+            }
+
+            showLoader('Test de connexion Gemini...');
+            try {
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${apiKey}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{ parts: [{ text: 'Test' }] }]
+                    })
+                });
+
+                if (response.ok) {
+                    showNotification('Connexion Gemini réussie !', 'success');
+                } else {
+                    const error = await response.json();
+                    showNotification(`Erreur API: ${error.error.message}`, 'error');
+                }
+            } catch (error) {
+                showNotification(`Erreur de connexion: ${error.message}`, 'error');
+            } finally {
+                hideLoader();
+            }
+        }
+
+        // Event listeners for new toolbar buttons
+        newToolbarButtons.saveCvBtn.addEventListener('click', saveCurrentCV);
+        newToolbarButtons.loadCvBtn.addEventListener('click', loadSavedCV);
+        newToolbarButtons.templatesBtn.addEventListener('click', () => {
+            templatesModal.overlay.classList.add('active');
+            loadTemplates();
+        });
+        newToolbarButtons.apiSettingsBtn.addEventListener('click', () => {
+            apiSettingsModal.overlay.classList.add('active');
+        });
+        newToolbarButtons.collapseAllSectionsBtn.addEventListener('click', collapseAllSections);
+
+        // API settings modal event listeners
+        apiSettingsModal.saveBtn.addEventListener('click', () => {
+            apiSettings.provider = apiSettingsModal.providerSelect.value;
+            apiSettings.gemini.apiKey = apiSettingsModal.geminiApiKey.value;
+            apiSettings.chatgpt.apiKey = apiSettingsModal.chatgptApiKey.value;
+            apiSettings.gemini.model = apiSettingsModal.geminiModelSelect.value;
+            apiSettings.chatgpt.model = apiSettingsModal.chatgptModelSelect.value;
+            saveApiSettings();
+            apiSettingsModal.overlay.classList.remove('active');
+        });
+
+        apiSettingsModal.testGeminiBtn.addEventListener('click', testGeminiConnection);
+
         // Close modals when clicking outside
         apiSettingsModal.overlay.addEventListener('click', (e) => {
             if (e.target === apiSettingsModal.overlay) {
@@ -3692,11 +3725,6 @@
                 templatesModal.overlay.classList.remove('active');
             }
         });
-
-        // Load initial data
-        loadApiSettings();
-        loadTemplates();
-        setupPanelResizers();
 
     </script>
 </body>
