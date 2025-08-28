@@ -1912,25 +1912,87 @@
                                 <div id="experience-module" class="cv-module"><div class="drag-handle"><i class="fas fa-grip-vertical"></i></div><h2 class="section-title style-underline" data-section-id="experience"><i class="fas fa-briefcase section-icon"></i><span contenteditable="true">Expérience</span><div class="section-ai-actions"><button class="ai-action-btn toggle-visibility-btn" title="Masquer/Afficher la section"><i class="fas fa-eye"></i></button><button class="ai-action-btn" data-action="summarize-experience" title="Synthétiser les expériences avec l'IA (5 lignes max)"><i class="fas fa-magic-wand-sparkles"></i></button></div></h2><div id="cv-experience-preview"></div></div>
                                 <div id="formation-module" class="cv-module"><div class="drag-handle"><i class="fas fa-grip-vertical"></i></div><h2 class="section-title style-underline" data-section-id="formation"><i class="fas fa-graduation-cap section-icon"></i><span contenteditable="true">Formation</span><div class="section-ai-actions"><button class="ai-action-btn toggle-visibility-btn" title="Masquer/Afficher la section"><i class="fas fa-eye"></i></button><button class="ai-action-btn" data-action="rewrite-formation" title="Améliorer les formations avec l'IA"><i class="fas fa-magic-wand-sparkles"></i></button></div></h2><div id="cv-formation-preview"></div></div>
                                 <div id="competences-module" class="cv-module"><div class="drag-handle"><i class="fas fa-grip-vertical"></i></div><h2 class="section-title style-underline" data-section-id="competences"><i class="fas fa-star section-icon"></i><span contenteditable="true">Compétences</span><div class="section-ai-actions"><button class="ai-action-btn toggle-visibility-btn" title="Masquer/Afficher la section"><i class="fas fa-eye"></i></button></div></h2><div id="cv-competences-preview"></div></div>
+                                <div id="interests-module" class="cv-module"><div class="drag-handle"><i class="fas fa-grip-vertical"></i></div><h2 class="section-title style-underline" data-section-id="interests"><i class="fas fa-heart section-icon"></i><span contenteditable="true">Centres d'Intérêt</span><div class="section-ai-actions"><button class="ai-action-btn toggle-visibility-btn" title="Masquer/Afficher la section"><i class="fas fa-eye"></i></button></div></h2><div id="cv-interests-preview"></div></div>
                             </div>
                         </div>
+                        <div id="fixed-banner-bottom"></div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <script type="module">
+    <!-- Modals et overlays -->
+    <div id="loader-overlay" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white p-6 rounded-lg shadow-lg text-center">
+            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+            <p id="loader-text">Chargement...</p>
+        </div>
+    </div>
+
+    <div id="notification" class="fixed top-4 right-4 z-50"></div>
+
+    <script>
+        // Script principal pour l'application CV
         document.addEventListener('DOMContentLoaded', function() {
+            console.log('Application CV chargée');
+            
+            // Sélecteurs principaux
             const controls = {
-                aiSuggestInterestsBtn: document.getElementById('ai-suggest-interests-btn'),
-                interestsTextarea: document.getElementById('interests'),
-                interestsCount: document.getElementById('interests-count'),
+                // Éléments de base
+                nom: document.getElementById('nom'),
+                prenom: document.getElementById('prenom'),
+                poste: document.getElementById('poste'),
+                email: document.getElementById('email'),
+                telephone: document.getElementById('telephone'),
+                description: document.getElementById('description'),
+                competences: document.getElementById('competences'),
+                interests: document.getElementById('interests'),
+                
+                // Éléments d'interface
                 loader: document.getElementById('loader-overlay'),
                 loaderText: document.getElementById('loader-text'),
-                poste: document.getElementById('poste')
+                
+                // Boutons IA
+                aiSuggestInterestsBtn: document.getElementById('ai-suggest-interests-btn'),
+                
+                // Compteurs
+                interestsCount: document.getElementById('interests-count'),
+                
+                // Listes
+                experienceList: document.getElementById('experience-list'),
+                formationList: document.getElementById('formation-list'),
+                
+                // Boutons d'action
+                addExperienceBtn: document.getElementById('add-experience'),
+                addFormationBtn: document.getElementById('add-formation'),
+                downloadPdfBtn: document.getElementById('download-pdf-btn'),
+                resetCvBtn: document.getElementById('reset-cv-btn'),
+                
+                // Éléments de bannière
+                bannerNom: document.getElementById('banner-nom'),
+                bannerPoste: document.getElementById('banner-poste'),
+                bannerEmail: document.getElementById('banner-email'),
+                bannerTel: document.getElementById('banner-tel'),
+                bannerImage: document.getElementById('banner-image'),
+                
+                // Prévisualisations
+                cvNomPrenomPreview: document.getElementById('cv-nom-prenom-preview'),
+                cvPostePreview: document.getElementById('cv-poste-preview'),
+                cvDescriptionPreview: document.getElementById('cv-description-preview'),
+                cvExperiencePreview: document.getElementById('cv-experience-preview'),
+                cvFormationPreview: document.getElementById('cv-formation-preview'),
+                cvCompetencesPreview: document.getElementById('cv-competences-preview'),
+                cvInterestsPreview: document.getElementById('cv-interests-preview'),
+                
+                // Éléments de bannière preview
+                bannerNomPreview: document.getElementById('banner-nom-preview'),
+                bannerPostePreview: document.getElementById('banner-poste-preview'),
+                bannerEmailPreview: document.getElementById('banner-email-preview'),
+                bannerTelPreview: document.getElementById('banner-tel-preview')
             };
 
+            // Fonctions utilitaires
             function showLoader(text = "Chargement...") {
                 if (controls.loaderText) controls.loaderText.textContent = text;
                 if (controls.loader) {
@@ -1940,71 +2002,160 @@
             }
 
             function hideLoader() {
-                if (controls?.loader) {
+                if (controls.loader) {
                     controls.loader.classList.add('hidden');
                     controls.loader.classList.remove('flex');
                 }
             }
 
             function showNotification(message, type = 'success', duration = 3000) {
-                try {
-                    const container = document.getElementById('notification') || document.body;
-                    const toast = document.createElement('div');
-                    toast.className = `fixed top-4 right-4 z-50 p-4 rounded-md shadow-lg text-white max-w-sm transition-all duration-300 transform translate-x-full opacity-0 ${type === 'error' ? 'bg-red-500' : type === 'warning' ? 'bg-yellow-500' : 'bg-green-500'}`;
-                    toast.innerHTML = `<div class="flex items-center gap-2"><i class="fas ${type === 'error' ? 'fa-times-circle' : type === 'warning' ? 'fa-exclamation-triangle' : 'fa-check-circle'}"></i><span>${message}</span></div>`;
-                    container.appendChild(toast);
-                    setTimeout(() => { toast.style.opacity = '1'; toast.style.transform = 'translateX(0)'; }, 10);
-                    setTimeout(() => { toast.style.opacity = '0'; toast.style.transition = 'opacity .3s'; }, Math.max(100, duration - 300));
-                    setTimeout(() => { toast.remove(); }, Math.max(400, duration));
-                } catch (_) {
-                    console.log(`[${type}] ${message}`);
-                }
+                const container = document.getElementById('notification');
+                if (!container) return;
+                
+                const toast = document.createElement('div');
+                toast.className = `p-4 rounded-md shadow-lg text-white max-w-sm mb-2 transition-all duration-300 transform translate-x-full opacity-0 ${
+                    type === 'error' ? 'bg-red-500' : 
+                    type === 'warning' ? 'bg-yellow-500' : 
+                    'bg-green-500'
+                }`;
+                
+                const icon = type === 'error' ? 'fa-times-circle' : 
+                           type === 'warning' ? 'fa-exclamation-triangle' : 
+                           'fa-check-circle';
+                           
+                toast.innerHTML = `
+                    <div class="flex items-center gap-2">
+                        <i class="fas ${icon}"></i>
+                        <span>${message}</span>
+                    </div>
+                `;
+                
+                container.appendChild(toast);
+                
+                // Animation d'entrée
+                setTimeout(() => {
+                    toast.style.opacity = '1';
+                    toast.style.transform = 'translateX(0)';
+                }, 10);
+                
+                // Animation de sortie
+                setTimeout(() => {
+                    toast.style.opacity = '0';
+                    toast.style.transform = 'translateX(100%)';
+                    setTimeout(() => toast.remove(), 300);
+                }, duration);
             }
 
+            // Fonction simulée pour l'API IA
             async function callAIAPI(prompt) {
                 return new Promise((resolve) => {
                     setTimeout(() => {
                         resolve("lecture, sport, voyages, musique, cinéma, photographie, cuisine, jardinage");
-                    }, 1000);
+                    }, 1500);
                 });
             }
 
             // Gestion des compteurs d'intérêts
-            const interestsTextarea = controls.interestsTextarea;
-            const interestsCount = controls.interestsCount;
-
-            if (interestsTextarea && interestsCount) {
-                interestsTextarea.addEventListener('input', () => {
-                    const interests = interestsTextarea.value.split(',').filter(i => i.trim());
-                    interestsCount.textContent = interests.length;
+            if (controls.interests && controls.interestsCount) {
+                controls.interests.addEventListener('input', () => {
+                    const interests = controls.interests.value.split(',').filter(i => i.trim());
+                    controls.interestsCount.textContent = interests.length;
                 });
             }
 
+            // Gestion du bouton de suggestions IA pour les centres d'intérêt
             if (controls.aiSuggestInterestsBtn) {
                 controls.aiSuggestInterestsBtn.addEventListener('click', async () => {
-                    const currentInterests = interestsTextarea.value;
-                    const prompt = `En tant qu'expert en recrutement, suggère 8 centres d'intérêt pertinents pour un CV dans le domaine professionnel de "${controls.poste.value || 'général'}". Tiens compte des centres d'intérêt existants: "${currentInterests}". Retourne uniquement la liste des suggestions séparées par des virgules, sans introduction ni conclusion.`;
+                    const currentInterests = controls.interests ? controls.interests.value : '';
+                    const poste = controls.poste ? controls.poste.value : 'général';
+                    
+                    const prompt = `En tant qu'expert en recrutement, suggère 8 centres d'intérêt pertinents pour un CV dans le domaine professionnel de "${poste}". Tiens compte des centres d'intérêt existants: "${currentInterests}". Retourne uniquement la liste des suggestions séparées par des virgules, sans introduction ni conclusion.`;
 
                     try {
                         showLoader("Génération de suggestions...");
                         const suggestions = await callAIAPI(prompt);
-                        if (suggestions) {
+                        
+                        if (suggestions && controls.interests) {
                             if (currentInterests) {
-                                interestsTextarea.value = currentInterests + ', ' + suggestions;
+                                controls.interests.value = currentInterests + ', ' + suggestions;
                             } else {
-                                interestsTextarea.value = suggestions;
+                                controls.interests.value = suggestions;
                             }
-                            const interests = interestsTextarea.value.split(',').filter(i => i.trim());
-                            interestsCount.textContent = interests.length;
+                            
+                            // Recalculer le compteur
+                            const interests = controls.interests.value.split(',').filter(i => i.trim());
+                            if (controls.interestsCount) {
+                                controls.interestsCount.textContent = interests.length;
+                            }
+                            
                             showNotification('Suggestions IA ajoutées à vos centres d\'intérêt.', 'success');
                         }
                     } catch (error) {
+                        console.error('Erreur API IA:', error);
                         showNotification('Erreur lors de la génération de suggestions.', 'error');
                     } finally {
                         hideLoader();
                     }
                 });
             }
+
+            // Synchronisation des champs avec les prévisualisations
+            function syncPreview() {
+                // Nom et prénom
+                if (controls.nom && controls.prenom && controls.cvNomPrenomPreview) {
+                    const nomComplet = `${controls.prenom.value} ${controls.nom.value}`.trim();
+                    controls.cvNomPrenomPreview.textContent = nomComplet || 'Prénom NOM';
+                }
+                
+                // Poste
+                if (controls.poste && controls.cvPostePreview) {
+                    controls.cvPostePreview.textContent = controls.poste.value || 'Poste Recherché';
+                }
+                
+                // Description
+                if (controls.description && controls.cvDescriptionPreview) {
+                    controls.cvDescriptionPreview.innerHTML = controls.description.value.replace(/\n/g, '<br>') || '';
+                }
+                
+                // Compétences
+                if (controls.competences && controls.cvCompetencesPreview) {
+                    const competences = controls.competences.value.split(',').filter(c => c.trim());
+                    controls.cvCompetencesPreview.innerHTML = competences.map(c => `<span class="skill-tag">${c.trim()}</span>`).join(' ');
+                }
+                
+                // Centres d'intérêt
+                if (controls.interests && controls.cvInterestsPreview) {
+                    const interests = controls.interests.value.split(',').filter(i => i.trim());
+                    controls.cvInterestsPreview.innerHTML = interests.map(i => `<span class="interest-tag">${i.trim()}</span>`).join(' ');
+                }
+                
+                // Bannière
+                if (controls.bannerNom && controls.bannerNomPreview) {
+                    controls.bannerNomPreview.textContent = controls.bannerNom.value || '';
+                }
+                if (controls.bannerPoste && controls.bannerPostePreview) {
+                    controls.bannerPostePreview.textContent = controls.bannerPoste.value || '';
+                }
+                if (controls.bannerEmail && controls.bannerEmailPreview) {
+                    controls.bannerEmailPreview.textContent = controls.bannerEmail.value || '';
+                }
+                if (controls.bannerTel && controls.bannerTelPreview) {
+                    controls.bannerTelPreview.textContent = controls.bannerTel.value || '';
+                }
+            }
+
+            // Écouter les changements sur tous les champs
+            const fieldsToWatch = ['nom', 'prenom', 'poste', 'description', 'competences', 'interests', 'bannerNom', 'bannerPoste', 'bannerEmail', 'bannerTel'];
+            fieldsToWatch.forEach(fieldName => {
+                if (controls[fieldName]) {
+                    controls[fieldName].addEventListener('input', syncPreview);
+                }
+            });
+
+            // Initialiser la prévisualisation
+            syncPreview();
+
+            console.log('Tous les gestionnaires d\'événements sont configurés');
         });
     </script>
 </body>
