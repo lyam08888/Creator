@@ -4227,11 +4227,9 @@
             function setupTooltips() {
                 const tip = document.createElement('div');
                 tip.id = 'app-tooltip';
-                Object.assign(tip.style, {
-                    position: 'fixed', zIndex: 99999, pointerEvents: 'none', padding: '6px 8px', borderRadius: '6px',
-                    fontSize: '12px', background: 'rgba(17,24,39,0.95)', color: '#fff', boxShadow: '0 4px 10px rgba(0,0,0,0.2)',
-                    left: '-9999px', top: '-9999px', opacity: '0', transition: 'opacity 120ms ease'
-                });
+                tip.setAttribute('role', 'tooltip');
+                tip.setAttribute('aria-hidden', 'true');
+                tip.className = 'fixed z-[99999] pointer-events-none px-2.5 py-1.5 rounded-md text-white bg-slate-900/95 shadow-xl text-xs transition-opacity duration-150 opacity-0';
                 document.body.appendChild(tip);
 
                 let current = null;
@@ -4240,14 +4238,17 @@
                     const label = getLabel(el);
                     if (!label) return;
                     tip.textContent = label;
+                    // Positioning with small offset
                     tip.style.left = (x + 12) + 'px';
                     tip.style.top = (y + 12) + 'px';
                     tip.style.opacity = '1';
+                    tip.setAttribute('aria-hidden', 'false');
                 };
                 const hide = () => {
                     tip.style.opacity = '0';
                     tip.style.left = '-9999px';
                     tip.style.top = '-9999px';
+                    tip.setAttribute('aria-hidden', 'true');
                 };
 
                 document.addEventListener('mousemove', (e) => {
@@ -4256,7 +4257,7 @@
                         if (current) hide();
                         current = el;
                         if (el) {
-                            // Preserve native title in data-tooltip to avoid native tooltip flicker
+                            // Migrate native title to data-tooltip to avoid default browser tooltip
                             if (el.hasAttribute('title')) {
                                 el.setAttribute('data-tooltip', el.getAttribute('title'));
                                 el.removeAttribute('title');
