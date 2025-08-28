@@ -5885,41 +5885,7 @@
                     img.style.display = 'block';
                 }
             }
-        }
-
-        // Fonction pour afficher les notifications
-        function showNotification(message, type = 'info') {
-            const notification = document.createElement('div');
-            notification.className = `notification notification-${type}`;
-            notification.innerHTML = `
-                <div class="notification-content">
-                    <span>${message}</span>
-                    <button class="notification-close">&times;</button>
-                </div>
-            `;
-
-            document.body.appendChild(notification);
-
-            // Animation d'entrée
-            setTimeout(() => {
-                notification.classList.add('active');
-            }, 10);
-
-            // Fermeture automatique après 5 secondes
-            setTimeout(() => {
-                notification.classList.remove('active');
-                setTimeout(() => {
-                    document.body.removeChild(notification);
-                }, 300);
-            }, 5000);
-
-            // Fermeture manuelle
-            notification.querySelector('.notification-close').addEventListener('click', () => {
-                notification.classList.remove('active');
-                setTimeout(() => {
-                    document.body.removeChild(notification);
-                }, 300);
-            });
+            }
         }
 
         // Fonction pour basculer le mode sombre
