@@ -4995,10 +4995,21 @@
 
         // Save API settings to localStorage
         function saveApiSettings() {
+            // Persist consolidated settings
             localStorage.setItem('cv-api-settings', JSON.stringify(apiSettings));
-            updateApiUI();
+            // Backward-compat individual keys for existing code paths
+            if (apiSettings.gemini?.apiKey !== undefined) {
+                localStorage.setItem('gemini-api-key', apiSettings.gemini.apiKey || '');
+            }
+            if (apiSettings.chatgpt?.apiKey !== undefined) {
+                localStorage.setItem('openai-api-key', apiSettings.chatgpt.apiKey || '');
+            }
+            try { updateApiUI(); } catch (_) {}
             showNotification('Paramètres API sauvegardés.', 'success');
         }
+
+        // Alias (compat) expected by earlier listeners
+        function saveAPISettings() { return saveApiSettings(); }
 
         // Save banner settings
         function saveBannerSettings() {
@@ -5241,21 +5252,24 @@
             }
         }
 
-        // Update API UI
+        // Update API UI (guarded for missing elements/fields)
         function updateApiUI() {
-            newToolbarButtons.apiProviderSelect.value = apiSettings.provider;
-            apiSettingsModal.providerSelect.value = apiSettings.provider;
-            apiSettingsModal.geminiApiKey.value = apiSettings.gemini.apiKey;
-            apiSettingsModal.chatgptApiKey.value = apiSettings.chatgpt.apiKey;
-            apiSettingsModal.geminiModelSelect.value = apiSettings.gemini.model;
-            apiSettingsModal.chatgptModelSelect.value = apiSettings.chatgpt.model;
+            const providerSel = newToolbarButtons.apiProviderSelect;
+            if (providerSel) providerSel.value = apiSettings.provider;
+
+            if (apiSettingsModal.providerSelect) apiSettingsModal.providerSelect.value = apiSettings.provider;
+            if (apiSettingsModal.geminiApiKey) apiSettingsModal.geminiApiKey.value = apiSettings.gemini?.apiKey || '';
+            if (apiSettingsModal.chatgptApiKey) apiSettingsModal.chatgptApiKey.value = apiSettings.chatgpt?.apiKey || '';
+            if (apiSettingsModal.chatgptModel) apiSettingsModal.chatgptModel.value = apiSettings.chatgpt?.model || 'gpt-3.5-turbo';
 
             // Update status indicator
             const statusIndicator = document.getElementById('api-status-indicator');
-            const hasApiKey = (apiSettings.provider === 'gemini' && apiSettings.gemini.apiKey) ||
-                             (apiSettings.provider === 'chatgpt' && apiSettings.chatgpt.apiKey);
-            statusIndicator.className = `w-2 h-2 rounded-full ${hasApiKey ? 'bg-green-400' : 'bg-gray-400'}`;
-            statusIndicator.title = hasApiKey ? 'API configurée' : 'API non configurée';
+            if (statusIndicator) {
+                const hasApiKey = (apiSettings.provider === 'gemini' && apiSettings.gemini?.apiKey) ||
+                                 (apiSettings.provider === 'chatgpt' && apiSettings.chatgpt?.apiKey);
+                statusIndicator.className = `w-2 h-2 rounded-full ${hasApiKey ? 'bg-green-400' : 'bg-gray-400'}`;
+                statusIndicator.title = hasApiKey ? 'API configurée' : 'API non configurée';
+            }
         }
 
         // Test API connections
@@ -5327,10 +5341,8 @@
 
         // Fonction pour réduire toutes les sections
         function collapseAllSections() {
-            const sections = document.querySelectorAll('.cv-section details');
-            sections.forEach(section => {
-                section.open = false;
-            });
+            // Collapse all control groups in the left panel
+            document.querySelectorAll('#controls details, details.control-group').forEach(d => { d.open = false; });
             showNotification('Toutes les sections réduites.', 'success');
         }
 
@@ -5355,7 +5367,27 @@
                 const prompt = `Analyse ce texte et extrais les informations pour remplir un CV. Retourne un objet JSON avec les champs suivants: nom, prenom, poste, description, email, telephone, competences, experiences (tableau d'objets avec title, meta, desc), formations (tableau d'objets avec title, meta). Texte à analyser: "${textToAnalyze}"`;
 
                 const result = await callAIAPI(prompt);
-                const cvData = JSON.parse(result);
+                // Sanitize potential code fences or explanations
+                let jsonText = result?.trim() || '';
+                // Remove markdown fences like ```json ... ``` or ``` ... ```
+                if (jsonText.startsWith('```')) {
+                    jsonText = jsonText.replace(/^```[a-zA-Z]*\s*/,'').replace(/```\s*$/,'').trim();
+                }
+                // Attempt to extract JSON substring if wrapper text exists
+                const firstBrace = jsonText.indexOf('{');
+                const lastBrace = jsonText.lastIndexOf('}');
+                if (firstBrace !== -1 && lastBrace !== -1) {
+                    jsonText = jsonText.slice(firstBrace, lastBrace + 1);
+                }
+                let cvData;
+                try {
+                    cvData = JSON.parse(jsonText);
+                } catch (e) {
+                    console.error('JSON invalide reçu de l\'IA:', jsonText);
+                    showNotification('Réponse IA non valide (JSON attendu). Modifiez le prompt ou réessayez.', 'error');
+                    hideLoader();
+                    return;
+                }
 
                 // Remplir les champs
                 if (cvData.nom) controls.nom.value = cvData.nom;
@@ -5877,18 +5909,22 @@
 
         // Fonction pour sauvegarder les paramètres API
         function saveAPISettings() {
-            const geminiKey = document.getElementById('gemini-api-key').value;
-            const openaiKey = document.getElementById('openai-api-key').value;
+            // Read from modal inputs if present
+            const geminiInput = document.getElementById('gemini-api-key');
+            const chatgptInput = document.getElementById('chatgpt-api-key');
+            const providerSel = document.getElementById('modal-ai-provider-select');
 
-            if (geminiKey) {
-                localStorage.setItem('gemini-api-key', geminiKey);
-            }
-            if (openaiKey) {
-                localStorage.setItem('openai-api-key', openaiKey);
-            }
+            if (providerSel) apiSettings.provider = providerSel.value;
+            if (geminiInput) apiSettings.gemini.apiKey = geminiInput.value || '';
+            if (chatgptInput) apiSettings.chatgpt.apiKey = chatgptInput.value || '';
 
-            showNotification('Paramètres API sauvegardés.', 'success');
-            controls.apiModal.classList.remove('active');
+            // Persist via consolidated path (also writes legacy keys and updates UI)
+            saveApiSettings();
+
+            // Hide the modal overlay if available
+            if (typeof apiSettingsModal !== 'undefined' && apiSettingsModal.overlay) {
+                apiSettingsModal.overlay.classList.remove('active');
+            }
         }
 
         // Fonction pour gérer la photo de profil
@@ -5942,9 +5978,10 @@
 
         // Fonction pour basculer le mode sombre
         function toggleDarkMode() {
-            document.body.classList.toggle('dark-mode');
-            const isDark = document.body.classList.contains('dark-mode');
-            localStorage.setItem('dark-mode', isDark);
+            const root = document.documentElement;
+            root.classList.toggle('dark');
+            const isDark = root.classList.contains('dark');
+            localStorage.setItem('dark-mode', isDark ? 'true' : 'false');
             showNotification(isDark ? 'Mode sombre activé.' : 'Mode sombre désactivé.', 'success');
         }
 
@@ -5952,7 +5989,9 @@
         function loadDarkMode() {
             const isDark = localStorage.getItem('dark-mode') === 'true';
             if (isDark) {
-                document.body.classList.add('dark-mode');
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
             }
         }
 
