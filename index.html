@@ -4878,6 +4878,11 @@
             }
         }
 
+        // Alias pour compatibilité avec les anciens écouteurs
+        function loadCV() {
+            return loadSavedCV();
+        }
+
         // Event listeners for new toolbar buttons
         newToolbarButtons.saveCvBtn.addEventListener('click', saveCurrentCV);
         newToolbarButtons.loadCvBtn.addEventListener('click', loadSavedCV);
@@ -6848,6 +6853,7 @@
                     counterElement.style.color = '#6b7280';
                 }
             }
+        }
         }
     });
 
