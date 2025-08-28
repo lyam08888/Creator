@@ -3520,6 +3520,85 @@
                 skills.forEach(skill => createSkillLevelItem(skill, 3));
             }
 
+            // Reusable PDF download function (shared by toolbar/controls)
+            async function downloadPDF() {
+                const filename = `CV_${controls.prenom.value}_${controls.nom.value}.pdf`.replace(/ /g, '_');
+                document.body.classList.add('presentation-mode');
+
+                const bannerImg = preview.bannerImg;
+                const bannerBg = preview.bannerBgImg;
+                const originalBannerImg = { src: bannerImg.src, style: bannerImg.style.cssText };
+                const originalBannerBg = { src: bannerBg.src, style: bannerBg.style.cssText };
+
+                const processImage = async (imgElement, isCircle = false) => {
+                    if (!imgElement.src || imgElement.src.startsWith('https://placehold.co')) return;
+
+                    const img = new Image();
+                    img.crossOrigin = "anonymous";
+
+                    const promise = new Promise((resolve) => {
+                        img.onload = () => {
+                            const canvas = document.createElement('canvas');
+                            const ctx = canvas.getContext('2d');
+                            const size = Math.min(img.naturalWidth, img.naturalHeight);
+                            canvas.width = isCircle ? size : img.naturalWidth;
+                            canvas.height = isCircle ? size : img.naturalHeight;
+
+                            if (isCircle) {
+                                ctx.beginPath();
+                                ctx.arc(size / 2, size / 2, size / 2, 0, Math.PI * 2);
+                                ctx.clip();
+                            }
+
+                            const hRatio = canvas.width / img.naturalWidth;
+                            const vRatio = canvas.height / img.naturalHeight;
+                            const ratio = Math.max(hRatio, vRatio);
+                            const centerShift_x = (canvas.width - img.naturalWidth * ratio) / 2;
+                            const centerShift_y = (canvas.height - img.naturalHeight * ratio) / 2;
+
+                            const opacity = imgElement.style.opacity || '1';
+                            const filter = imgElement.style.filter || 'none';
+                            ctx.globalAlpha = parseFloat(opacity);
+                            ctx.filter = filter;
+
+                            ctx.drawImage(img, 0, 0, img.naturalWidth, img.naturalHeight, centerShift_x, centerShift_y, img.naturalWidth * ratio, img.naturalHeight * ratio);
+
+                            imgElement.src = canvas.toDataURL('image/png');
+                            imgElement.style.borderRadius = '0';
+                            imgElement.style.objectFit = 'contain';
+                            imgElement.style.filter = 'none';
+                            imgElement.style.opacity = '1';
+                            resolve();
+                        };
+                        img.onerror = () => {
+                            console.error("Could not load image for PDF processing:", imgElement.src);
+                            resolve();
+                        };
+                    });
+                    img.src = imgElement.src;
+                    return promise;
+                };
+
+                await processImage(bannerImg, true);
+                await processImage(bannerBg, false);
+
+                const opt = {
+                    margin: 0,
+                    filename: filename,
+                    image: { type: 'jpeg', quality: 0.98 },
+                    html2canvas: { scale: 2, useCORS: true, logging: false },
+                    jsPDF: { unit: 'cm', format: 'a4', orientation: 'portrait' }
+                };
+
+                html2pdf().from(preview.previewWrapper).set(opt).save().finally(() => {
+                    bannerImg.src = originalBannerImg.src;
+                    bannerImg.style.cssText = originalBannerImg.style;
+                    bannerBg.src = originalBannerBg.src;
+                    bannerBg.style.cssText = originalBannerBg.style;
+                    document.body.classList.remove('presentation-mode');
+                });
+            }
+
             // --- INITIALIZATION FUNCTION ---
             function initializeAll() {
                 console.log("Initializing UI components and event listeners...");
@@ -3930,83 +4009,7 @@
                     }
                 });
 
-                controls.downloadPdfBtn.addEventListener('click', async () => {
-                    const filename = `CV_${controls.prenom.value}_${controls.nom.value}.pdf`.replace(/ /g, '_');
-                    document.body.classList.add('presentation-mode');
-
-                    const bannerImg = preview.bannerImg;
-                    const bannerBg = preview.bannerBgImg;
-                    const originalBannerImg = { src: bannerImg.src, style: bannerImg.style.cssText };
-                    const originalBannerBg = { src: bannerBg.src, style: bannerBg.style.cssText };
-
-                    const processImage = async (imgElement, isCircle = false) => {
-                        if (!imgElement.src || imgElement.src.startsWith('https://placehold.co')) return;
-
-                        const img = new Image();
-                        img.crossOrigin = "anonymous";
-                        
-                        const promise = new Promise((resolve) => {
-                            img.onload = () => {
-                                const canvas = document.createElement('canvas');
-                                const ctx = canvas.getContext('2d');
-                                const size = Math.min(img.naturalWidth, img.naturalHeight);
-                                canvas.width = isCircle ? size : img.naturalWidth;
-                                canvas.height = isCircle ? size : img.naturalHeight;
-
-                                if (isCircle) {
-                                    ctx.beginPath();
-                                    ctx.arc(size / 2, size / 2, size / 2, 0, Math.PI * 2);
-                                    ctx.clip();
-                                }
-                                
-                                const hRatio = canvas.width / img.naturalWidth;
-                                const vRatio = canvas.height / img.naturalHeight;
-                                const ratio = Math.max(hRatio, vRatio);
-                                const centerShift_x = (canvas.width - img.naturalWidth * ratio) / 2;
-                                const centerShift_y = (canvas.height - img.naturalHeight * ratio) / 2;
-                                
-                                const opacity = imgElement.style.opacity || '1';
-                                const filter = imgElement.style.filter || 'none';
-                                ctx.globalAlpha = parseFloat(opacity);
-                                ctx.filter = filter;
-                                
-                                ctx.drawImage(img, 0, 0, img.naturalWidth, img.naturalHeight, centerShift_x, centerShift_y, img.naturalWidth * ratio, img.naturalHeight * ratio);
-
-                                imgElement.src = canvas.toDataURL('image/png');
-                                imgElement.style.borderRadius = '0';
-                                imgElement.style.objectFit = 'contain';
-                                imgElement.style.filter = 'none';
-                                imgElement.style.opacity = '1';
-                                resolve();
-                            };
-                            img.onerror = () => {
-                                console.error("Could not load image for PDF processing:", imgElement.src);
-                                resolve(); // Resolve anyway to not block PDF generation
-                            };
-                        });
-                        img.src = imgElement.src;
-                        return promise;
-                    };
-                    
-                    await processImage(bannerImg, true);
-                    await processImage(bannerBg, false);
-
-                    const opt = {
-                        margin: 0,
-                        filename: filename,
-                        image: { type: 'jpeg', quality: 0.98 },
-                        html2canvas: { scale: 2, useCORS: true, logging: false },
-                        jsPDF: { unit: 'cm', format: 'a4', orientation: 'portrait' }
-                    };
-
-                    html2pdf().from(preview.previewWrapper).set(opt).save().finally(() => {
-                        bannerImg.src = originalBannerImg.src;
-                        bannerImg.style.cssText = originalBannerImg.style;
-                        bannerBg.src = originalBannerBg.src;
-                        bannerBg.style.cssText = originalBannerBg.style;
-                        document.body.classList.remove('presentation-mode');
-                    });
-                });
+                controls.downloadPdfBtn.addEventListener('click', downloadPDF);
 
                 controls.resetCvBtn.addEventListener('click', async () => {
                     const confirmed = await showConfirmModal("Nouveau CV", "Êtes-vous sûr de vouloir réinitialiser complètement le CV ?");
@@ -4049,7 +4052,7 @@
                 document.getElementById('load-banner-settings-btn')?.addEventListener('click', loadBannerSettings);
                 document.getElementById('load-cv-btn')?.addEventListener('click', loadCV);
                 document.getElementById('templates-btn')?.addEventListener('click', openTemplates);
-                document.getElementById('download-pdf-btn')?.addEventListener('click', downloadPDF);
+                
                 document.getElementById('share-btn')?.addEventListener('click', shareCV);
                 document.getElementById('reset-cv-btn')?.addEventListener('click', () => {
                     if (confirm('Êtes-vous sûr de vouloir réinitialiser le CV ?')) {
@@ -4398,83 +4401,7 @@
                 generateShareLink();
             });
 
-            toolbarButtons.downloadPdfBtn.addEventListener('click', async () => {
-                const filename = `CV_${controls.prenom.value}_${controls.nom.value}.pdf`.replace(/ /g, '_');
-                document.body.classList.add('presentation-mode');
-
-                const bannerImg = preview.bannerImg;
-                const bannerBg = preview.bannerBgImg;
-                const originalBannerImg = { src: bannerImg.src, style: bannerImg.style.cssText };
-                const originalBannerBg = { src: bannerBg.src, style: bannerBg.style.cssText };
-
-                const processImage = async (imgElement, isCircle = false) => {
-                    if (!imgElement.src || imgElement.src.startsWith('https://placehold.co')) return;
-
-                    const img = new Image();
-                    img.crossOrigin = "anonymous";
-
-                    const promise = new Promise((resolve) => {
-                        img.onload = () => {
-                            const canvas = document.createElement('canvas');
-                            const ctx = canvas.getContext('2d');
-                            const size = Math.min(img.naturalWidth, img.naturalHeight);
-                            canvas.width = isCircle ? size : img.naturalWidth;
-                            canvas.height = isCircle ? size : img.naturalHeight;
-
-                            if (isCircle) {
-                                ctx.beginPath();
-                                ctx.arc(size / 2, size / 2, size / 2, 0, Math.PI * 2);
-                                ctx.clip();
-                            }
-
-                            const hRatio = canvas.width / img.naturalWidth;
-                            const vRatio = canvas.height / img.naturalHeight;
-                            const ratio = Math.max(hRatio, vRatio);
-                            const centerShift_x = (canvas.width - img.naturalWidth * ratio) / 2;
-                            const centerShift_y = (canvas.height - img.naturalHeight * ratio) / 2;
-
-                            const opacity = imgElement.style.opacity || '1';
-                            const filter = imgElement.style.filter || 'none';
-                            ctx.globalAlpha = parseFloat(opacity);
-                            ctx.filter = filter;
-
-                            ctx.drawImage(img, 0, 0, img.naturalWidth, img.naturalHeight, centerShift_x, centerShift_y, img.naturalWidth * ratio, img.naturalHeight * ratio);
-
-                            imgElement.src = canvas.toDataURL('image/png');
-                            imgElement.style.borderRadius = '0';
-                            imgElement.style.objectFit = 'contain';
-                            imgElement.style.filter = 'none';
-                            imgElement.style.opacity = '1';
-                            resolve();
-                        };
-                        img.onerror = () => {
-                            console.error("Could not load image for PDF processing:", imgElement.src);
-                            resolve(); // Resolve anyway to not block PDF generation
-                        };
-                    });
-                    img.src = imgElement.src;
-                    return promise;
-                };
-
-                await processImage(bannerImg, true);
-                await processImage(bannerBg, false);
-
-                const opt = {
-                    margin: 0,
-                    filename: filename,
-                    image: { type: 'jpeg', quality: 0.98 },
-                    html2canvas: { scale: 2, useCORS: true, logging: false },
-                    jsPDF: { unit: 'cm', format: 'a4', orientation: 'portrait' }
-                };
-
-                html2pdf().from(preview.previewWrapper).set(opt).save().finally(() => {
-                    bannerImg.src = originalBannerImg.src;
-                    bannerImg.style.cssText = originalBannerImg.style;
-                    bannerBg.src = originalBannerBg.src;
-                    bannerBg.style.cssText = originalBannerBg.style;
-                    document.body.classList.remove('presentation-mode');
-                });
-            });
+            toolbarButtons.downloadPdfBtn.addEventListener('click', downloadPDF);
 
             toolbarButtons.anonymizeBtn.addEventListener('click', anonymizeCV);
 
