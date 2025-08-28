@@ -89,7 +89,25 @@
                 shareBtn: document.getElementById('share-btn'),
                 resetCvBtn: document.getElementById('reset-cv-btn'),
                 toggleDarkMode: document.getElementById('toggle-dark-mode'),
-                printCv: document.getElementById('print-cv')
+                printCv: document.getElementById('print-cv'),
+
+                // Advanced Layout Controls
+                pageMarginSlider: document.getElementById('page-margin-slider'),
+                pagePaddingSlider: document.getElementById('page-padding-slider'),
+                moduleSpacingSlider: document.getElementById('module-spacing-slider'),
+                paragraphSpacingSlider: document.getElementById('paragraph-spacing-slider'),
+                fontSizeH1Slider: document.getElementById('font-size-h1-slider'),
+                fontSizeH2Slider: document.getElementById('font-size-h2-slider'),
+                resetLayoutBtn: document.getElementById('reset-layout-btn'),
+                saveLayoutBtn: document.getElementById('save-layout-btn'),
+
+                // Value displays
+                pageMarginValue: document.getElementById('page-margin-value'),
+                pagePaddingValue: document.getElementById('page-padding-value'),
+                moduleSpacingValue: document.getElementById('module-spacing-value'),
+                paragraphSpacingValue: document.getElementById('paragraph-spacing-value'),
+                fontSizeH1Value: document.getElementById('font-size-h1-value'),
+                fontSizeH2Value: document.getElementById('font-size-h2-value')
             };
 
             // --- DYNAMIC SELECTORS ---
@@ -216,9 +234,141 @@
 
 
             // --- HISTORY (UNDO/REDO) SYSTEM ---
-            // History is not saved, so this is a simple implementation
-            function undo() { showNotification("Fonctionnalité non disponible en mode hors ligne.", "error"); }
-            function redo() { showNotification("Fonctionnalité non disponible en mode hors ligne.", "error"); }
+            let history = [];
+            let historyIndex = -1;
+            const maxHistorySize = 50;
+
+            function saveToHistory() {
+                const currentState = {
+                    cvData: getCurrentCvData(),
+                    timestamp: Date.now()
+                };
+
+                // Remove any history after current index (when user made changes after undo)
+                history = history.slice(0, historyIndex + 1);
+
+                // Add new state
+                history.push(currentState);
+                historyIndex++;
+
+                // Limit history size
+                if (history.length > maxHistorySize) {
+                    history.shift();
+                    historyIndex--;
+                }
+
+                updateUndoRedoButtons();
+            }
+
+            function getCurrentCvData() {
+                const controls = getControls();
+                return {
+                    nomPrenom: document.getElementById('cv-nom-prenom-preview')?.textContent || '',
+                    poste: document.getElementById('cv-poste-preview')?.textContent || '',
+                    description: document.getElementById('cv-description-preview')?.innerHTML || '',
+                    experiences: getDynamicItemsData(controls.experienceList),
+                    formations: getDynamicItemsData(controls.formationList),
+                    competences: document.getElementById('cv-competences-preview')?.innerHTML || '',
+                    interests: document.getElementById('cv-interets-preview')?.innerHTML || '',
+                    bannerData: {
+                        nom: document.getElementById('banner-nom-preview')?.textContent || '',
+                        poste: document.getElementById('banner-poste-preview')?.textContent || '',
+                        contact: document.getElementById('banner-contact-preview')?.innerHTML || ''
+                    }
+                };
+            }
+
+            function restoreFromHistory(state) {
+                if (!state || !state.cvData) return;
+
+                // Restore basic info
+                const nomPrenomEl = document.getElementById('cv-nom-prenom-preview');
+                const posteEl = document.getElementById('cv-poste-preview');
+                const descEl = document.getElementById('cv-description-preview');
+                const compEl = document.getElementById('cv-competences-preview');
+                const interestsEl = document.getElementById('cv-interets-preview');
+
+                if (nomPrenomEl) nomPrenomEl.textContent = state.cvData.nomPrenom;
+                if (posteEl) posteEl.textContent = state.cvData.poste;
+                if (descEl) descEl.innerHTML = state.cvData.description;
+                if (compEl) compEl.innerHTML = state.cvData.competences;
+                if (interestsEl) interestsEl.innerHTML = state.cvData.interests;
+
+                // Restore banner
+                const bannerNomEl = document.getElementById('banner-nom-preview');
+                const bannerPosteEl = document.getElementById('banner-poste-preview');
+                const bannerContactEl = document.getElementById('banner-contact-preview');
+
+                if (bannerNomEl) bannerNomEl.textContent = state.cvData.bannerData?.nom || '';
+                if (bannerPosteEl) bannerPosteEl.textContent = state.cvData.bannerData?.poste || '';
+                if (bannerContactEl) bannerContactEl.innerHTML = state.cvData.bannerData?.contact || '';
+
+                // Restore dynamic items
+                const controls = getControls();
+                restoreDynamicItems(controls.experienceList, state.cvData.experiences || []);
+                restoreDynamicItems(controls.formationList, state.cvData.formations || []);
+
+                updatePreview('form');
+            }
+
+            function restoreDynamicItems(container, items) {
+                // Clear existing items
+                container.innerHTML = '';
+
+                // Recreate items
+                items.forEach(item => {
+                    if (container.id === 'experience-list') {
+                        createDynamicItem(container, [
+                            { key: 'title', placeholder: 'Titre du poste' },
+                            { key: 'meta', placeholder: 'Entreprise & Dates' },
+                            { key: 'desc', placeholder: 'Description des missions', type: 'textarea' }
+                        ], item);
+                    } else if (container.id === 'formation-list') {
+                        createDynamicItem(container, [
+                            { key: 'title', placeholder: 'Nom du diplôme' },
+                            { key: 'meta', placeholder: 'Établissement & Année' }
+                        ], item);
+                    }
+                });
+            }
+
+            function updateUndoRedoButtons() {
+                const controls = getControls();
+                const undoBtn = controls.undoBtn;
+                const redoBtn = controls.redoBtn;
+
+                if (undoBtn) {
+                    undoBtn.disabled = historyIndex <= 0;
+                    undoBtn.classList.toggle('disabled', historyIndex <= 0);
+                }
+
+                if (redoBtn) {
+                    redoBtn.disabled = historyIndex >= history.length - 1;
+                    redoBtn.classList.toggle('disabled', historyIndex >= history.length - 1);
+                }
+            }
+
+            function undo() {
+                if (historyIndex > 0) {
+                    historyIndex--;
+                    restoreFromHistory(history[historyIndex]);
+                    updateUndoRedoButtons();
+                    showNotification('Annulé', 'info');
+                } else {
+                    showNotification('Aucune action à annuler', 'warning');
+                }
+            }
+
+            function redo() {
+                if (historyIndex < history.length - 1) {
+                    historyIndex++;
+                    restoreFromHistory(history[historyIndex]);
+                    updateUndoRedoButtons();
+                    showNotification('Rétabli', 'info');
+                } else {
+                    showNotification('Aucune action à rétablir', 'warning');
+                }
+            }
             
             // --- DRAG & DROP & RESIZE ---
             let activeResizer = null;
@@ -575,7 +725,12 @@
 
                             const itemContent = document.createElement('div');
                             itemContent.className = "dynamic-preview-item";
-                            itemContent.innerHTML = `<button class="delete-block-btn" title="Supprimer le bloc"><i class="fas fa-trash-alt"></i></button>`;
+                            itemContent.innerHTML = `
+                                <button class="delete-block-btn" title="Supprimer le bloc"><i class="fas fa-trash-alt"></i></button>
+                                <button class="duplicate-block-btn" title="Dupliquer le bloc"><i class="fas fa-copy"></i></button>
+                                <button class="move-up-btn" title="Déplacer vers le haut"><i class="fas fa-arrow-up"></i></button>
+                                <button class="move-down-btn" title="Déplacer vers le bas"><i class="fas fa-arrow-down"></i></button>
+                            `;
 
                             if (type === 'experience') {
                                 const titleHTML = `<div class="editable-wrapper"><p class="item-title" contenteditable="true">${item.title || '&nbsp;'}</p><span class="delete-line-btn"><i class="fas fa-times"></i></span></div>`;
@@ -1461,6 +1616,14 @@
 
                 controlsPanel.addEventListener('click', (e) => {
                     const target = e.target;
+
+                    // Helper function to update item indices
+                    function updateItemIndices(container) {
+                        const items = container.querySelectorAll('.dynamic-item-container');
+                        items.forEach((item, index) => {
+                            item.dataset.index = index;
+                        });
+                    }
                     
                     const removeBtn = target.closest('.remove-dynamic-item-btn, .remove-skill-level-btn');
                     if (removeBtn) {
@@ -1468,6 +1631,66 @@
                         updatePreview('form');
                         return;
                     }
+
+                    // Handle duplicate button
+                    const duplicateBtn = target.closest('.duplicate-block-btn');
+                    if (duplicateBtn) {
+                        const itemContainer = duplicateBtn.closest('.dynamic-item-container');
+                        if (itemContainer) {
+                            const clonedContainer = itemContainer.cloneNode(true);
+                            // Update data-index for the cloned item
+                            const currentIndex = parseInt(itemContainer.dataset.index);
+                            clonedContainer.dataset.index = currentIndex + 1;
+                            // Update indices for all subsequent items
+                            const allContainers = itemContainer.parentElement.querySelectorAll('.dynamic-item-container');
+                            for (let i = currentIndex + 1; i < allContainers.length; i++) {
+                                allContainers[i].dataset.index = parseInt(allContainers[i].dataset.index) + 1;
+                            }
+                            // Insert the cloned item after the original
+                            itemContainer.parentElement.insertBefore(clonedContainer, itemContainer.nextSibling);
+                            updatePreview('form');
+                            saveToHistory();
+                            showNotification('Bloc dupliqué avec succès.', 'success');
+                        }
+                        return;
+                    }
+
+                    // Handle move up button
+                    const moveUpBtn = target.closest('.move-up-btn');
+                    if (moveUpBtn) {
+                        const itemContainer = moveUpBtn.closest('.dynamic-item-container');
+                        if (itemContainer) {
+                            const prevItem = itemContainer.previousElementSibling;
+                            if (prevItem && prevItem.classList.contains('dynamic-item-container')) {
+                                itemContainer.parentElement.insertBefore(itemContainer, prevItem);
+                                // Update indices
+                                updateItemIndices(itemContainer.parentElement);
+                                updatePreview('form');
+                                saveToHistory();
+                                showNotification('Bloc déplacé vers le haut.', 'success');
+                            }
+                        }
+                        return;
+                    }
+
+                    // Handle move down button
+                    const moveDownBtn = target.closest('.move-down-btn');
+                    if (moveDownBtn) {
+                        const itemContainer = moveDownBtn.closest('.dynamic-item-container');
+                        if (itemContainer) {
+                            const nextItem = itemContainer.nextElementSibling;
+                            if (nextItem && nextItem.classList.contains('dynamic-item-container')) {
+                                itemContainer.parentElement.insertBefore(nextItem, itemContainer);
+                                // Update indices
+                                updateItemIndices(itemContainer.parentElement);
+                                updatePreview('form');
+                                saveToHistory();
+                                showNotification('Bloc déplacé vers le bas.', 'success');
+                            }
+                        }
+                        return;
+                    }
+
                     const removeSectionBtn = target.closest('.remove-section-btn');
                     if (removeSectionBtn) {
                         const sectionDiv = removeSectionBtn.closest('[data-section-id]');
@@ -2364,6 +2587,164 @@
 
             // Load accessibility settings on page load
             loadAccessibilitySettings();
+
+            // --- ADVANCED LAYOUT CONTROLS ---
+            if (controls.pageMarginSlider) {
+                controls.pageMarginSlider.addEventListener('input', (e) => {
+                    const value = parseFloat(e.target.value);
+                    controls.pageMarginValue.textContent = value;
+                    document.documentElement.style.setProperty('--page-margin', value + 'cm');
+                    saveToHistory();
+                });
+            }
+
+            if (controls.pagePaddingSlider) {
+                controls.pagePaddingSlider.addEventListener('input', (e) => {
+                    const value = parseFloat(e.target.value);
+                    controls.pagePaddingValue.textContent = value;
+                    // This would need to be applied to page containers
+                    document.querySelectorAll('.a4-page').forEach(page => {
+                        page.style.paddingLeft = value + 'cm';
+                        page.style.paddingRight = value + 'cm';
+                    });
+                    saveToHistory();
+                });
+            }
+
+            if (controls.moduleSpacingSlider) {
+                controls.moduleSpacingSlider.addEventListener('input', (e) => {
+                    const value = parseFloat(e.target.value);
+                    controls.moduleSpacingValue.textContent = value;
+                    document.documentElement.style.setProperty('--module-spacing', value + 'rem');
+                    saveToHistory();
+                });
+            }
+
+            if (controls.paragraphSpacingSlider) {
+                controls.paragraphSpacingSlider.addEventListener('input', (e) => {
+                    const value = parseFloat(e.target.value);
+                    controls.paragraphSpacingValue.textContent = value;
+                    document.documentElement.style.setProperty('--paragraph-spacing', value + 'rem');
+                    saveToHistory();
+                });
+            }
+
+            if (controls.fontSizeH1Slider) {
+                controls.fontSizeH1Slider.addEventListener('input', (e) => {
+                    const value = parseInt(e.target.value);
+                    controls.fontSizeH1Value.textContent = value;
+                    document.documentElement.style.setProperty('--font-size-h1', value + 'pt');
+                    saveToHistory();
+                });
+            }
+
+            if (controls.fontSizeH2Slider) {
+                controls.fontSizeH2Slider.addEventListener('input', (e) => {
+                    const value = parseInt(e.target.value);
+                    controls.fontSizeH2Value.textContent = value;
+                    document.documentElement.style.setProperty('--font-size-h2', value + 'pt');
+                    saveToHistory();
+                });
+            }
+
+            if (controls.resetLayoutBtn) {
+                controls.resetLayoutBtn.addEventListener('click', () => {
+                    // Reset to default values
+                    if (controls.pageMarginSlider) {
+                        controls.pageMarginSlider.value = 2;
+                        controls.pageMarginValue.textContent = '2';
+                        document.documentElement.style.setProperty('--page-margin', '2cm');
+                    }
+                    if (controls.pagePaddingSlider) {
+                        controls.pagePaddingSlider.value = 2;
+                        controls.pagePaddingValue.textContent = '2';
+                        document.querySelectorAll('.a4-page').forEach(page => {
+                            page.style.paddingLeft = '2cm';
+                            page.style.paddingRight = '2cm';
+                        });
+                    }
+                    if (controls.moduleSpacingSlider) {
+                        controls.moduleSpacingSlider.value = 1.5;
+                        controls.moduleSpacingValue.textContent = '1.5';
+                        document.documentElement.style.setProperty('--module-spacing', '1.5rem');
+                    }
+                    if (controls.paragraphSpacingSlider) {
+                        controls.paragraphSpacingSlider.value = 0.5;
+                        controls.paragraphSpacingValue.textContent = '0.5';
+                        document.documentElement.style.setProperty('--paragraph-spacing', '0.5rem');
+                    }
+                    if (controls.fontSizeH1Slider) {
+                        controls.fontSizeH1Slider.value = 40;
+                        controls.fontSizeH1Value.textContent = '40';
+                        document.documentElement.style.setProperty('--font-size-h1', '40pt');
+                    }
+                    if (controls.fontSizeH2Slider) {
+                        controls.fontSizeH2Slider.value = 21;
+                        controls.fontSizeH2Value.textContent = '21';
+                        document.documentElement.style.setProperty('--font-size-h2', '21pt');
+                    }
+                    saveToHistory();
+                    showNotification('Mise en page réinitialisée', 'info');
+                });
+            }
+
+            if (controls.saveLayoutBtn) {
+                controls.saveLayoutBtn.addEventListener('click', () => {
+                    const layoutSettings = {
+                        pageMargin: controls.pageMarginSlider?.value || 2,
+                        pagePadding: controls.pagePaddingSlider?.value || 2,
+                        moduleSpacing: controls.moduleSpacingSlider?.value || 1.5,
+                        paragraphSpacing: controls.paragraphSpacingSlider?.value || 0.5,
+                        fontSizeH1: controls.fontSizeH1Slider?.value || 40,
+                        fontSizeH2: controls.fontSizeH2Slider?.value || 21
+                    };
+                    localStorage.setItem('cv-layout-settings', JSON.stringify(layoutSettings));
+                    showNotification('Paramètres de mise en page sauvegardés', 'success');
+                });
+            }
+
+            // Load saved layout settings
+            const savedLayout = localStorage.getItem('cv-layout-settings');
+            if (savedLayout) {
+                try {
+                    const layoutSettings = JSON.parse(savedLayout);
+                    if (controls.pageMarginSlider && layoutSettings.pageMargin) {
+                        controls.pageMarginSlider.value = layoutSettings.pageMargin;
+                        controls.pageMarginValue.textContent = layoutSettings.pageMargin;
+                        document.documentElement.style.setProperty('--page-margin', layoutSettings.pageMargin + 'cm');
+                    }
+                    if (controls.pagePaddingSlider && layoutSettings.pagePadding) {
+                        controls.pagePaddingSlider.value = layoutSettings.pagePadding;
+                        controls.pagePaddingValue.textContent = layoutSettings.pagePadding;
+                        document.querySelectorAll('.a4-page').forEach(page => {
+                            page.style.paddingLeft = layoutSettings.pagePadding + 'cm';
+                            page.style.paddingRight = layoutSettings.pagePadding + 'cm';
+                        });
+                    }
+                    if (controls.moduleSpacingSlider && layoutSettings.moduleSpacing) {
+                        controls.moduleSpacingSlider.value = layoutSettings.moduleSpacing;
+                        controls.moduleSpacingValue.textContent = layoutSettings.moduleSpacing;
+                        document.documentElement.style.setProperty('--module-spacing', layoutSettings.moduleSpacing + 'rem');
+                    }
+                    if (controls.paragraphSpacingSlider && layoutSettings.paragraphSpacing) {
+                        controls.paragraphSpacingSlider.value = layoutSettings.paragraphSpacing;
+                        controls.paragraphSpacingValue.textContent = layoutSettings.paragraphSpacing;
+                        document.documentElement.style.setProperty('--paragraph-spacing', layoutSettings.paragraphSpacing + 'rem');
+                    }
+                    if (controls.fontSizeH1Slider && layoutSettings.fontSizeH1) {
+                        controls.fontSizeH1Slider.value = layoutSettings.fontSizeH1;
+                        controls.fontSizeH1Value.textContent = layoutSettings.fontSizeH1;
+                        document.documentElement.style.setProperty('--font-size-h1', layoutSettings.fontSizeH1 + 'pt');
+                    }
+                    if (controls.fontSizeH2Slider && layoutSettings.fontSizeH2) {
+                        controls.fontSizeH2Slider.value = layoutSettings.fontSizeH2;
+                        controls.fontSizeH2Value.textContent = layoutSettings.fontSizeH2;
+                        document.documentElement.style.setProperty('--font-size-h2', layoutSettings.fontSizeH2 + 'pt');
+                    }
+                } catch (e) {
+                    console.warn('Erreur lors du chargement des paramètres de mise en page:', e);
+                }
+            }
 
             // --- START THE APP ---
             initializeAll();

@@ -373,6 +373,20 @@
         .delete-block-btn { display: none; position: absolute; top: 4px; right: 4px; width: 24px; height: 24px; background-color: #fee2e2; color: #b91c1c; border: none; border-radius: 50%; cursor: pointer; align-items: center; justify-content: center; z-index: 6; }
         .dynamic-preview-item:hover .delete-block-btn { display: flex; }
         .delete-block-btn:hover { background-color: #fecaca; color: #991b1b; }
+
+        /* Duplicate and Move Buttons */
+        .duplicate-block-btn { display: none; position: absolute; top: 4px; right: 32px; width: 24px; height: 24px; background-color: #dbeafe; color: #1d4ed8; border: none; border-radius: 50%; cursor: pointer; align-items: center; justify-content: center; z-index: 6; }
+        .dynamic-preview-item:hover .duplicate-block-btn { display: flex; }
+        .duplicate-block-btn:hover { background-color: #bfdbfe; color: #1e40af; }
+
+        .move-up-btn { display: none; position: absolute; top: 32px; right: 4px; width: 24px; height: 24px; background-color: #f3f4f6; color: #374151; border: none; border-radius: 50%; cursor: pointer; align-items: center; justify-content: center; z-index: 6; }
+        .dynamic-preview-item:hover .move-up-btn { display: flex; }
+        .move-up-btn:hover { background-color: #e5e7eb; color: #1f2937; }
+
+        .move-down-btn { display: none; position: absolute; top: 32px; right: 32px; width: 24px; height: 24px; background-color: #f3f4f6; color: #374151; border: none; border-radius: 50%; cursor: pointer; align-items: center; justify-content: center; z-index: 6; }
+        .dynamic-preview-item:hover .move-down-btn { display: flex; }
+        .move-down-btn:hover { background-color: #e5e7eb; color: #1f2937; }
+
         .new-badge { background-color: #ef4444; color: white; font-size: 0.6rem; font-weight: bold; padding: 2px 5px; border-radius: 4px; margin-left: 6px; vertical-align: middle; }
         
         /* Modal Styles */
@@ -828,6 +842,9 @@
         body.presentation-mode #add-page-btn-wrapper,
         body.presentation-mode .section-ai-actions,
         body.presentation-mode .delete-block-btn,
+        body.presentation-mode .duplicate-block-btn,
+        body.presentation-mode .move-up-btn,
+        body.presentation-mode .move-down-btn,
         body.presentation-mode .delete-line-btn,
         body.presentation-mode .insert-line-wrapper,
         body.presentation-mode .panel-resizer {
@@ -1927,6 +1944,64 @@
                                 <button data-title-style="style-side-line" class="section-title-style-btn bg-gray-200 p-2 rounded-md text-sm" title="Titre avec ligne latérale">Ligne Côté</button>
                                 <button data-title-style="style-background" class="section-title-style-btn bg-gray-200 p-2 rounded-md text-sm" title="Titre avec fond coloré">Fond</button>
                                 <button data-title-style="style-boxed" class="section-title-style-btn bg-gray-200 p-2 rounded-md text-sm" title="Titre dans une boîte">Encadré</button>
+                            </div>
+                        </div>
+                    </details>
+
+                    <details class="control-group">
+                        <summary><span>Mise en Page Avancée</span><label class="completion-label"><input type="checkbox" id="completion-layout-advanced" class="completion-checkbox"><span>Fait ✅</span></label></summary>
+                        <div class="control-group-content">
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Marges de Page</label>
+                                    <div class="grid grid-cols-2 gap-2">
+                                        <div>
+                                            <label class="text-xs">Haut/Bas: <span id="page-margin-value">2</span>cm</label>
+                                            <input type="range" id="page-margin-slider" min="0.5" max="4" step="0.1" value="2" class="cv-input w-full h-2 bg-gray-200 rounded-lg cursor-pointer">
+                                        </div>
+                                        <div>
+                                            <label class="text-xs">Gauche/Droite: <span id="page-padding-value">2</span>cm</label>
+                                            <input type="range" id="page-padding-slider" min="0.5" max="4" step="0.1" value="2" class="cv-input w-full h-2 bg-gray-200 rounded-lg cursor-pointer">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Espacement des Modules</label>
+                                    <div class="grid grid-cols-2 gap-2">
+                                        <div>
+                                            <label class="text-xs">Entre modules: <span id="module-spacing-value">1.5</span>rem</label>
+                                            <input type="range" id="module-spacing-slider" min="0.5" max="3" step="0.1" value="1.5" class="cv-input w-full h-2 bg-gray-200 rounded-lg cursor-pointer">
+                                        </div>
+                                        <div>
+                                            <label class="text-xs">Entre paragraphes: <span id="paragraph-spacing-value">0.5</span>rem</label>
+                                            <input type="range" id="paragraph-spacing-slider" min="0.2" max="1.5" step="0.1" value="0.5" class="cv-input w-full h-2 bg-gray-200 rounded-lg cursor-pointer">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Taille des Polices</label>
+                                    <div class="grid grid-cols-2 gap-2">
+                                        <div>
+                                            <label class="text-xs">Titres H1: <span id="font-size-h1-value">40</span>pt</label>
+                                            <input type="range" id="font-size-h1-slider" min="24" max="60" step="1" value="40" class="cv-input w-full h-2 bg-gray-200 rounded-lg cursor-pointer">
+                                        </div>
+                                        <div>
+                                            <label class="text-xs">Titres H2: <span id="font-size-h2-value">21</span>pt</label>
+                                            <input type="range" id="font-size-h2-slider" min="14" max="32" step="1" value="21" class="cv-input w-full h-2 bg-gray-200 rounded-lg cursor-pointer">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="flex gap-2">
+                                    <button id="reset-layout-btn" class="flex-1 bg-gray-500 text-white py-2 px-4 rounded-md hover:bg-gray-600 flex items-center justify-center gap-2">
+                                        <i class="fas fa-undo"></i> Réinitialiser
+                                    </button>
+                                    <button id="save-layout-btn" class="flex-1 bg-green-500 text-white py-2 px-4 rounded-md hover:bg-green-600 flex items-center justify-center gap-2">
+                                        <i class="fas fa-save"></i> Sauvegarder
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </details>
