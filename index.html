@@ -2443,6 +2443,41 @@
             let activeIconTarget = null;
             
             // --- UI UTILITIES ---
+            // Minimal toast notification utility used across the app
+            function showNotification(message, type = 'info', duration = 3000) {
+                try {
+                    let container = document.getElementById('toast-container');
+                    if (!container) {
+                        container = document.createElement('div');
+                        container.id = 'toast-container';
+                        container.style.position = 'fixed';
+                        container.style.top = '16px';
+                        container.style.right = '16px';
+                        container.style.zIndex = '9999';
+                        container.style.display = 'flex';
+                        container.style.flexDirection = 'column';
+                        container.style.gap = '8px';
+                        document.body.appendChild(container);
+                    }
+                    const toast = document.createElement('div');
+                    const colors = { success: '#16a34a', error: '#dc2626', warning: '#d97706', info: '#2563eb' };
+                    toast.style.background = '#111827';
+                    toast.style.color = 'white';
+                    toast.style.borderLeft = `4px solid ${colors[type] || colors.info}`;
+                    toast.style.padding = '10px 12px';
+                    toast.style.borderRadius = '6px';
+                    toast.style.boxShadow = '0 4px 12px rgba(0,0,0,0.25)';
+                    toast.style.fontSize = '14px';
+                    toast.textContent = message;
+                    container.appendChild(toast);
+                    setTimeout(() => { toast.style.opacity = '0'; toast.style.transition = 'opacity .3s'; }, Math.max(100, duration - 300));
+                    setTimeout(() => { toast.remove(); }, Math.max(400, duration));
+                } catch (_) {
+                    // Last resort
+                    console.log(`[${type}] ${message}`);
+                }
+            }
+
             function showLoader(text = "Chargement...") {
                 controls.loaderText.textContent = text;
                 controls.loader.classList.remove('hidden');
