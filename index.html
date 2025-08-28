@@ -5453,8 +5453,14 @@
 
         // Fonction pour ouvrir les paramètres API
         function openAPISettings() {
-            controls.apiModal.classList.add('active');
-            loadApiSettings();
+            try {
+                if (typeof apiSettingsModal !== 'undefined' && apiSettingsModal.overlay) {
+                    apiSettingsModal.overlay.classList.add('active');
+                }
+                loadApiSettings();
+            } catch (e) {
+                console.warn('API settings modal not available:', e);
+            }
         }
 
         // Fonction pour améliorer l'accessibilité
@@ -5756,7 +5762,8 @@
             controls.secondaryColorPicker.value = randomSuggestion.secondary;
             updatePrimaryColor();
             updateSecondaryColor();
-        // === FONCTIONS IA ===
+    }
+    // === FONCTIONS IA ===
 
         // Fonction pour réécrire le profil avec l'IA
         async function rewriteProfile() {
@@ -6893,7 +6900,6 @@
                     counterElement.style.color = '#6b7280';
                 }
             }
-        }
         }
     });
 
