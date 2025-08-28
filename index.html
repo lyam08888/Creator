@@ -1274,6 +1274,7 @@
                 <button class="tab-btn -mb-px py-3 px-4 text-sm font-medium border-b-2 whitespace-nowrap" data-target="#panel-content" title="Édition du contenu du CV"><i class="fa-solid fa-file-lines mr-1"></i> Contenu</button>
                 <button class="tab-btn -mb-px py-3 px-4 text-sm font-medium border-b-2 whitespace-nowrap" data-target="#panel-layout" title="Configuration de la mise en page"><i class="fa-solid fa-columns mr-1"></i> Mise en Page</button>
                 <button class="tab-btn -mb-px py-3 px-4 text-sm font-medium border-b-2 whitespace-nowrap" data-target="#panel-banner" title="Personnalisation de la bannière"><i class="fa-solid fa-user-tie mr-1"></i> Bannière</button>
+                <button class="tab-btn -mb-px py-3 px-4 text-sm font-medium border-b-2 whitespace-nowrap" data-target="#panel-config" title="Configuration et paramètres avancés"><i class="fa-solid fa-cog mr-1"></i> Configuration</button>
             </div>
 
             <div id="tab-content" class="py-4 flex-grow overflow-y-auto">
@@ -2069,6 +2070,239 @@
                 </div>
             </div>
 
+            <!-- NOTIFICATION SYSTEM WITH TOOLTIPS -->
+            <div id="notification" class="fixed top-4 right-4 z-50"></div>
+
+            <!-- TOOLTIP SYSTEM -->
+            <div id="tooltip" class="fixed z-50 pointer-events-none opacity-0 transition-opacity duration-200 bg-gray-900 text-white text-sm px-3 py-2 rounded-lg shadow-lg max-w-xs"></div>
+
+            <!-- MODAL OVERLAYS -->
+            <div id="modal-overlay" class="modal-overlay">
+                <div class="modal-content">
+                    <div id="modal-header" class="flex justify-between items-center mb-4">
+                        <h3 id="modal-title" class="text-lg font-semibold">Titre de la modale</h3>
+                        <button id="modal-close" class="text-gray-500 hover:text-gray-700">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div id="modal-body"></div>
+                </div>
+            </div>
+
+            <script>
+                // Enhanced Notification System with Tooltips
+                class NotificationManager {
+                    constructor() {
+                        this.container = document.getElementById('notification');
+                        this.tooltip = document.getElementById('tooltip');
+                        this.activeTooltips = new Map();
+                        this.init();
+                    }
+
+                    init() {
+                        // Initialize tooltips for all elements with data-tooltip
+                        document.addEventListener('mouseover', (e) => {
+                            const target = e.target.closest('[data-tooltip]');
+                            if (target) {
+                                this.showTooltip(target, target.dataset.tooltip);
+                            }
+                        });
+
+                        document.addEventListener('mouseout', (e) => {
+                            const target = e.target.closest('[data-tooltip]');
+                            if (target) {
+                                this.hideTooltip();
+                            }
+                        });
+
+                        // Initialize modal system
+                        this.initModalSystem();
+                    }
+
+                    show(message, type = 'success', duration = 3000, options = {}) {
+                        const toast = document.createElement('div');
+                        toast.className = `toast p-4 rounded-lg shadow-lg text-white max-w-sm mb-2 transition-all duration-300 transform translate-x-full ${
+                            type === 'error' ? 'bg-red-500' :
+                            type === 'warning' ? 'bg-yellow-500' :
+                            type === 'info' ? 'bg-blue-500' :
+                            'bg-green-500'
+                        }`;
+
+                        const icon = type === 'error' ? 'fa-times-circle' :
+                                   type === 'warning' ? 'fa-exclamation-triangle' :
+                                   type === 'info' ? 'fa-info-circle' :
+                                   'fa-check-circle';
+
+                        toast.innerHTML = `
+                            <div class="flex items-center gap-3">
+                                <i class="fas ${icon} text-lg"></i>
+                                <div class="flex-1">
+                                    <div class="font-medium">${message}</div>
+                                    ${options.description ? `<div class="text-sm opacity-90 mt-1">${options.description}</div>` : ''}
+                                </div>
+                                <button class="dismiss-btn text-white hover:text-gray-200 ml-2">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                            ${options.action ? `
+                                <div class="mt-3 pt-3 border-t border-white border-opacity-20">
+                                    <button class="action-btn bg-white bg-opacity-20 hover:bg-opacity-30 text-white px-3 py-1 rounded text-sm transition-colors">
+                                        ${options.action.text}
+                                    </button>
+                                </div>
+                            ` : ''}
+                        `;
+
+                        // Add dismiss functionality
+                        const dismissBtn = toast.querySelector('.dismiss-btn');
+                        if (dismissBtn) {
+                            dismissBtn.addEventListener('click', () => this.dismiss(toast));
+                        }
+
+                        // Add action functionality
+                        const actionBtn = toast.querySelector('.action-btn');
+                        if (actionBtn && options.action && options.action.callback) {
+                            actionBtn.addEventListener('click', () => {
+                                options.action.callback();
+                                this.dismiss(toast);
+                            });
+                        }
+
+                        this.container.appendChild(toast);
+
+                        // Animate in
+                        setTimeout(() => {
+                            toast.style.transform = 'translateX(0)';
+                        }, 10);
+
+                        // Auto dismiss
+                        if (duration > 0) {
+                            setTimeout(() => this.dismiss(toast), duration);
+                        }
+
+                        return toast;
+                    }
+
+                    dismiss(toast) {
+                        toast.style.transform = 'translateX(100%)';
+                        setTimeout(() => {
+                            if (toast.parentNode) {
+                                toast.remove();
+                            }
+                        }, 300);
+                    }
+
+                    showTooltip(element, text) {
+                        if (!text) return;
+
+                        const rect = element.getBoundingClientRect();
+                        this.tooltip.textContent = text;
+                        this.tooltip.style.opacity = '1';
+
+                        // Position tooltip
+                        const tooltipRect = this.tooltip.getBoundingClientRect();
+                        let left = rect.left + (rect.width / 2) - (tooltipRect.width / 2);
+                        let top = rect.top - tooltipRect.height - 8;
+
+                        // Adjust if tooltip goes off screen
+                        if (left < 10) left = 10;
+                        if (left + tooltipRect.width > window.innerWidth - 10) {
+                            left = window.innerWidth - tooltipRect.width - 10;
+                        }
+                        if (top < 10) {
+                            top = rect.bottom + 8;
+                        }
+
+                        this.tooltip.style.left = left + 'px';
+                        this.tooltip.style.top = top + 'px';
+                    }
+
+                    hideTooltip() {
+                        this.tooltip.style.opacity = '0';
+                    }
+
+                    initModalSystem() {
+                        const overlay = document.getElementById('modal-overlay');
+                        const closeBtn = document.getElementById('modal-close');
+
+                        if (closeBtn) {
+                            closeBtn.addEventListener('click', () => this.hideModal());
+                        }
+
+                        if (overlay) {
+                            overlay.addEventListener('click', (e) => {
+                                if (e.target === overlay) {
+                                    this.hideModal();
+                                }
+                            });
+                        }
+
+                        // ESC key to close modal
+                        document.addEventListener('keydown', (e) => {
+                            if (e.key === 'Escape' && overlay.classList.contains('active')) {
+                                this.hideModal();
+                            }
+                        });
+                    }
+
+                    showModal(title, content, options = {}) {
+                        const overlay = document.getElementById('modal-overlay');
+                        const modalTitle = document.getElementById('modal-title');
+                        const modalBody = document.getElementById('modal-body');
+
+                        if (modalTitle) modalTitle.textContent = title;
+                        if (modalBody) modalBody.innerHTML = content;
+
+                        if (overlay) {
+                            overlay.classList.add('active');
+                            document.body.style.overflow = 'hidden';
+                        }
+                    }
+
+                    hideModal() {
+                        const overlay = document.getElementById('modal-overlay');
+                        if (overlay) {
+                            overlay.classList.remove('active');
+                            document.body.style.overflow = '';
+                        }
+                    }
+                }
+
+                // Initialize notification manager
+                const notificationManager = new NotificationManager();
+
+                // Override the old showNotification function
+                window.showNotification = (message, type = 'success', duration = 3000, options = {}) => {
+                    return notificationManager.show(message, type, duration, options);
+                };
+
+                // Add tooltips to existing elements
+                document.addEventListener('DOMContentLoaded', () => {
+                    // Add tooltips to toolbar buttons
+                    const toolbarButtons = document.querySelectorAll('#top-toolbar button');
+                    toolbarButtons.forEach(btn => {
+                        if (btn.title && !btn.dataset.tooltip) {
+                            btn.dataset.tooltip = btn.title;
+                        }
+                    });
+
+                    // Add tooltips to tab buttons
+                    const tabButtons = document.querySelectorAll('.tab-btn');
+                    tabButtons.forEach(btn => {
+                        if (btn.title && !btn.dataset.tooltip) {
+                            btn.dataset.tooltip = btn.title;
+                        }
+                    });
+
+                    // Add tooltips to control buttons
+                    const controlButtons = document.querySelectorAll('button[title]');
+                    controlButtons.forEach(btn => {
+                        if (btn.title && !btn.dataset.tooltip) {
+                            btn.dataset.tooltip = btn.title;
+                        }
+                    });
+                });
+            </script>
         </div>
 
         <!-- PREVIEW PANEL -->
