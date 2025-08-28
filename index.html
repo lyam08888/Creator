@@ -885,7 +885,25 @@
             }
         }
 
-        /* === NOUVEAUX STYLES DE MISE EN PAGE AVANCÉS === */
+        /* Tab Navigation Styles */
+        .tab-btn {
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+        .tab-btn:hover {
+            border-bottom-color: #d1d5db;
+        }
+        .tab-btn.active {
+            border-bottom-color: #2563eb !important;
+            color: #2563eb !important;
+        }
+        .tab-panel {
+            display: none;
+        }
+        .tab-panel:not(.hidden) {
+            display: block;
+        }
 
         /* Bannière inversée */
         .banner-inverted .banner-content-wrapper { flex-direction: row-reverse; }
@@ -1260,7 +1278,7 @@
 
             <div id="tab-content" class="py-4 flex-grow overflow-y-auto">
                 <!-- TAB: IA -->
-                <div id="panel-ia" class="tab-panel space-y-4">
+                <div id="panel-ia" class="tab-panel hidden space-y-4">
                     <details class="control-group" open>
                         <summary><span>Analyse IA</span><label class="completion-label"><input type="checkbox" id="completion-ia-analyse" class="completion-checkbox"><span>Fait ✅</span></label></summary>
                         <div class="control-group-content space-y-2">
