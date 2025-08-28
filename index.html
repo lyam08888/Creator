@@ -3684,6 +3684,78 @@
                 });
             }
 
+            // --- HISTORY (Undo/Redo) ---
+            const historyManager = { stack: [], index: -1, max: 50 };
+
+            function captureState() {
+                const panel = document.getElementById('controls');
+                if (!panel) return {};
+                const els = panel.querySelectorAll('input, textarea, select');
+                const state = {};
+                els.forEach(el => {
+                    if (!el.id) return;
+                    if (el.type === 'checkbox' || el.type === 'radio') state[el.id] = !!el.checked;
+                    else state[el.id] = el.value;
+                });
+                return state;
+            }
+
+            function applyState(state) {
+                if (!state) return;
+                Object.keys(state).forEach(id => {
+                    const el = document.getElementById(id);
+                    if (!el) return;
+                    if (el.type === 'checkbox' || el.type === 'radio') el.checked = !!state[id];
+                    else el.value = state[id];
+                });
+                try { updatePreview('all'); if (typeof updateAllStyles === 'function') updateAllStyles(); } catch(_) {}
+            }
+
+            function statesEqual(a, b) {
+                const ak = Object.keys(a || {}), bk = Object.keys(b || {});
+                if (ak.length !== bk.length) return false;
+                for (const k of ak) if (a[k] !== b[k]) return false;
+                return true;
+            }
+
+            function updateUndoRedoButtons() {
+                if (controls.undoBtn) controls.undoBtn.disabled = historyManager.index <= 0;
+                if (controls.redoBtn) controls.redoBtn.disabled = historyManager.index >= historyManager.stack.length - 1;
+            }
+
+            function pushHistory() {
+                const state = captureState();
+                const current = historyManager.stack[historyManager.index];
+                if (current && statesEqual(current, state)) { updateUndoRedoButtons(); return; }
+                if (historyManager.index < historyManager.stack.length - 1) {
+                    historyManager.stack = historyManager.stack.slice(0, historyManager.index + 1);
+                }
+                historyManager.stack.push(state);
+                if (historyManager.stack.length > historyManager.max) historyManager.stack.shift();
+                historyManager.index = historyManager.stack.length - 1;
+                updateUndoRedoButtons();
+            }
+
+            function undo() {
+                if (historyManager.index <= 0) return;
+                historyManager.index--;
+                applyState(historyManager.stack[historyManager.index]);
+                updateUndoRedoButtons();
+            }
+
+            function redo() {
+                if (historyManager.index >= historyManager.stack.length - 1) return;
+                historyManager.index++;
+                applyState(historyManager.stack[historyManager.index]);
+                updateUndoRedoButtons();
+            }
+
+            let historyDebounceTimer = null;
+            function scheduleHistoryPush() {
+                clearTimeout(historyDebounceTimer);
+                historyDebounceTimer = setTimeout(pushHistory, 300);
+            }
+
             // --- INITIALIZATION FUNCTION ---
             function initializeAll() {
                 console.log("Initializing UI components and event listeners...");
@@ -3738,6 +3810,8 @@
                     if(e.target.matches('.completion-checkbox')) {
                         updateProgressBar();
                     }
+                    // Track changes for undo/redo
+                    scheduleHistoryPush();
                      if(e.target.matches('.skill-level-input')) {
                          e.target.nextElementSibling.textContent = `${e.target.value}/5`;
                          updatePreview('form');
@@ -3758,6 +3832,9 @@
                         reader.readAsDataURL(file);
                     }
                 });
+
+                // Initialize history with current state
+                pushHistory();
                 
                 controls.bannerBgImage.addEventListener('change', (e) => {
                     const file = e.target.files[0];
