@@ -1922,14 +1922,6 @@
         </div>
     </div>
 
-    <!-- Modals et overlays -->
-    <div id="loader-overlay" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
-        <div class="bg-white p-6 rounded-lg shadow-lg text-center">
-            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-            <p id="loader-text">Chargement...</p>
-        </div>
-    </div>
-
     <div id="notification" class="fixed top-4 right-4 z-50"></div>
 
     <script>
@@ -1949,6 +1941,7 @@
                 loaderText: document.getElementById('loader-text'),
                 aiSuggestInterestsBtn: document.getElementById('ai-suggest-interests-btn'),
                 interestsCount: document.getElementById('interests-count'),
+                analyzeBtn: document.getElementById('analyze-btn'),
                 experienceList: document.getElementById('experience-list'),
                 formationList: document.getElementById('formation-list'),
                 addExperienceBtn: document.getElementById('add-experience'),
@@ -2022,18 +2015,289 @@
                 }, duration);
             }
 
-            async function callAIAPI(prompt) {
-                return new Promise((resolve) => {
-                    setTimeout(() => {
-                        resolve("lecture, sport, voyages, musique, cinéma, photographie, cuisine, jardinage");
-                    }, 1500);
+            function createDynamicItem(container, fields, data = {}, index = -1) {
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'p-2 border rounded-md bg-white relative';
+                
+                fields.forEach(field => {
+                    const isTextarea = field.type === 'textarea';
+                    const input = document.createElement(isTextarea ? 'textarea' : 'input');
+                    
+                    if (!isTextarea) input.type = 'text';
+                    
+                    input.placeholder = field.placeholder;
+                    input.className = `cv-input w-full p-1 border rounded-sm mb-1 data-${field.key}`;
+                    if(isTextarea) input.rows = 3;
+                    input.value = data[field.key] || '';
+                    itemDiv.appendChild(input);
                 });
+
+                const removeBtn = document.createElement('button');
+                removeBtn.innerHTML = '<i class="fas fa-times-circle text-red-400 hover:text-red-600"></i>';
+                removeBtn.className = 'absolute top-1 right-1 remove-dynamic-item-btn';
+                itemDiv.appendChild(removeBtn);
+                
+                if (index !== -1 && index < container.children.length) {
+                    container.insertBefore(itemDiv, container.children[index]);
+                } else {
+                    container.appendChild(itemDiv);
+                }
+                
+                updatePreview('form');
+                const firstInput = itemDiv.querySelector('input, textarea');
+                if (firstInput) firstInput.focus();
+            }
+
+            function updatePreview(source = 'form') {
+                // Simple preview update - can be enhanced later
+                console.log('Preview updated from:', source);
+            }
+
+            // API Settings functionality
+            let apiSettings = {
+                provider: 'gemini',
+                gemini: { apiKey: '', isValid: false },
+                chatgpt: { apiKey: '', model: 'gpt-3.5-turbo', isValid: false }
+            };
+
+            // Load API settings from localStorage
+            function loadApiSettings() {
+                const saved = localStorage.getItem('cv-api-settings');
+                if (saved) {
+                    apiSettings = { ...apiSettings, ...JSON.parse(saved) };
+                }
+            }
+
+            async function callGeminiAPI(prompt, schema) {
+                // Vérifier si une clé API Gemini est disponible
+                if (!apiSettings.gemini.apiKey) {
+                    showNotification("Veuillez configurer votre clé API Gemini dans les paramètres.", 'error');
+                    return null;
+                }
+
+                showLoader("L'IA réfléchit...");
+                try {
+                    const apiKey = apiSettings.gemini.apiKey;
+                    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+
+                    const payload = {
+                        contents: [{ role: "user", parts: [{ text: prompt }] }],
+                        generationConfig: schema ? { responseMimeType: "application/json", responseSchema: schema } : {}
+                    };
+
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (!response.ok) {
+                        const errorBody = await response.text();
+                        throw new Error(`Erreur API: ${response.status} ${response.statusText} - ${errorBody}`);
+                    }
+
+                    const result = await response.json();
+
+                    if (result.candidates && result.candidates.length > 0) {
+                         if (result.candidates[0].finishReason !== "STOP" && result.candidates[0].finishReason !== "MAX_TOKENS") {
+                               throw new Error(`L'IA a été bloquée (raison: ${result.candidates[0].finishReason}). Veuillez reformuler votre demande.`);
+                         }
+                        if (result.candidates[0].content && result.candidates[0].content.parts && result.candidates[0].content.parts.length > 0) {
+                            const text = result.candidates[0].content.parts[0].text;
+                            return schema ? JSON.parse(text) : text;
+                        }
+                    }
+
+                    throw new Error("Réponse invalide ou vide reçue de l'IA.");
+
+                } catch (error) {
+                    console.error("Erreur détaillée de l'IA:", error);
+                    showNotification(`Erreur de l'IA : ${error.message}`, 'error', 5000);
+                    return null;
+                } finally {
+                    hideLoader();
+                }
+            }
+
+            async function callChatGPTAPI(prompt) {
+                // Vérifier si une clé API ChatGPT est disponible
+                if (!apiSettings.chatgpt.apiKey) {
+                    showNotification("Veuillez configurer votre clé API ChatGPT dans les paramètres.", 'error');
+                    return null;
+                }
+
+                showLoader("L'IA réfléchit...");
+                try {
+                    const apiKey = apiSettings.chatgpt.apiKey;
+                    const apiUrl = 'https://api.openai.com/v1/chat/completions';
+
+                    const payload = {
+                        model: apiSettings.chatgpt.model || 'gpt-3.5-turbo',
+                        messages: [{ role: 'user', content: prompt }],
+                        max_tokens: 1000,
+                        temperature: 0.7
+                    };
+
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${apiKey}`
+                        },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (!response.ok) {
+                        const errorBody = await response.json();
+                        throw new Error(`Erreur API ChatGPT: ${errorBody.error?.message || response.statusText}`);
+                    }
+
+                    const result = await response.json();
+
+                    if (result.choices && result.choices.length > 0) {
+                        return result.choices[0].message.content;
+                    }
+
+                    throw new Error("Réponse invalide ou vide reçue de ChatGPT.");
+
+                } catch (error) {
+                    console.error("Erreur détaillée de ChatGPT:", error);
+                    showNotification(`Erreur ChatGPT : ${error.message}`, 'error', 5000);
+                    return null;
+                } finally {
+                    hideLoader();
+                }
+            }
+
+            async function callAIAPI(prompt, schema = null) {
+                // Vérifier qu'un fournisseur est sélectionné
+                if (!apiSettings.provider) {
+                    showNotification("Veuillez sélectionner un fournisseur d'IA dans les paramètres.", 'error');
+                    return null;
+                }
+
+                // Vérifier que la clé API est disponible
+                const hasApiKey = (apiSettings.provider === 'gemini' && apiSettings.gemini.apiKey) ||
+                                 (apiSettings.provider === 'chatgpt' && apiSettings.chatgpt.apiKey);
+
+                if (!hasApiKey) {
+                    showNotification(`Veuillez configurer votre clé API ${apiSettings.provider} dans les paramètres.`, 'error');
+                    return null;
+                }
+
+                // Router vers la bonne API
+                if (apiSettings.provider === 'gemini') {
+                    return await callGeminiAPI(prompt, schema);
+                } else if (apiSettings.provider === 'chatgpt') {
+                    return await callChatGPTAPI(prompt);
+                } else {
+                    showNotification("Fournisseur d'IA non supporté.", 'error');
+                    return null;
+                }
             }
 
             if (controls.interests && controls.interestsCount) {
                 controls.interests.addEventListener('input', () => {
                     const interests = controls.interests.value.split(',').filter(i => i.trim());
                     controls.interestsCount.textContent = interests.length;
+                });
+            }
+
+            // Event listeners for add buttons
+            if (controls.addExperienceBtn) {
+                controls.addExperienceBtn.addEventListener('click', () => createDynamicItem(controls.experienceList, [
+                    { key: 'title', placeholder: 'Titre du poste' },
+                    { key: 'meta', placeholder: 'Entreprise & Dates' },
+                    { key: 'desc', placeholder: 'Description des missions', type: 'textarea' }
+                ]));
+            }
+
+            if (controls.addFormationBtn) {
+                controls.addFormationBtn.addEventListener('click', () => createDynamicItem(controls.formationList, [
+                    { key: 'title', placeholder: 'Nom du diplôme' },
+                    { key: 'meta', placeholder: 'Établissement & Année' }
+                ]));
+            }
+
+            // Event listeners for other essential buttons
+            if (controls.analyzeBtn) {
+                controls.analyzeBtn.addEventListener('click', async () => {
+                    const aiInput = document.getElementById('ai-input');
+                    if (!aiInput || !aiInput.value.trim()) {
+                        showNotification('Veuillez saisir un texte à analyser.', 'warning');
+                        return;
+                    }
+                    
+                    try {
+                        showLoader('Analyse du texte...');
+                        const result = await callAIAPI(`Analyse ce texte et extrais les informations pour remplir un CV. Retourne un objet JSON avec les champs: nom, prenom, poste, description, email, telephone, competences, experiences, formations. Texte: "${aiInput.value}"`);
+                        
+                        if (result && typeof result === 'object') {
+                            if (result.nom) controls.nom.value = result.nom;
+                            if (result.prenom) controls.prenom.value = result.prenom;
+                            if (result.poste) controls.poste.value = result.poste;
+                            if (result.description) controls.description.value = result.description;
+                            if (result.email) controls.email.value = result.email;
+                            if (result.telephone) controls.telephone.value = result.telephone;
+                            if (result.competences) controls.competences.value = result.competences;
+                            
+                            updatePreview('form');
+                            showNotification('Texte analysé et champs remplis.', 'success');
+                        }
+                    } catch (error) {
+                        console.error('Erreur lors de l\'analyse:', error);
+                        showNotification('Erreur lors de l\'analyse du texte.', 'error');
+                    } finally {
+                        hideLoader();
+                    }
+                });
+            }
+
+            if (controls.downloadPdfBtn) {
+                controls.downloadPdfBtn.addEventListener('click', async () => {
+                    try {
+                        showLoader('Génération du PDF...');
+                        const element = document.getElementById('cv-preview-wrapper');
+                        if (!element) {
+                            showNotification('Aperçu CV non trouvé.', 'error');
+                            return;
+                        }
+                        
+                        const opt = {
+                            margin: 1,
+                            filename: 'cv.pdf',
+                            image: { type: 'jpeg', quality: 0.98 },
+                            html2canvas: { scale: 2 },
+                            jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+                        };
+                        
+                        await html2pdf().set(opt).from(element).save();
+                        showNotification('PDF généré avec succès !', 'success');
+                    } catch (error) {
+                        console.error('Erreur lors de la génération du PDF:', error);
+                        showNotification('Erreur lors de la génération du PDF.', 'error');
+                    } finally {
+                        hideLoader();
+                    }
+                });
+            }
+
+            if (controls.resetCvBtn) {
+                controls.resetCvBtn.addEventListener('click', () => {
+                    if (confirm('Êtes-vous sûr de vouloir réinitialiser le CV ? Toutes les données seront perdues.')) {
+                        // Reset all form fields
+                        document.querySelectorAll('.cv-input').forEach(input => {
+                            if (input.type === 'checkbox') input.checked = false;
+                            else input.value = '';
+                        });
+                        
+                        // Clear dynamic lists
+                        if (controls.experienceList) controls.experienceList.innerHTML = '';
+                        if (controls.formationList) controls.formationList.innerHTML = '';
+                        
+                        updatePreview('form');
+                        showNotification('CV réinitialisé.', 'success');
+                    }
                 });
             }
 
@@ -2067,6 +2331,21 @@
                         showNotification('Erreur lors de la génération de suggestions.', 'error');
                     } finally {
                         hideLoader();
+                    }
+                });
+            }
+
+            // Event delegation for remove buttons
+            const controlsPanel = document.getElementById('controls');
+            if (controlsPanel) {
+                controlsPanel.addEventListener('click', (e) => {
+                    const target = e.target;
+                    
+                    const removeBtn = target.closest('.remove-dynamic-item-btn');
+                    if (removeBtn) {
+                        removeBtn.parentElement.remove();
+                        updatePreview('form');
+                        return;
                     }
                 });
             }
@@ -2117,6 +2396,7 @@
             });
 
             syncPreview();
+            loadApiSettings();
             console.log('Tous les gestionnaires d\'événements sont configurés');
         });
     </script>
