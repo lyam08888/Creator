@@ -3230,24 +3230,31 @@
                     title.classList.add(activeStyle);
                 });
                 
+                // Bannière: style, alignement, inversion
                 const banner = preview.banner;
-                const newBannerStyle = controls.bannerStyleSelect.value;
-                const newAlign = document.querySelector('.banner-align-btn.active')?.dataset.bannerAlign || 'left';
-                const isInverted = controls.bannerInvertBtn.classList.contains('active');
+                if (banner) {
+                    const newBannerStyle = controls.bannerStyleSelect.value;
+                    const newAlign = document.querySelector('.banner-align-btn.active')?.dataset.bannerAlign || 'left';
+                    const isInverted = controls.bannerInvertBtn.classList.contains('active');
 
-                const classesToRemove = Array.from(banner.classList).filter(c => c.startsWith('banner-style-'));
-                if (classesToRemove.length > 0) banner.classList.remove(...classesToRemove);
+                    // Style de bannière (classes banner-style-*)
+                    const classesToRemove = Array.from(banner.classList).filter(c => c.startsWith('banner-style-'));
+                    if (classesToRemove.length > 0) banner.classList.remove(...classesToRemove);
+                    if (newBannerStyle) banner.classList.add(newBannerStyle);
 
-                if (newBannerStyle) banner.classList.add(newBannerStyle);
-                
-                const contentWrapper = banner.querySelector('.banner-content-wrapper');
-                contentWrapper.className = 'banner-content-wrapper'; // Reset classes
-                contentWrapper.classList.add(`banner-align-${newAlign}`);
-                if (isInverted) contentWrapper.classList.add('banner-layout-inverted');
+                    // Alignement appliqué sur l'élément bannière
+                    banner.classList.remove('banner-align-left', 'banner-align-center', 'banner-align-right');
+                    banner.classList.add(`banner-align-${newAlign}`);
+
+                    // Inversion (logo/texte)
+                    banner.classList.toggle('banner-inverted', !!isInverted);
+                }
 
                 // Mise à jour des styles avancés
                 updateAdvancedStyles();
 
+                // Rafraîchir l'aperçu de la bannière
+                updatePreview('banner');
                 checkAllPagesOverflow();
             }
 
@@ -4160,13 +4167,14 @@
                 // === NOUVEAUX EVENT LISTENERS POUR L'ALIGNEMENT DE LA BANNIÈRE ===
                 document.querySelectorAll('.banner-align-btn').forEach(btn => {
                     btn.addEventListener('click', (e) => {
+                        const targetBtn = e.currentTarget;
                         // Retirer la classe active de tous les boutons d'alignement
                         document.querySelectorAll('.banner-align-btn').forEach(b => b.classList.remove('active'));
                         // Ajouter la classe active au bouton cliqué
-                        e.target.classList.add('active');
+                        targetBtn.classList.add('active');
 
                         // Appliquer l'alignement à la bannière
-                        const alignment = e.target.dataset.bannerAlign;
+                        const alignment = targetBtn.dataset.bannerAlign;
                         const banner = document.getElementById('recruiter-banner');
                         if (banner) {
                             // Retirer toutes les classes d'alignement
@@ -4179,12 +4187,36 @@
                 });
 
                 // Event listener pour le bouton d'inversion logo/texte
-                document.getElementById('banner-invert-btn')?.addEventListener('click', () => {
+                document.getElementById('banner-invert-btn')?.addEventListener('click', (e) => {
                     const banner = document.getElementById('recruiter-banner');
+                    const btn = e.currentTarget;
+                    if (btn) btn.classList.toggle('active');
                     if (banner) {
                         banner.classList.toggle('banner-inverted');
                         updatePreview('banner');
                     }
+                });
+
+                // Event listeners pour fixer/détacher la bannière
+                controls.fixBannerTopBtn?.addEventListener('click', () => {
+                    moveBannerTo('top');
+                    updatePreview('banner');
+                    showNotification('Bannière fixée en haut.', 'success');
+                });
+                controls.fixBannerBottomBtn?.addEventListener('click', () => {
+                    moveBannerTo('bottom');
+                    updatePreview('banner');
+                    showNotification('Bannière fixée en bas.', 'success');
+                });
+                controls.modularBannerBtn?.addEventListener('click', () => {
+                    moveBannerTo('modular');
+                    updatePreview('banner');
+                    showNotification('Bannière rendue modulaire.', 'success');
+                });
+
+                // Afficher/Masquer la bannière
+                controls.toggleBanner?.addEventListener('change', () => {
+                    updatePreview('banner');
                 });
 
                 // Event listeners pour les boutons de taille de logo
