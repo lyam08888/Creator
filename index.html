@@ -6831,8 +6831,6 @@
             interestsCount.textContent = interests.length;
         }
 
-        }); // Fermeture du premier DOMContentLoaded event listener
-
         // Fonction pour compter les caractères dans les champs de texte
         function updateCharCount(textarea, counterElement, maxLength = null) {
             if (!textarea || !counterElement) return;
@@ -6850,6 +6848,8 @@
                 }
             }
         }
+
+        }); // Fermeture du premier DOMContentLoaded event listener
 
     </script>
 </body>
