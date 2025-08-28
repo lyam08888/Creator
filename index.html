@@ -1035,6 +1035,100 @@
         .a4-page-container { background-color: var(--panel-bg); }
         .tooltip-tailwind { background: var(--tooltip-bg); color: white; box-shadow: 0 8px 24px rgba(0,0,0,0.25); border-radius: 0.5rem; padding: 0.5rem 0.625rem; font-size: 0.75rem; }
 
+        /* Styles pour améliorer l'apparence et le fonctionnement */
+        .presentation-mode #controls {
+            display: none;
+        }
+        
+        .presentation-mode #cv-preview-wrapper {
+            margin: 0 auto;
+            max-width: none;
+        }
+        
+        .presentation-mode .cv-page {
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            margin: 20px auto;
+        }
+        
+        .show-overflow {
+            overflow: visible !important;
+        }
+        
+        .show-overflow::after {
+            content: '⚠️ DÉPASSEMENT';
+            position: absolute;
+            top: -20px;
+            right: 10px;
+            background: #ef4444;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: bold;
+        }
+        
+        .skill-tag {
+            display: inline-block;
+            background: #e5e7eb;
+            color: #374151;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.875rem;
+            margin: 2px 4px 2px 0;
+        }
+        
+        .interest-tag {
+            display: inline-block;
+            background: #dbeafe;
+            color: #1e40af;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.875rem;
+            margin: 2px 4px 2px 0;
+        }
+        
+        .remove-dynamic-item-btn {
+            transition: all 0.2s;
+        }
+        
+        .remove-dynamic-item-btn:hover {
+            transform: scale(1.1);
+        }
+        
+        .history-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        /* Améliorations pour l'accessibilité */
+        [contenteditable="true"]:focus {
+            outline: 2px solid #3b82f6;
+            outline-offset: 2px;
+        }
+        
+        button:focus {
+            outline: 2px solid #3b82f6;
+            outline-offset: 2px;
+        }
+        
+        /* Styles pour les tooltips */
+        .toolbar-btn {
+            transition: all 0.2s;
+        }
+        
+        .toolbar-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        
+        .ai-action-btn {
+            transition: all 0.2s;
+        }
+        
+        .ai-action-btn:hover {
+            transform: scale(1.05);
+        }
+
     </style>
 </head>
 <body class="bg-gray-200 font-sans">
@@ -1963,7 +2057,29 @@
                 bannerNomPreview: document.getElementById('banner-nom-preview'),
                 bannerPostePreview: document.getElementById('banner-poste-preview'),
                 bannerEmailPreview: document.getElementById('banner-email-preview'),
-                bannerTelPreview: document.getElementById('banner-tel-preview')
+                bannerTelPreview: document.getElementById('banner-tel-preview'),
+                
+                // Boutons de la toolbar
+                apiSettingsBtn: document.getElementById('api-settings-btn'),
+                accessibilityBtn: document.getElementById('accessibility-btn'),
+                saveCvBtn: document.getElementById('save-cv-btn'),
+                loadCvBtn: document.getElementById('load-cv-btn'),
+                saveSettingsBtn: document.getElementById('save-settings-btn'),
+                loadSettingsBtn: document.getElementById('load-settings-btn'),
+                templatesBtn: document.getElementById('templates-btn'),
+                shareBtn: document.getElementById('share-btn'),
+                anonymizeBtn: document.getElementById('anonymize-btn'),
+                toggleOverflowBtn: document.getElementById('toggle-overflow-btn'),
+                togglePresentationModeBtn: document.getElementById('toggle-presentation-mode-btn'),
+                undoBtn: document.getElementById('undo-btn'),
+                redoBtn: document.getElementById('redo-btn'),
+                collapseAllSectionsBtn: document.getElementById('collapse-all-sections-btn'),
+                
+                // Boutons IA
+                generateMailBtn: document.getElementById('generate-mail-btn'),
+                aiSummarizeBtn: document.getElementById('ai-summarize-btn'),
+                aiLimitSkillsBtn: document.getElementById('ai-limit-skills-btn'),
+                aiSynthesizeSkillsBtn: document.getElementById('ai-synthesize-skills-btn')
             };
 
             function showLoader(text = "Chargement...") {
@@ -2046,6 +2162,23 @@
                 updatePreview('form');
                 const firstInput = itemDiv.querySelector('input, textarea');
                 if (firstInput) firstInput.focus();
+            }
+
+            function getDynamicItemsData(container) {
+                const items = [];
+                container.querySelectorAll('.p-2.border.rounded-md').forEach(item => {
+                    const itemData = {};
+                    item.querySelectorAll('input, textarea').forEach(input => {
+                        const key = input.className.match(/data-(\w+)/)?.[1];
+                        if (key) {
+                            itemData[key] = input.value;
+                        }
+                    });
+                    if (Object.keys(itemData).length > 0) {
+                        items.push(itemData);
+                    }
+                });
+                return items;
             }
 
             function updatePreview(source = 'form') {
@@ -2247,6 +2380,420 @@
                     } catch (error) {
                         console.error('Erreur lors de l\'analyse:', error);
                         showNotification('Erreur lors de l\'analyse du texte.', 'error');
+                    } finally {
+                        hideLoader();
+                    }
+                });
+            }
+
+            // Toolbar buttons
+            if (controls.apiSettingsBtn) {
+                controls.apiSettingsBtn.addEventListener('click', () => {
+                    showNotification('Ouverture des paramètres API...', 'info');
+                    // TODO: Implement API settings modal
+                });
+            }
+
+            if (controls.accessibilityBtn) {
+                controls.accessibilityBtn.addEventListener('click', () => {
+                    showLoader('Amélioration de l\'accessibilité...');
+                    
+                    // Add accessibility improvements
+                    document.querySelectorAll('[contenteditable="true"]').forEach(el => {
+                        el.setAttribute('aria-label', 'Zone de texte éditable');
+                    });
+                    
+                    document.querySelectorAll('button:not([aria-label])').forEach(btn => {
+                        const icon = btn.querySelector('i');
+                        if (icon) {
+                            const iconClass = icon.className;
+                            let label = '';
+                            if (iconClass.includes('magic')) label = 'Utiliser l\'IA';
+                            else if (iconClass.includes('save')) label = 'Sauvegarder';
+                            else if (iconClass.includes('download')) label = 'Télécharger';
+                            else if (iconClass.includes('share')) label = 'Partager';
+                            if (label) btn.setAttribute('aria-label', label);
+                        }
+                    });
+                    
+                    hideLoader();
+                    showNotification('Accessibilité améliorée.', 'success');
+                });
+            }
+
+            if (controls.saveCvBtn) {
+                controls.saveCvBtn.addEventListener('click', () => {
+                    try {
+                        const cvData = {
+                            nom: controls.nom.value,
+                            prenom: controls.prenom.value,
+                            poste: controls.poste.value,
+                            description: controls.description.value,
+                            email: controls.email.value,
+                            telephone: controls.telephone.value,
+                            competences: controls.competences.value,
+                            interests: controls.interests.value,
+                            experiences: getDynamicItemsData(controls.experienceList),
+                            formations: getDynamicItemsData(controls.formationList),
+                            timestamp: new Date().toISOString()
+                        };
+                        
+                        localStorage.setItem('cv-data', JSON.stringify(cvData));
+                        showNotification('CV sauvegardé avec succès !', 'success');
+                    } catch (error) {
+                        console.error('Erreur lors de la sauvegarde:', error);
+                        showNotification('Erreur lors de la sauvegarde.', 'error');
+                    }
+                });
+            }
+
+            if (controls.loadCvBtn) {
+                controls.loadCvBtn.addEventListener('click', () => {
+                    try {
+                        const savedData = localStorage.getItem('cv-data');
+                        if (!savedData) {
+                            showNotification('Aucun CV sauvegardé trouvé.', 'warning');
+                            return;
+                        }
+                        
+                        const cvData = JSON.parse(savedData);
+                        
+                        // Load basic fields
+                        if (cvData.nom) controls.nom.value = cvData.nom;
+                        if (cvData.prenom) controls.prenom.value = cvData.prenom;
+                        if (cvData.poste) controls.poste.value = cvData.poste;
+                        if (cvData.description) controls.description.value = cvData.description;
+                        if (cvData.email) controls.email.value = cvData.email;
+                        if (cvData.telephone) controls.telephone.value = cvData.telephone;
+                        if (cvData.competences) controls.competences.value = cvData.competences;
+                        if (cvData.interests) controls.interests.value = cvData.interests;
+                        
+                        // Load dynamic items
+                        if (cvData.experiences) {
+                            controls.experienceList.innerHTML = '';
+                            cvData.experiences.forEach(exp => createDynamicItem(controls.experienceList, [
+                                { key: 'title', placeholder: 'Titre du poste' },
+                                { key: 'meta', placeholder: 'Entreprise & Dates' },
+                                { key: 'desc', placeholder: 'Description des missions', type: 'textarea' }
+                            ], exp));
+                        }
+                        
+                        if (cvData.formations) {
+                            controls.formationList.innerHTML = '';
+                            cvData.formations.forEach(form => createDynamicItem(controls.formationList, [
+                                { key: 'title', placeholder: 'Nom du diplôme' },
+                                { key: 'meta', placeholder: 'Établissement & Année' }
+                            ], form));
+                        }
+                        
+                        updatePreview('form');
+                        showNotification('CV chargé avec succès !', 'success');
+                    } catch (error) {
+                        console.error('Erreur lors du chargement:', error);
+                        showNotification('Erreur lors du chargement.', 'error');
+                    }
+                });
+            }
+
+            if (controls.saveSettingsBtn) {
+                controls.saveSettingsBtn.addEventListener('click', () => {
+                    try {
+                        const settings = {
+                            primaryColor: controls.primaryColorPicker?.value || '#2563eb',
+                            secondaryColor: controls.secondaryColorPicker?.value || '#334155',
+                            fontFamilyH1: controls.fontFamilyH1Select?.value || "'Montserrat', sans-serif",
+                            fontFamilyH2: controls.fontFamilyH2Select?.value || "'Montserrat', sans-serif",
+                            fontFamilyBody: controls.fontFamilyBodySelect?.value || "'Lato', sans-serif",
+                            apiSettings: apiSettings,
+                            timestamp: new Date().toISOString()
+                        };
+                        
+                        localStorage.setItem('cv-settings', JSON.stringify(settings));
+                        showNotification('Paramètres sauvegardés !', 'success');
+                    } catch (error) {
+                        console.error('Erreur lors de la sauvegarde des paramètres:', error);
+                        showNotification('Erreur lors de la sauvegarde des paramètres.', 'error');
+                    }
+                });
+            }
+
+            if (controls.loadSettingsBtn) {
+                controls.loadSettingsBtn.addEventListener('click', () => {
+                    try {
+                        const savedSettings = localStorage.getItem('cv-settings');
+                        if (!savedSettings) {
+                            showNotification('Aucun paramètre sauvegardé trouvé.', 'warning');
+                            return;
+                        }
+                        
+                        const settings = JSON.parse(savedSettings);
+                        
+                        // Apply settings
+                        if (settings.primaryColor && controls.primaryColorPicker) {
+                            controls.primaryColorPicker.value = settings.primaryColor;
+                        }
+                        if (settings.secondaryColor && controls.secondaryColorPicker) {
+                            controls.secondaryColorPicker.value = settings.secondaryColor;
+                        }
+                        if (settings.fontFamilyH1 && controls.fontFamilyH1Select) {
+                            controls.fontFamilyH1Select.value = settings.fontFamilyH1;
+                        }
+                        if (settings.fontFamilyH2 && controls.fontFamilyH2Select) {
+                            controls.fontFamilyH2Select.value = settings.fontFamilyH2;
+                        }
+                        if (settings.fontFamilyBody && controls.fontFamilyBodySelect) {
+                            controls.fontFamilyBodySelect.value = settings.fontFamilyBody;
+                        }
+                        if (settings.apiSettings) {
+                            apiSettings = { ...apiSettings, ...settings.apiSettings };
+                        }
+                        
+                        updatePreview('all');
+                        showNotification('Paramètres chargés !', 'success');
+                    } catch (error) {
+                        console.error('Erreur lors du chargement des paramètres:', error);
+                        showNotification('Erreur lors du chargement des paramètres.', 'error');
+                    }
+                });
+            }
+
+            if (controls.templatesBtn) {
+                controls.templatesBtn.addEventListener('click', () => {
+                    showNotification('Gestion des modèles - Fonctionnalité à venir...', 'info');
+                    // TODO: Implement templates modal
+                });
+            }
+
+            if (controls.shareBtn) {
+                controls.shareBtn.addEventListener('click', async () => {
+                    try {
+                        const cvData = {
+                            nom: controls.nom.value,
+                            prenom: controls.prenom.value,
+                            poste: controls.poste.value,
+                            description: controls.description.value,
+                            email: controls.email.value,
+                            telephone: controls.telephone.value,
+                            competences: controls.competences.value,
+                            interests: controls.interests.value
+                        };
+                        
+                        const shareData = {
+                            title: 'Mon CV',
+                            text: `CV de ${cvData.prenom} ${cvData.nom} - ${cvData.poste}`,
+                            url: window.location.href
+                        };
+                        
+                        if (navigator.share) {
+                            await navigator.share(shareData);
+                            showNotification('CV partagé avec succès !', 'success');
+                        } else {
+                            // Fallback: copy URL to clipboard
+                            await navigator.clipboard.writeText(window.location.href);
+                            showNotification('Lien copié dans le presse-papiers !', 'success');
+                        }
+                    } catch (error) {
+                        console.error('Erreur lors du partage:', error);
+                        showNotification('Erreur lors du partage.', 'error');
+                    }
+                });
+            }
+
+            if (controls.anonymizeBtn) {
+                controls.anonymizeBtn.addEventListener('click', () => {
+                    if (controls.nom.value && controls.prenom.value) {
+                        // Store original data
+                        const originalData = {
+                            nom: controls.nom.value,
+                            prenom: controls.prenom.value
+                        };
+                        
+                        // Anonymize
+                        const firstLetter = originalData.nom.charAt(0) + '.';
+                        controls.nom.value = firstLetter;
+                        controls.prenom.value = originalData.prenom;
+                        
+                        controls.anonymizeBtn.innerHTML = '<i class="fa-solid fa-user-check"></i> Désanonymiser';
+                        controls.anonymizeBtn.title = 'Désanonymiser le CV';
+                        
+                        updatePreview('form');
+                        showNotification('CV anonymisé.', 'success');
+                    } else {
+                        showNotification('Informations personnelles manquantes.', 'warning');
+                    }
+                });
+            }
+
+            if (controls.toggleOverflowBtn) {
+                controls.toggleOverflowBtn.addEventListener('click', () => {
+                    const cvPages = document.querySelectorAll('.cv-page');
+                    cvPages.forEach(page => {
+                        page.classList.toggle('show-overflow');
+                    });
+                    
+                    const isActive = document.querySelector('.cv-page.show-overflow');
+                    controls.toggleOverflowBtn.innerHTML = isActive ? 
+                        '<i class="fas fa-eye-slash"></i> Masquer dépassements' : 
+                        '<i class="fas fa-eye"></i> Afficher dépassements';
+                    
+                    showNotification(isActive ? 'Dépassements affichés' : 'Dépassements masqués', 'info');
+                });
+            }
+
+            if (controls.togglePresentationModeBtn) {
+                controls.togglePresentationModeBtn.addEventListener('click', () => {
+                    document.body.classList.toggle('presentation-mode');
+                    const isPresentation = document.body.classList.contains('presentation-mode');
+                    
+                    controls.togglePresentationModeBtn.innerHTML = isPresentation ? 
+                        '<i class="fas fa-desktop"></i> Mode Édition' : 
+                        '<i class="fas fa-presentation"></i> Mode Présentation';
+                    
+                    showNotification(isPresentation ? 'Mode présentation activé' : 'Mode édition activé', 'info');
+                });
+            }
+
+            if (controls.undoBtn) {
+                controls.undoBtn.addEventListener('click', () => {
+                    showNotification('Fonction Annuler - À implémenter', 'info');
+                    // TODO: Implement undo functionality
+                });
+            }
+
+            if (controls.redoBtn) {
+                controls.redoBtn.addEventListener('click', () => {
+                    showNotification('Fonction Rétablir - À implémenter', 'info');
+                    // TODO: Implement redo functionality
+                });
+            }
+
+            if (controls.collapseAllSectionsBtn) {
+                controls.collapseAllSectionsBtn.addEventListener('click', () => {
+                    document.querySelectorAll('#controls details, details.control-group').forEach(d => { 
+                        d.open = false; 
+                    });
+                    showNotification('Toutes les sections réduites.', 'success');
+                });
+            }
+
+            // AI buttons
+            if (controls.generateMailBtn) {
+                controls.generateMailBtn.addEventListener('click', async () => {
+                    const recruiterInfo = {
+                        nom: controls.bannerNom?.value || '',
+                        poste: controls.bannerPoste?.value || '',
+                        email: controls.bannerEmail?.value || ''
+                    };
+                    
+                    const candidateInfo = {
+                        nom: controls.nom.value,
+                        prenom: controls.prenom.value,
+                        poste: controls.poste.value,
+                        email: controls.email.value
+                    };
+                    
+                    if (!recruiterInfo.email || !candidateInfo.nom) {
+                        showNotification('Informations manquantes pour générer le mail.', 'warning');
+                        return;
+                    }
+                    
+                    try {
+                        showLoader('Génération du mail...');
+                        const prompt = `Génère un mail de présentation professionnel pour postuler au poste de "${candidateInfo.poste}". Le candidat s'appelle ${candidateInfo.prenom} ${candidateInfo.nom}, son email est ${candidateInfo.email}. Le recruteur est ${recruiterInfo.nom}, poste: ${recruiterInfo.poste}, email: ${recruiterInfo.email}. Le mail doit être en français, professionnel, et inclure une présentation brève, les motivations, et une formule de politesse.`;
+                        
+                        const generatedMail = await callAIAPI(prompt);
+                        
+                        if (generatedMail) {
+                            await navigator.clipboard.writeText(generatedMail);
+                            showNotification('Mail généré et copié dans le presse-papiers.', 'success');
+                        }
+                    } catch (error) {
+                        console.error('Erreur lors de la génération du mail:', error);
+                        showNotification('Erreur lors de la génération du mail.', 'error');
+                    } finally {
+                        hideLoader();
+                    }
+                });
+            }
+
+            if (controls.aiSummarizeBtn) {
+                controls.aiSummarizeBtn.addEventListener('click', async () => {
+                    const experienceItems = controls.experienceList.querySelectorAll('.data-desc');
+                    if (experienceItems.length === 0) {
+                        showNotification('Aucune expérience à résumer.', 'warning');
+                        return;
+                    }
+                    
+                    try {
+                        showLoader('Synthèse des expériences...');
+                        for (let i = 0; i < experienceItems.length; i++) {
+                            const textarea = experienceItems[i];
+                            const originalText = textarea.value;
+                            if (originalText) {
+                                const prompt = `Résume la description de cette mission professionnelle en 5 lignes maximum. Utilise des verbes d'action et un format de liste à puces (chaque point commençant par '• '). Ne retourne que le texte final formaté en liste à puces, sans aucune phrase d'introduction, de conclusion ou de commentaire. Voici la description : "${originalText}"`;
+                                const summary = await callAIAPI(prompt);
+                                if (summary) {
+                                    textarea.value = summary;
+                                }
+                            }
+                        }
+                        updatePreview('form');
+                        showNotification('Toutes les expériences ont été synthétisées.', 'success');
+                    } catch (error) {
+                        console.error('Erreur lors de la synthèse:', error);
+                        showNotification('Erreur lors de la synthèse.', 'error');
+                    } finally {
+                        hideLoader();
+                    }
+                });
+            }
+
+            if (controls.aiLimitSkillsBtn) {
+                controls.aiLimitSkillsBtn.addEventListener('click', async () => {
+                    const currentSkills = controls.competences.value;
+                    if (!currentSkills) {
+                        showNotification('La liste de compétences est vide.', 'warning');
+                        return;
+                    }
+                    
+                    try {
+                        showLoader('Limitation des compétences...');
+                        const prompt = `Analyse cette liste de compétences: "${currentSkills}". Garde seulement les 10 compétences les plus pertinentes et importantes pour un CV. Retourne uniquement la liste des 10 compétences sélectionnées, séparées par des virgules, sans explication.`;
+                        const limitedSkills = await callAIAPI(prompt);
+                        if (limitedSkills) {
+                            controls.competences.value = limitedSkills;
+                            updatePreview('form');
+                            showNotification('Compétences limitées à 10.', 'success');
+                        }
+                    } catch (error) {
+                        console.error('Erreur lors de la limitation:', error);
+                        showNotification('Erreur lors de la limitation des compétences.', 'error');
+                    } finally {
+                        hideLoader();
+                    }
+                });
+            }
+
+            if (controls.aiSynthesizeSkillsBtn) {
+                controls.aiSynthesizeSkillsBtn.addEventListener('click', async () => {
+                    const currentSkills = controls.competences.value;
+                    if (!currentSkills) {
+                        showNotification('La liste de compétences est vide.', 'warning');
+                        return;
+                    }
+                    
+                    try {
+                        showLoader('Synthèse des compétences...');
+                        const prompt = `Analyse cette liste de compétences: "${currentSkills}". Regroupe-les par catégories pertinentes (ex: Langages, Frameworks, Outils, Logiciels, Langues, etc.). Retourne le résultat sous la forme "Catégorie 1: compétence A, compétence B\nCatégorie 2: compétence C, compétence D". Ne retourne que le texte final formaté, sans aucune phrase d'introduction, de conclusion ou de commentaire.`;
+                        const organizedSkills = await callAIAPI(prompt);
+                        if (organizedSkills) {
+                            controls.competences.value = organizedSkills;
+                            updatePreview('form');
+                            showNotification('Compétences organisées par catégories.', 'success');
+                        }
+                    } catch (error) {
+                        console.error('Erreur lors de l\'organisation:', error);
+                        showNotification('Erreur lors de l\'organisation des compétences.', 'error');
                     } finally {
                         hideLoader();
                     }
