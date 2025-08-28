@@ -2449,81 +2449,104 @@
                 controls.loader.classList.add('flex');
             }
 
-            function hideLoader() {
-                controls.loader.classList.add('hidden');
-                controls.loader.classList.remove('flex');
+            async function analyzeText(inputText) {
+                try {
+                    setLoading(true, 'Analyse IA en cours...');
+                    const provider = apiSettings.provider || 'gemini';
+                    const model = provider === 'gemini' ? (apiSettings.gemini.model || 'gemini-1.5-flash') : (apiSettings.chatgpt.model || 'gpt-5');
+                    const prompt = buildAnalysisPrompt(inputText, provider, model);
+                    const schema = getAnalysisJsonSchema();
+                    const response = await callAIAPI(prompt, schema);
+
+                    let data = response;
+                    if (!data) {
+                        showNotification('Réponse vide de l\'IA. Un texte par défaut sera généré.', 'warning');
+                        data = { profile: generateProfileParagraphFallback(inputText) };
+                    }
+
+                    // Sanitize malformed stringified JSON wrapped in code fences
+                    if (typeof data === 'string') {
+                        let s = data.trim();
+                        if (s.startsWith('```')) s = s.replace(/^```[a-zA-Z]*\s*/, '').replace(/```\s*$/, '').trim();
+                        const first = s.indexOf('{');
+                        const last = s.lastIndexOf('}');
+                        if (first !== -1 && last !== -1 && last > first) {
+                            s = s.slice(first, last + 1);
+                        }
+                        try { data = JSON.parse(s); } catch (e) {
+                            showNotification('Impossible d\'analyser la réponse IA, utilisation d\'un paragraphe par défaut pour le profil.', 'warning');
+                            data = { profile: generateProfileParagraphFallback(inputText) };
+                        }
+                    }
+
+                    // Apply fields defensively
+                    const profileEl = document.getElementById('profile-textarea');
+                    if (profileEl) profileEl.value = data.profile || generateProfileParagraphFallback(inputText);
+
+                    const emailEl = document.getElementById('email-input');
+                    if (emailEl && data.email) emailEl.value = data.email;
+
+                    const telEl = document.getElementById('telephone-input');
+                    if (telEl && data.telephone) telEl.value = data.telephone;
+
+                    const skillsEl = document.getElementById('skills-textarea');
+                    if (skillsEl && Array.isArray(data.skills)) skillsEl.value = data.skills.join(', ');
+
+                    const langEl = document.getElementById('languages-textarea');
+                    if (langEl && Array.isArray(data.languages)) langEl.value = data.languages.join(', ');
+
+                    updatePreview('profile');
+                    updatePreview('skills');
+                    updatePreview('languages');
+                    showNotification('Analyse IA terminée.', 'success');
+                } catch (err) {
+                    const msg = (err && err.message) ? err.message : 'Erreur inconnue durant l\'analyse.';
+                    if (/quota|rate limit|insufficient_quota/i.test(msg)) {
+                        showNotification('Quota dépassé pour le fournisseur sélectionné. Essayez un autre modèle ou un autre fournisseur.', 'error');
+                    } else if (/json/i.test(msg)) {
+                        showNotification('La réponse IA n\'était pas un JSON valide. Un paragraphe de profil a été généré.', 'warning');
+                        const el = document.getElementById('profile-textarea');
+                        if (el) el.value = generateProfileParagraphFallback(inputText);
+                        updatePreview('profile');
+                    } else {
+                        showNotification(msg, 'error');
+                    }
+                } finally {
+                    setLoading(false);
+                }
             }
 
-            function showNotification(message, type = 'success', duration = 3000) {
-                const toast = document.createElement('div');
-                const icon = type === 'error' ? 'fa-times-circle text-red-500' : 'fa-check-circle text-green-500';
-                toast.className = 'toast';
-                toast.innerHTML = `<i class="fas ${icon}"></i><span>${message}</span>`;
-                document.getElementById('notification').appendChild(toast);
-                setTimeout(() => toast.classList.add('show'), 10);
-                setTimeout(() => {
-                    toast.classList.remove('show');
-                    toast.addEventListener('transitionend', () => toast.remove());
-                }, duration);
-            }
-            
-            function showConfirmModal(title, text) {
-                return new Promise((resolve) => {
-                    controls.confirmModal.title.textContent = title;
-                    controls.confirmModal.text.innerHTML = text;
-                    controls.confirmModal.overlay.classList.add('active');
-
-                    const cleanup = (result) => {
-                        controls.confirmModal.overlay.classList.remove('active');
-                        controls.confirmModal.okBtn.onclick = null;
-                        controls.confirmModal.cancelBtn.onclick = null;
-                        resolve(result);
-                    };
-
-                    controls.confirmModal.okBtn.onclick = () => cleanup(true);
-                    controls.confirmModal.cancelBtn.onclick = () => cleanup(false);
-                });
-            }
-
-
-            // --- HISTORY (UNDO/REDO) SYSTEM ---
-            // History is not saved, so this is a simple implementation
-            function undo() { showNotification("Fonctionnalité non disponible en mode hors ligne.", "error"); }
-            function redo() { showNotification("Fonctionnalité non disponible en mode hors ligne.", "error"); }
-            
-            // --- DRAG & DROP & RESIZE ---
+            // --- COLUMN RESIZING (two-column layout) ---
             let activeResizer = null;
             let activeContainer = null;
             let activeCol1 = null;
-            let initialX = 0;
-            let initialCol1Width = 0;
+            let startX = 0;
+            let containerWidth = 0;
+            let startCol1Percent = 0;
 
             function initResize(e) {
                 e.preventDefault();
                 activeResizer = e.target;
                 activeContainer = activeResizer.parentElement;
-                const columns = activeContainer.querySelectorAll('.cv-column');
-                activeCol1 = columns[0];
-                initialX = e.clientX;
-                initialCol1Width = activeCol1.offsetWidth;
-
+                const cols = activeContainer.querySelectorAll('.cv-column');
+                if (!cols || cols.length < 2) return;
+                activeCol1 = cols[0];
+                startX = e.clientX;
+                containerWidth = activeContainer.getBoundingClientRect().width;
+                startCol1Percent = (parseFloat(getComputedStyle(activeCol1).width) / containerWidth) * 100;
                 document.addEventListener('mousemove', doResize);
                 document.addEventListener('mouseup', stopResize);
                 document.body.classList.add('is-resizing');
             }
 
             function doResize(e) {
-                if (!activeResizer) return;
-                const dx = e.clientX - initialX;
-                const newCol1Width = initialCol1Width + dx;
-                const containerWidth = activeContainer.offsetWidth;
-                
-                if (newCol1Width < 50 || newCol1Width > containerWidth - 50) return;
-
-                const newCol1Percent = (newCol1Width / containerWidth) * 100;
+                if (!activeContainer || !activeCol1) return;
+                const dx = e.clientX - startX;
+                const dxPercent = (dx / containerWidth) * 100;
+                let newCol1Percent = startCol1Percent + dxPercent;
+                // clamp between 10% and 90%
+                newCol1Percent = Math.max(10, Math.min(90, newCol1Percent));
                 const newCol2Percent = 100 - newCol1Percent;
-
-                activeContainer.classList.remove('layout-2-col-33-67', 'layout-2-col-50-50', 'layout-2-col-67-33');
                 activeContainer.style.gridTemplateColumns = `${newCol1Percent}% ${newCol2Percent}%`;
                 activeResizer.style.left = `${newCol1Percent}%`;
             }
@@ -2535,6 +2558,9 @@
                 activeResizer = null;
                 activeContainer = null;
                 activeCol1 = null;
+                if (typeof checkAllPagesOverflow === 'function') {
+                    try { checkAllPagesOverflow(); } catch (_) {}
+                }
             }
 
             function setupAllResizers() {
@@ -3119,12 +3145,31 @@
                     const result = await response.json();
                     
                     if (result.candidates && result.candidates.length > 0) {
-                         if (result.candidates[0].finishReason !== "STOP" && result.candidates[0].finishReason !== "MAX_TOKENS") {
-                               throw new Error(`L'IA a été bloquée (raison: ${result.candidates[0].finishReason}). Veuillez reformuler votre demande.`);
-                         }
+                        if (result.candidates[0].finishReason !== "STOP" && result.candidates[0].finishReason !== "MAX_TOKENS") {
+                            throw new Error(`L'IA a été bloquée (raison: ${result.candidates[0].finishReason}). Veuillez reformuler votre demande.`);
+                        }
                         if (result.candidates[0].content && result.candidates[0].content.parts && result.candidates[0].content.parts.length > 0) {
-                            const text = result.candidates[0].content.parts[0].text;
-                            return schema ? JSON.parse(text) : text;
+                            const text = result.candidates[0].content.parts[0].text || '';
+                            if (!schema) return text;
+                            // Robust JSON parse with cleanup fallback
+                            try {
+                                return JSON.parse(text);
+                            } catch (_) {
+                                let cleaned = (text || '').trim();
+                                if (cleaned.startsWith('```')) {
+                                    cleaned = cleaned.replace(/^```[a-zA-Z]*\s*/, '').replace(/```\s*$/, '').trim();
+                                }
+                                const first = cleaned.indexOf('{');
+                                const last = cleaned.lastIndexOf('}');
+                                if (first !== -1 && last !== -1 && last > first) {
+                                    cleaned = cleaned.slice(first, last + 1);
+                                }
+                                try {
+                                    return JSON.parse(cleaned);
+                                } catch (e2) {
+                                    throw new Error(`Réponse JSON invalide de Gemini.`);
+                                }
+                            }
                         }
                     }
                     
@@ -3196,24 +3241,25 @@
                     return null;
                 }
 
-                // Vérifier que la clé API est disponible
-                const hasApiKey = (apiSettings.provider === 'gemini' && apiSettings.gemini.apiKey) ||
-                                 (apiSettings.provider === 'chatgpt' && apiSettings.chatgpt.apiKey);
+                const preferred = apiSettings.provider;
+                const alt = preferred === 'gemini' ? 'chatgpt' : 'gemini';
+                const hasPreferredKey = (preferred === 'gemini' && apiSettings.gemini.apiKey) || (preferred === 'chatgpt' && apiSettings.chatgpt.apiKey);
+                const hasAltKey = (alt === 'gemini' && apiSettings.gemini.apiKey) || (alt === 'chatgpt' && apiSettings.chatgpt.apiKey);
 
-                if (!hasApiKey) {
-                    showNotification(`Veuillez configurer votre clé API ${apiSettings.provider} dans les paramètres.`, 'error');
+                if (!hasPreferredKey && !hasAltKey) {
+                    showNotification(`Veuillez configurer une clé API (Gemini ou ChatGPT) dans les paramètres.`, 'error');
                     return null;
                 }
 
-                // Router vers la bonne API
-                if (apiSettings.provider === 'gemini') {
-                    return await callGeminiAPI(prompt, schema);
-                } else if (apiSettings.provider === 'chatgpt') {
-                    return await callChatGPTAPI(prompt);
-                } else {
-                    showNotification("Fournisseur d'IA non supporté.", 'error');
-                    return null;
+                const runProvider = async (provider) => provider === 'gemini' ? callGeminiAPI(prompt, schema) : callChatGPTAPI(prompt);
+
+                // Essayer fournisseur préféré, puis basculer si échec et clé alternative dispo
+                let result = hasPreferredKey ? await runProvider(preferred) : null;
+                if (!result && hasAltKey) {
+                    showNotification(`Bascule automatique vers ${alt.toUpperCase()} (échec ${preferred.toUpperCase()}).`, 'info');
+                    result = await runProvider(alt);
                 }
+                return result;
             }
 
             function updateAllStyles() {
@@ -5052,6 +5098,9 @@
         // Alias (compat) expected by earlier listeners
         function saveAPISettings() { return saveApiSettings(); }
 
+    // Alias (compat) for loading API settings (older code calls loadAPISettings)
+    function loadAPISettings() { return loadApiSettings(); }
+
         // Save banner settings
         function saveBannerSettings() {
             const bannerData = {
@@ -5438,8 +5487,8 @@
                 if (cvData.prenom) controls.prenom.value = cvData.prenom;
                 if (cvData.poste) controls.poste.value = cvData.poste;
                 if (cvData.description) controls.description.value = cvData.description;
-                if (cvData.email) controls.email.value = cvData.email;
-                if (cvData.telephone) controls.telephone.value = cvData.telephone;
+                if (cvData.email && controls.email) controls.email.value = cvData.email;
+                if (cvData.telephone && controls.telephone) controls.telephone.value = cvData.telephone;
                 if (cvData.competences) controls.competences.value = cvData.competences;
 
                 // Remplir les expériences
