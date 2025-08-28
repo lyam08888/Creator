@@ -1368,6 +1368,21 @@
                 <i class="fa-solid fa-moon"></i> THÈME SOMBRE
             </button>
         </div>
+
+        <!-- ZOOM CONTROLLER -->
+        <div id="zoom-controller" class="flex items-center gap-2 bg-gray-100 rounded-lg p-2 ml-4">
+            <button id="zoom-out-btn" class="zoom-btn w-8 h-8 bg-white hover:bg-gray-50 rounded border border-gray-300 flex items-center justify-center text-gray-600 hover:text-gray-800" title="Zoom arrière (Ctrl+-)">
+                <i class="fas fa-minus text-sm"></i>
+            </button>
+            <input type="range" id="zoom-slider" min="50" max="200" value="100" step="10" class="zoom-range w-20 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer" title="Ajuster le niveau de zoom">
+            <span id="zoom-value" class="zoom-value text-sm font-medium text-gray-700 min-w-[3rem] text-center">100%</span>
+            <button id="zoom-in-btn" class="zoom-btn w-8 h-8 bg-white hover:bg-gray-50 rounded border border-gray-300 flex items-center justify-center text-gray-600 hover:text-gray-800" title="Zoom avant (Ctrl++)">
+                <i class="fas fa-plus text-sm"></i>
+            </button>
+            <button id="zoom-reset-btn" class="zoom-btn w-8 h-8 bg-white hover:bg-gray-50 rounded border border-gray-300 flex items-center justify-center text-gray-600 hover:text-gray-800" title="Réinitialiser le zoom à 100% (Ctrl+0)">
+                <i class="fas fa-expand text-sm"></i>
+            </button>
+        </div>
     </div>
 
     <div class="flex flex-col lg:flex-row min-h-screen relative">
@@ -2708,6 +2723,24 @@
                             activeModals.forEach(modal => modal.classList.remove('active'));
                         }
 
+                        // Ctrl++ or Ctrl+=: Zoom In
+                        if (e.ctrlKey && (e.key === '=' || e.key === '+')) {
+                            e.preventDefault();
+                            if (controls.zoomInBtn) controls.zoomInBtn.click();
+                        }
+
+                        // Ctrl+-: Zoom Out
+                        if (e.ctrlKey && e.key === '-') {
+                            e.preventDefault();
+                            if (controls.zoomOutBtn) controls.zoomOutBtn.click();
+                        }
+
+                        // Ctrl+0: Reset Zoom
+                        if (e.ctrlKey && e.key === '0') {
+                            e.preventDefault();
+                            if (controls.zoomResetBtn) controls.zoomResetBtn.click();
+                        }
+
                         // F1: Open Accessibility Modal
                         if (e.key === 'F1') {
                             e.preventDefault();
@@ -2729,7 +2762,7 @@
 
                     // Show keyboard shortcuts hint
                     showNotification(
-                        'Raccourcis disponibles : Ctrl+S (sauvegarder), Ctrl+P (PDF), Ctrl+Z/Y (annuler/rétablir), F1 (accessibilité), F2 (API), F3 (templates)',
+                        'Raccourcis disponibles : Ctrl+S (sauvegarder), Ctrl+P (PDF), Ctrl+Z/Y (annuler/rétablir), Ctrl+/- (zoom), Ctrl+0 (reset zoom), F1 (accessibilité), F2 (API), F3 (templates)',
                         'info',
                         8000,
                         {
@@ -3308,6 +3341,123 @@
                     };
                     input.click();
                 }
+
+                // ===========================================
+                // ZOOM FUNCTIONALITY
+                // ===========================================
+
+                let currentZoom = 100;
+                const minZoom = 50;
+                const maxZoom = 200;
+                const zoomStep = 10;
+
+                function updateZoomDisplay() {
+                    if (controls.zoomValue) {
+                        controls.zoomValue.textContent = `${currentZoom}%`;
+                    }
+                    if (controls.zoomSlider) {
+                        controls.zoomSlider.value = currentZoom;
+                    }
+                }
+
+                function applyZoom() {
+                    const cvWrapper = document.getElementById('cv-preview-wrapper');
+                    if (cvWrapper) {
+                        cvWrapper.style.transform = `scale(${currentZoom / 100})`;
+                        cvWrapper.style.transformOrigin = 'top center';
+                        cvWrapper.style.transition = 'transform 0.3s ease';
+                    }
+                }
+
+                function setZoom(zoomLevel) {
+                    currentZoom = Math.max(minZoom, Math.min(maxZoom, zoomLevel));
+                    updateZoomDisplay();
+                    applyZoom();
+                    
+                    // Sauvegarder le zoom dans localStorage
+                    localStorage.setItem('cv-zoom-level', currentZoom.toString());
+                }
+
+                function zoomIn() {
+                    setZoom(currentZoom + zoomStep);
+                    showNotification(`Zoom: ${currentZoom}%`, 'info', 1000);
+                }
+
+                function zoomOut() {
+                    setZoom(currentZoom - zoomStep);
+                    showNotification(`Zoom: ${currentZoom}%`, 'info', 1000);
+                }
+
+                function resetZoom() {
+                    setZoom(100);
+                    showNotification('Zoom réinitialisé à 100%', 'success', 1500);
+                }
+
+                // Initialiser le zoom
+                function initZoom() {
+                    // Charger le zoom sauvegardé
+                    const savedZoom = localStorage.getItem('cv-zoom-level');
+                    if (savedZoom) {
+                        currentZoom = parseInt(savedZoom);
+                    }
+                    
+                    updateZoomDisplay();
+                    applyZoom();
+
+                    // Gestionnaires d'événements pour les contrôles de zoom
+                    if (controls.zoomInBtn) {
+                        controls.zoomInBtn.addEventListener('click', zoomIn);
+                    }
+                    
+                    if (controls.zoomOutBtn) {
+                        controls.zoomOutBtn.addEventListener('click', zoomOut);
+                    }
+                    
+                    if (controls.zoomResetBtn) {
+                        controls.zoomResetBtn.addEventListener('click', resetZoom);
+                    }
+                    
+                    if (controls.zoomSlider) {
+                        controls.zoomSlider.addEventListener('input', (e) => {
+                            setZoom(parseInt(e.target.value));
+                        });
+                        
+                        controls.zoomSlider.addEventListener('change', (e) => {
+                            showNotification(`Zoom: ${currentZoom}%`, 'info', 1000);
+                        });
+                    }
+
+                    // Raccourcis clavier pour le zoom
+                    document.addEventListener('keydown', (e) => {
+                        if (e.ctrlKey || e.metaKey) {
+                            if (e.key === '=' || e.key === '+') {
+                                e.preventDefault();
+                                zoomIn();
+                            } else if (e.key === '-') {
+                                e.preventDefault();
+                                zoomOut();
+                            } else if (e.key === '0') {
+                                e.preventDefault();
+                                resetZoom();
+                            }
+                        }
+                    });
+
+                    // Gestion du zoom avec la molette de la souris (Ctrl + scroll)
+                    document.addEventListener('wheel', (e) => {
+                        if (e.ctrlKey || e.metaKey) {
+                            e.preventDefault();
+                            if (e.deltaY < 0) {
+                                zoomIn();
+                            } else {
+                                zoomOut();
+                            }
+                        }
+                    });
+                }
+
+                // Initialiser le zoom au chargement de la page
+                initZoom();
             </script>
         </div>
 
@@ -3412,7 +3562,15 @@
                 generateMailBtn: document.getElementById('generate-mail-btn'),
                 aiSummarizeBtn: document.getElementById('ai-summarize-btn'),
                 aiLimitSkillsBtn: document.getElementById('ai-limit-skills-btn'),
-                aiSynthesizeSkillsBtn: document.getElementById('ai-synthesize-skills-btn')
+                aiSynthesizeSkillsBtn: document.getElementById('ai-synthesize-skills-btn'),
+
+                // Contrôles de zoom
+                zoomController: document.getElementById('zoom-controller'),
+                zoomInBtn: document.getElementById('zoom-in-btn'),
+                zoomOutBtn: document.getElementById('zoom-out-btn'),
+                zoomResetBtn: document.getElementById('zoom-reset-btn'),
+                zoomSlider: document.getElementById('zoom-slider'),
+                zoomValue: document.getElementById('zoom-value')
             };
 
             function showLoader(text = "Chargement...") {
