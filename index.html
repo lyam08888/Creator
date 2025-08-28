@@ -4177,9 +4177,74 @@
                 });
 
                 document.querySelectorAll('.a4-page').forEach(setupOverflowObserver);
+                // Enable enhanced tooltips
+                setupTooltips();
             }
 
             // --- TOOLBAR AND ACCESSIBILITY FUNCTIONALITY ---
+            // Basic implementations for common toolbar actions if absent
+            function printCV() { try { window.print(); } catch (e) { console.error('Print failed', e); } }
+            function toggleDarkMode() { document.documentElement.classList.toggle('dark'); }
+            function toggleOverflow() {
+                document.body.classList.toggle('overflow-check-active');
+                const btn = document.getElementById('toggle-overflow-btn');
+                if (btn) btn.classList.toggle('active');
+                try { checkAllPagesOverflow(); } catch (_) {}
+            }
+            function togglePresentationMode() {
+                document.body.classList.toggle('presentation-mode');
+                const isActive = document.body.classList.contains('presentation-mode');
+                const btn = document.getElementById('toggle-presentation-mode-btn');
+                if (btn) btn.innerHTML = `<i class="fa-solid ${isActive ? 'fa-eye-slash' : 'fa-eye'}"></i> ${isActive ? 'Quitter Présentation' : 'MODE PRÉSENTATION'}`;
+            }
+
+            // Lightweight custom tooltip system using [title] or [data-tooltip]
+            function setupTooltips() {
+                const tip = document.createElement('div');
+                tip.id = 'app-tooltip';
+                Object.assign(tip.style, {
+                    position: 'fixed', zIndex: 99999, pointerEvents: 'none', padding: '6px 8px', borderRadius: '6px',
+                    fontSize: '12px', background: 'rgba(17,24,39,0.95)', color: '#fff', boxShadow: '0 4px 10px rgba(0,0,0,0.2)',
+                    left: '-9999px', top: '-9999px', opacity: '0', transition: 'opacity 120ms ease'
+                });
+                document.body.appendChild(tip);
+
+                let current = null;
+                const getLabel = (el) => el?.getAttribute('data-tooltip') || el?.getAttribute('title');
+                const show = (el, x, y) => {
+                    const label = getLabel(el);
+                    if (!label) return;
+                    tip.textContent = label;
+                    tip.style.left = (x + 12) + 'px';
+                    tip.style.top = (y + 12) + 'px';
+                    tip.style.opacity = '1';
+                };
+                const hide = () => {
+                    tip.style.opacity = '0';
+                    tip.style.left = '-9999px';
+                    tip.style.top = '-9999px';
+                };
+
+                document.addEventListener('mousemove', (e) => {
+                    const el = e.target.closest('[data-tooltip],[title]');
+                    if (el !== current) {
+                        if (current) hide();
+                        current = el;
+                        if (el) {
+                            // Preserve native title in data-tooltip to avoid native tooltip flicker
+                            if (el.hasAttribute('title')) {
+                                el.setAttribute('data-tooltip', el.getAttribute('title'));
+                                el.removeAttribute('title');
+                            }
+                            show(el, e.clientX, e.clientY);
+                        }
+                    } else if (el) {
+                        tip.style.left = (e.clientX + 12) + 'px';
+                        tip.style.top = (e.clientY + 12) + 'px';
+                    }
+                });
+                document.addEventListener('mouseleave', hide);
+            }
 
             // Generate share link functionality
             function generateShareLink() {
