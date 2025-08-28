@@ -5364,7 +5364,7 @@
 
             try {
                 showLoader('Analyse du texte...');
-                const prompt = `Analyse ce texte et extrais les informations pour remplir un CV. Retourne un objet JSON avec les champs suivants: nom, prenom, poste, description, email, telephone, competences, experiences (tableau d'objets avec title, meta, desc), formations (tableau d'objets avec title, meta). Texte à analyser: "${textToAnalyze}"`;
+                const prompt = `Analyse ce texte et extrais les informations pour remplir un CV. Retourne un objet JSON STRICT (sans commentaire ni texte hors JSON) avec les champs suivants: nom, prenom, poste, description, email, telephone, competences, experiences (tableau d'objets avec title, meta, desc), formations (tableau d'objets avec title, meta). La propriété description DOIT contenir un paragraphe concis (2-3 phrases) en français résumant le profil professionnel. Texte à analyser: "${textToAnalyze}"`;
 
                 const result = await callAIAPI(prompt);
                 // Sanitize potential code fences or explanations
@@ -5419,6 +5419,26 @@
                             { key: 'meta', placeholder: 'Établissement & Année' }
                         ], form);
                     });
+                }
+
+                // Générer un paragraphe de profil si manquant
+                if (!controls.description.value || !controls.description.value.trim()) {
+                    try {
+                        const summaryContext = {
+                            nom: controls.nom.value,
+                            prenom: controls.prenom.value,
+                            poste: controls.poste.value,
+                            competences: controls.competences.value,
+                            experiences: (cvData.experiences || []).slice(0, 3)
+                        };
+                        const profilePrompt = `Rédige un paragraphe de profil en français (2 à 3 phrases, 60-80 mots) pour un CV, ton professionnel et percutant, sans liste ni titres. Données: ${JSON.stringify(summaryContext)}`;
+                        const generatedProfile = await callAIAPI(profilePrompt);
+                        if (generatedProfile && generatedProfile.trim()) {
+                            controls.description.value = generatedProfile.trim();
+                        }
+                    } catch (e) {
+                        console.warn('Impossible de générer automatiquement le profil:', e);
+                    }
                 }
 
                 updatePreview('form');
