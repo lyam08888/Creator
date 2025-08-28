@@ -4092,13 +4092,13 @@
                 document.getElementById('generate-mail-btn')?.addEventListener('click', generateMail);
                 document.getElementById('ai-summarize-btn')?.addEventListener('click', summarizeAllExperiencesAI);
 
-                // Event listeners pour les boutons IA du profil
-                document.getElementById('ai-rewrite-profile')?.addEventListener('click', rewriteProfile);
-                document.getElementById('ai-optimize-profile')?.addEventListener('click', optimizeProfile);
+                // Event listeners pour les boutons IA du profil (wrappés pour éviter les ReferenceError avant définition)
+                document.getElementById('ai-rewrite-profile')?.addEventListener('click', () => rewriteProfile());
+                document.getElementById('ai-optimize-profile')?.addEventListener('click', () => optimizeProfile());
 
-                // Event listeners pour les boutons de gestion des compétences
-                document.getElementById('ai-categorize-skills')?.addEventListener('click', categorizeSkills);
-                document.getElementById('ai-suggest-skills')?.addEventListener('click', suggestSkills);
+                // Event listeners pour les boutons de gestion des compétences (wrappés)
+                document.getElementById('ai-categorize-skills')?.addEventListener('click', () => categorizeSkills());
+                document.getElementById('ai-suggest-skills')?.addEventListener('click', () => suggestSkills());
 
                 // === CORRECTION DES EVENT LISTENERS AVEC LES BONS IDs ===
 
