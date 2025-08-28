@@ -1933,13 +1933,10 @@
     <div id="notification" class="fixed top-4 right-4 z-50"></div>
 
     <script>
-        // Script principal pour l'application CV
         document.addEventListener('DOMContentLoaded', function() {
             console.log('Application CV chargée');
             
-            // Sélecteurs principaux
             const controls = {
-                // Éléments de base
                 nom: document.getElementById('nom'),
                 prenom: document.getElementById('prenom'),
                 poste: document.getElementById('poste'),
@@ -1948,35 +1945,21 @@
                 description: document.getElementById('description'),
                 competences: document.getElementById('competences'),
                 interests: document.getElementById('interests'),
-                
-                // Éléments d'interface
                 loader: document.getElementById('loader-overlay'),
                 loaderText: document.getElementById('loader-text'),
-                
-                // Boutons IA
                 aiSuggestInterestsBtn: document.getElementById('ai-suggest-interests-btn'),
-                
-                // Compteurs
                 interestsCount: document.getElementById('interests-count'),
-                
-                // Listes
                 experienceList: document.getElementById('experience-list'),
                 formationList: document.getElementById('formation-list'),
-                
-                // Boutons d'action
                 addExperienceBtn: document.getElementById('add-experience'),
                 addFormationBtn: document.getElementById('add-formation'),
                 downloadPdfBtn: document.getElementById('download-pdf-btn'),
                 resetCvBtn: document.getElementById('reset-cv-btn'),
-                
-                // Éléments de bannière
                 bannerNom: document.getElementById('banner-nom'),
                 bannerPoste: document.getElementById('banner-poste'),
                 bannerEmail: document.getElementById('banner-email'),
                 bannerTel: document.getElementById('banner-tel'),
                 bannerImage: document.getElementById('banner-image'),
-                
-                // Prévisualisations
                 cvNomPrenomPreview: document.getElementById('cv-nom-prenom-preview'),
                 cvPostePreview: document.getElementById('cv-poste-preview'),
                 cvDescriptionPreview: document.getElementById('cv-description-preview'),
@@ -1984,15 +1967,12 @@
                 cvFormationPreview: document.getElementById('cv-formation-preview'),
                 cvCompetencesPreview: document.getElementById('cv-competences-preview'),
                 cvInterestsPreview: document.getElementById('cv-interests-preview'),
-                
-                // Éléments de bannière preview
                 bannerNomPreview: document.getElementById('banner-nom-preview'),
                 bannerPostePreview: document.getElementById('banner-poste-preview'),
                 bannerEmailPreview: document.getElementById('banner-email-preview'),
                 bannerTelPreview: document.getElementById('banner-tel-preview')
             };
 
-            // Fonctions utilitaires
             function showLoader(text = "Chargement...") {
                 if (controls.loaderText) controls.loaderText.textContent = text;
                 if (controls.loader) {
@@ -2031,14 +2011,10 @@
                 `;
                 
                 container.appendChild(toast);
-                
-                // Animation d'entrée
                 setTimeout(() => {
                     toast.style.opacity = '1';
                     toast.style.transform = 'translateX(0)';
                 }, 10);
-                
-                // Animation de sortie
                 setTimeout(() => {
                     toast.style.opacity = '0';
                     toast.style.transform = 'translateX(100%)';
@@ -2046,7 +2022,6 @@
                 }, duration);
             }
 
-            // Fonction simulée pour l'API IA
             async function callAIAPI(prompt) {
                 return new Promise((resolve) => {
                     setTimeout(() => {
@@ -2055,7 +2030,6 @@
                 });
             }
 
-            // Gestion des compteurs d'intérêts
             if (controls.interests && controls.interestsCount) {
                 controls.interests.addEventListener('input', () => {
                     const interests = controls.interests.value.split(',').filter(i => i.trim());
@@ -2063,7 +2037,6 @@
                 });
             }
 
-            // Gestion du bouton de suggestions IA pour les centres d'intérêt
             if (controls.aiSuggestInterestsBtn) {
                 controls.aiSuggestInterestsBtn.addEventListener('click', async () => {
                     const currentInterests = controls.interests ? controls.interests.value : '';
@@ -2082,7 +2055,6 @@
                                 controls.interests.value = suggestions;
                             }
                             
-                            // Recalculer le compteur
                             const interests = controls.interests.value.split(',').filter(i => i.trim());
                             if (controls.interestsCount) {
                                 controls.interestsCount.textContent = interests.length;
@@ -2099,37 +2071,30 @@
                 });
             }
 
-            // Synchronisation des champs avec les prévisualisations
             function syncPreview() {
-                // Nom et prénom
                 if (controls.nom && controls.prenom && controls.cvNomPrenomPreview) {
                     const nomComplet = `${controls.prenom.value} ${controls.nom.value}`.trim();
                     controls.cvNomPrenomPreview.textContent = nomComplet || 'Prénom NOM';
                 }
                 
-                // Poste
                 if (controls.poste && controls.cvPostePreview) {
                     controls.cvPostePreview.textContent = controls.poste.value || 'Poste Recherché';
                 }
                 
-                // Description
                 if (controls.description && controls.cvDescriptionPreview) {
                     controls.cvDescriptionPreview.innerHTML = controls.description.value.replace(/\n/g, '<br>') || '';
                 }
                 
-                // Compétences
                 if (controls.competences && controls.cvCompetencesPreview) {
                     const competences = controls.competences.value.split(',').filter(c => c.trim());
                     controls.cvCompetencesPreview.innerHTML = competences.map(c => `<span class="skill-tag">${c.trim()}</span>`).join(' ');
                 }
                 
-                // Centres d'intérêt
                 if (controls.interests && controls.cvInterestsPreview) {
                     const interests = controls.interests.value.split(',').filter(i => i.trim());
                     controls.cvInterestsPreview.innerHTML = interests.map(i => `<span class="interest-tag">${i.trim()}</span>`).join(' ');
                 }
                 
-                // Bannière
                 if (controls.bannerNom && controls.bannerNomPreview) {
                     controls.bannerNomPreview.textContent = controls.bannerNom.value || '';
                 }
@@ -2144,7 +2109,6 @@
                 }
             }
 
-            // Écouter les changements sur tous les champs
             const fieldsToWatch = ['nom', 'prenom', 'poste', 'description', 'competences', 'interests', 'bannerNom', 'bannerPoste', 'bannerEmail', 'bannerTel'];
             fieldsToWatch.forEach(fieldName => {
                 if (controls[fieldName]) {
@@ -2152,9 +2116,7 @@
                 }
             });
 
-            // Initialiser la prévisualisation
             syncPreview();
-
             console.log('Tous les gestionnaires d\'événements sont configurés');
         });
     </script>
