@@ -3756,6 +3756,9 @@
                 historyDebounceTimer = setTimeout(pushHistory, 300);
             }
 
+            // Expose for legacy/global handlers
+            try { window.undo = undo; window.redo = redo; } catch(_) {}
+
             // --- INITIALIZATION FUNCTION ---
             function initializeAll() {
                 console.log("Initializing UI components and event listeners...");
@@ -3787,11 +3790,11 @@
                 });
                 tabButtons[0].click();
 
-                controls.undoBtn.addEventListener('click', undo);
-                controls.redoBtn.addEventListener('click', redo);
+                controls.undoBtn.addEventListener('click', () => { if (window.undo) window.undo(); });
+                controls.redoBtn.addEventListener('click', () => { if (window.redo) window.redo(); });
                 document.addEventListener('keydown', (e) => {
-                    if (e.ctrlKey && e.key === 'z') { e.preventDefault(); undo(); }
-                    if (e.ctrlKey && e.key === 'y') { e.preventDefault(); redo(); }
+                    if (e.ctrlKey && e.key === 'z') { e.preventDefault(); if (window.undo) window.undo(); }
+                    if (e.ctrlKey && e.key === 'y') { e.preventDefault(); if (window.redo) window.redo(); }
                 });
 
                 controls.addExperienceBtn.addEventListener('click', () => createDynamicItem(controls.experienceList, [{ key: 'title', placeholder: 'Titre du poste' }, { key: 'meta', placeholder: 'Entreprise & Dates' }, { key: 'desc', placeholder: 'Description des missions', type: 'textarea' }]));
