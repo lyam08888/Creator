@@ -2329,6 +2329,9 @@
                 skillsLevelControls: document.getElementById('skills-level-controls'),
                 skillsLevelList: document.getElementById('skills-level-list'),
                 addSkillLevelBtn: document.getElementById('add-skill-level-btn'),
+                aiSuggestInterestsBtn: document.getElementById('ai-suggest-interests-btn'),
+                interestsTextarea: document.getElementById('interests'),
+                interestsCount: document.getElementById('interests-count'),
                 confirmModal: {
                     overlay: document.getElementById('confirm-modal'),
                     title: document.getElementById('confirm-modal-title'),
@@ -2482,6 +2485,13 @@
                 controls.loaderText.textContent = text;
                 controls.loader.classList.remove('hidden');
                 controls.loader.classList.add('flex');
+            }
+
+            function hideLoader() {
+                if (controls?.loader) {
+                    controls.loader.classList.add('hidden');
+                    controls.loader.classList.remove('flex');
+                }
             }
 
             async function analyzeText(inputText) {
@@ -6859,8 +6869,8 @@
         }
 
         // Gestion des compteurs d'intérêts
-        const interestsTextarea = document.getElementById('interests');
-        const interestsCount = document.getElementById('interests-count');
+        const interestsTextarea = controls.interestsTextarea;
+        const interestsCount = controls.interestsCount;
 
         if (interestsTextarea && interestsCount) {
             interestsTextarea.addEventListener('input', () => {
@@ -6869,8 +6879,8 @@
             });
         }
 
-        if (aiSuggestInterestsBtn) {
-            aiSuggestInterestsBtn.addEventListener('click', async () => {
+        if (controls.aiSuggestInterestsBtn) {
+            controls.aiSuggestInterestsBtn.addEventListener('click', async () => {
                 const currentInterests = interestsTextarea.value;
                 const prompt = `En tant qu'expert en recrutement, suggère 8 centres d'intérêt pertinents pour un CV dans le domaine professionnel de "${controls.poste.value || 'général'}". Tiens compte des centres d'intérêt existants: "${currentInterests}". Retourne uniquement la liste des suggestions séparées par des virgules, sans introduction ni conclusion.`;
 
