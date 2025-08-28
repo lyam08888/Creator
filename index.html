@@ -4802,14 +4802,6 @@
             showNotification('Template sauvegardé avec succès !', 'success');
         }
 
-        // Load a template
-        function loadTemplate(template) {
-            // Here you would apply the template data to the current CV
-            // For now, we'll just show a notification
-            showNotification(`Template "${template.name}" chargé !`, 'success');
-            templatesModal.overlay.classList.remove('active');
-        }
-
         // Delete a template
         function deleteTemplate(index) {
             savedTemplates.splice(index, 1);
