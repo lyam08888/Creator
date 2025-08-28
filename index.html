@@ -2153,9 +2153,8 @@
                         <div>
                             <label for="chatgpt-model" class="block text-sm font-medium mb-1">Modèle</label>
                             <select id="chatgpt-model" class="w-full p-2 border rounded-md text-sm">
+                                <option value="gpt-5" selected>GPT-5</option>
                                 <option value="gpt-3.5-turbo">GPT-3.5 Turbo</option>
-                                <option value="gpt-4">GPT-4</option>
-                                <option value="gpt-4-turbo">GPT-4 Turbo</option>
                             </select>
                         </div>
                         <button id="test-chatgpt-btn" class="w-full bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 text-sm" title="Tester la connexion à l'API ChatGPT">
@@ -3153,7 +3152,7 @@
                     const apiUrl = 'https://api.openai.com/v1/chat/completions';
 
                     const payload = {
-                        model: apiSettings.chatgpt.model || 'gpt-3.5-turbo',
+                        model: apiSettings.chatgpt.model || 'gpt-5',
                         messages: [{ role: 'user', content: prompt }],
                         max_tokens: 1000,
                         temperature: 0.7
@@ -4746,7 +4745,7 @@
         let apiSettings = {
             provider: 'gemini',
             gemini: { apiKey: '', model: 'gemini-1.5-flash', isValid: false },
-            chatgpt: { apiKey: '', model: 'gpt-3.5-turbo', isValid: false }
+            chatgpt: { apiKey: '', model: 'gpt-5', isValid: false }
         };
 
         // Load API settings from localStorage
@@ -5271,7 +5270,7 @@
             if (apiSettingsModal.geminiApiKey) apiSettingsModal.geminiApiKey.value = apiSettings.gemini?.apiKey || '';
             if (apiSettingsModal.geminiModel) apiSettingsModal.geminiModel.value = apiSettings.gemini?.model || 'gemini-1.5-flash';
             if (apiSettingsModal.chatgptApiKey) apiSettingsModal.chatgptApiKey.value = apiSettings.chatgpt?.apiKey || '';
-            if (apiSettingsModal.chatgptModel) apiSettingsModal.chatgptModel.value = apiSettings.chatgpt?.model || 'gpt-3.5-turbo';
+            if (apiSettingsModal.chatgptModel) apiSettingsModal.chatgptModel.value = apiSettings.chatgpt?.model || 'gpt-5';
 
             // Update status indicator
             const statusIndicator = document.getElementById('api-status-indicator');
