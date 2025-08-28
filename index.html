@@ -6534,6 +6534,10 @@
             });
         }
 
+        // Gestion des compteurs d'intérêts
+        const interestsTextarea = document.getElementById('interests');
+        const interestsCount = document.getElementById('interests-count');
+
         if (interestsTextarea && interestsCount) {
             interestsTextarea.addEventListener('input', () => {
                 const interests = interestsTextarea.value.split(',').filter(i => i.trim());
@@ -6811,6 +6815,24 @@
             });
         }
 
+        // Initialisation des compteurs au chargement
+        // Initialiser les compteurs existants
+        if (descriptionTextarea && profileCharCount) {
+            updateCharCount(descriptionTextarea, profileCharCount, 500);
+        }
+
+        if (competencesTextarea && skillsCount) {
+            const skills = competencesTextarea.value.split(',').filter(s => s.trim());
+            skillsCount.textContent = skills.length;
+        }
+
+        if (interestsTextarea && interestsCount) {
+            const interests = interestsTextarea.value.split(',').filter(i => i.trim());
+            interestsCount.textContent = interests.length;
+        }
+
+        }); // Fermeture du premier DOMContentLoaded event listener
+
         // Fonction pour compter les caractères dans les champs de texte
         function updateCharCount(textarea, counterElement, maxLength = null) {
             if (!textarea || !counterElement) return;
@@ -6828,24 +6850,6 @@
                 }
             }
         }
-
-        // Initialisation des compteurs au chargement
-        document.addEventListener('DOMContentLoaded', () => {
-            // Initialiser les compteurs existants
-            if (descriptionTextarea && profileCharCount) {
-                updateCharCount(descriptionTextarea, profileCharCount, 500);
-            }
-
-            if (competencesTextarea && skillsCount) {
-                const skills = competencesTextarea.value.split(',').filter(s => s.trim());
-                skillsCount.textContent = skills.length;
-            }
-
-            if (interestsTextarea && interestsCount) {
-                const interests = interestsTextarea.value.split(',').filter(i => i.trim());
-                interestsCount.textContent = interests.length;
-            }
-        });
 
     </script>
 </body>
