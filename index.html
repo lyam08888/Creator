@@ -898,11 +898,9 @@
             border-bottom-color: #2563eb !important;
             color: #2563eb !important;
         }
-        .tab-panel {
-            display: none;
-        }
+        /* Tab panels are hidden by default via Tailwind's 'hidden' class */
         .tab-panel:not(.hidden) {
-            display: block;
+            display: block !important;
         }
 
         /* Bannière inversée */
@@ -1421,7 +1419,6 @@
                 <button class="tab-btn -mb-px py-3 px-4 text-sm font-medium border-b-2 whitespace-nowrap" data-target="#panel-content" title="Édition du contenu du CV"><i class="fa-solid fa-file-lines mr-1"></i> Contenu</button>
                 <button class="tab-btn -mb-px py-3 px-4 text-sm font-medium border-b-2 whitespace-nowrap" data-target="#panel-layout" title="Configuration de la mise en page"><i class="fa-solid fa-columns mr-1"></i> Mise en Page</button>
                 <button class="tab-btn -mb-px py-3 px-4 text-sm font-medium border-b-2 whitespace-nowrap" data-target="#panel-banner" title="Personnalisation de la bannière"><i class="fa-solid fa-user-tie mr-1"></i> Bannière</button>
-                <button class="tab-btn -mb-px py-3 px-4 text-sm font-medium border-b-2 whitespace-nowrap" data-target="#panel-config" title="Configuration et paramètres avancés"><i class="fa-solid fa-cog mr-1"></i> Configuration</button>
             </div>
 
             <div id="tab-content" class="py-4 flex-grow overflow-y-auto">
@@ -2675,6 +2672,56 @@
                             btn.dataset.tooltip = btn.title;
                         }
                     });
+
+                    // ===========================================
+                    // TAB FUNCTIONALITY
+                    // ===========================================
+
+                    // Initialize tab system
+                    function initializeTabs() {
+                        const tabButtons = document.querySelectorAll('.tab-btn');
+                        const tabPanels = document.querySelectorAll('.tab-panel');
+
+                        // Set first tab as active by default
+                        if (tabButtons.length > 0 && tabPanels.length > 0) {
+                            const firstTab = tabButtons[0];
+                            const firstPanel = document.querySelector(firstTab.dataset.target);
+                            if (firstPanel) {
+                                firstTab.classList.add('active');
+                                firstPanel.classList.remove('hidden');
+                            }
+                        }
+
+                        // Add click event listeners to tab buttons
+                        tabButtons.forEach(button => {
+                            button.addEventListener('click', () => {
+                                const targetId = button.dataset.target;
+                                const targetPanel = document.querySelector(targetId);
+
+                                if (!targetPanel) {
+                                    console.error(`Panel with ID ${targetId} not found`);
+                                    return;
+                                }
+
+                                // Remove active class from all tabs and hide all panels
+                                tabButtons.forEach(btn => btn.classList.remove('active'));
+                                tabPanels.forEach(panel => panel.classList.add('hidden'));
+
+                                // Add active class to clicked tab and show target panel
+                                button.classList.add('active');
+                                targetPanel.classList.remove('hidden');
+
+                                // Optional: Scroll to top of controls panel
+                                const controlsPanel = document.getElementById('controls');
+                                if (controlsPanel) {
+                                    controlsPanel.scrollTop = 0;
+                                }
+                            });
+                        });
+                    }
+
+                    // Initialize tabs
+                    initializeTabs();
 
             // Initialize modal systems
                     initializeAccessibilityModal();
