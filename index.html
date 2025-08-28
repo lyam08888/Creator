@@ -1013,6 +1013,28 @@
         .icon-square { background: var(--secondary-color); color: white; border-radius: 4px; width: 20px; height: 20px; display: inline-flex; align-items: center; justify-content: center; font-size: 10px; }
         .icon-transparent { background: transparent; color: var(--primary-color); border: 2px solid var(--primary-color); border-radius: 50%; width: 20px; height: 20px; display: inline-flex; align-items: center; justify-content: center; font-size: 10px; }
 
+        /* Dark theme base using CSS variables */
+        :root {
+            --bg-color: #f1f5f9;
+            --text-color: #0f172a;
+            --panel-bg: #ffffff;
+            --panel-border: #e5e7eb;
+            --tooltip-bg: rgba(15, 23, 42, 0.95);
+        }
+        .dark {
+            --bg-color: #0f172a;
+            --text-color: #e2e8f0;
+            --panel-bg: #111827;
+            --panel-border: #374151;
+            --tooltip-bg: rgba(31,41,55,0.98);
+        }
+        body { background-color: var(--bg-color); color: var(--text-color); }
+        #top-toolbar { background-color: var(--panel-bg); border-color: var(--panel-border); }
+        #controls { background-color: var(--panel-bg); }
+        .modal-content { background-color: var(--panel-bg); color: var(--text-color); }
+        .a4-page-container { background-color: var(--panel-bg); }
+        .tooltip-tailwind { background: var(--tooltip-bg); color: white; box-shadow: 0 8px 24px rgba(0,0,0,0.25); border-radius: 0.5rem; padding: 0.5rem 0.625rem; font-size: 0.75rem; }
+
     </style>
 </head>
 <body class="bg-gray-200 font-sans">
@@ -1080,6 +1102,9 @@
             </button>
             <button id="toggle-presentation-mode-btn" class="toolbar-btn bg-indigo-600 text-white px-3 py-2 rounded-md hover:bg-indigo-700 flex items-center gap-2 text-sm" title="Basculer en mode présentation">
                 <i class="fa-solid fa-eye"></i> MODE PRÉSENTATION
+            </button>
+            <button id="toggle-dark-mode" class="toolbar-btn bg-slate-700 text-white px-3 py-2 rounded-md hover:bg-slate-800 flex items-center gap-2 text-sm" title="Basculer le thème sombre (Ctrl+D)">
+                <i class="fa-solid fa-moon"></i> THÈME SOMBRE
             </button>
         </div>
     </div>
@@ -4599,6 +4624,29 @@
             // --- START THE APP ---
             initializeAll();
             resetCVToDefault(); // Start with a clean slate
+
+            // Keyboard shortcuts
+            document.addEventListener('keydown', (e) => {
+                if (e.key === '?' || (e.shiftKey && e.key === '/')) {
+                    e.preventDefault();
+                    document.getElementById('shortcuts-modal')?.classList.add('active');
+                }
+                if (e.ctrlKey && (e.key === 'd' || e.key === 'D')) {
+                    e.preventDefault();
+                    toggleDarkMode();
+                }
+                if (e.ctrlKey && (e.key === 'p' || e.key === 'P')) {
+                    // Let browser print default behavior, but ensure not in inputs
+                    if ((document.activeElement && ['INPUT','TEXTAREA'].includes(document.activeElement.tagName)) === false) {
+                        printCV();
+                    }
+                }
+            });
+
+            // Shortcuts modal close actions
+            document.getElementById('close-shortcuts-modal')?.addEventListener('click', () => document.getElementById('shortcuts-modal')?.classList.remove('active'));
+            document.getElementById('close-shortcuts-modal-bottom')?.addEventListener('click', () => document.getElementById('shortcuts-modal')?.classList.remove('active'));
+            document.getElementById('shortcuts-modal')?.addEventListener('click', (e) => { if (e.target === e.currentTarget) e.currentTarget.classList.remove('active'); });
 
         // --- ZOOM CONTROLLER ---
         const zoomController = document.createElement('div');
